@@ -1,8 +1,8 @@
 # CMR-IA: A Context-Maintenance and Retrieval Model for Item and Associative Memory
 
-CMR-IA is a computational model of memory, belonging to the family of Context-Maintenance and Retrieval (CMR) Models. CMR-IA aims at providing an mechanistic explanation for memory of items and associations, which concerns tasks including item recognition, associative recognition, and cued recall. 
+CMR-IA is a computational model of memory, belonging to the family of Context-Maintenance and Retrieval (CMR) Models. CMR-IA aims to provide a mechanistic explanation for memory of items and associations, which concerns tasks including item recognition, associative recognition, and cued recall. 
 
-This is a project in the Computational Memory Lab at Upenn. It is maintained by Beige Jin. Many of the codes are inherited from [Pazdera & Kahana (2022)](https://github.com/jpazdera/PazdKaha22), especially the big structure of the model and the particle swarm optimization. But please be cautious that major modifications are also made in multiple aspects, including how to use the model.
+This is a project in the Computational Memory Lab at Upenn. It is maintained by Beige Jin. Many of the codes are inherited from [Pazdera & Kahana (2022)](https://github.com/jpazdera/PazdKaha22), especially the big structure of the model and the particle swarm optimization. But please be cautious that major modifications are also in multiple aspects, including how to use the model. We've marked the changes in the code with comments like `[bj]` and `[Newly added]`.
 
 The following is an overview of the two directories included herein (for more details, please see the README files located within each directory):
 - `Analysis/`: Jupyter notebooks for running simulations, analyzing data, and generating figures.
