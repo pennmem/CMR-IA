@@ -43,3 +43,14 @@ python setup_cmr.py install
 ~~~
 
 (5) Note that the optimization algorithms will not be installed as part of the package. If you wish to use these scripts, you will need to modify them as needed to work with your research project, and then run the files directly (see README in `Modeling/`).
+
+Shield: [![CC BY 4.0][cc-by-shield]][cc-by]
+
+This work is licensed under a
+[Creative Commons Attribution 4.0 International License][cc-by].
+
+[![CC BY 4.0][cc-by-image]][cc-by]
+
+[cc-by]: http://creativecommons.org/licenses/by/4.0/
+[cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
+[cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
