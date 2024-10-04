@@ -1,0 +1,165 @@
+---
+title: "simu1_stat_Az_noAUC"
+author: "Beige Jin"
+date: "2024-09-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# knitr::opts_knit$set(root.dir = "/Users/bei/BeiWorld/Research/2022CMRIA/CMR_IA/Analysis/simu1_recog_recsim")
+```
+
+### Set Up
+
+```{r lib}
+library(MASS)
+library(lme4)
+library(RePsychLing)
+library(lmerTest)
+library(car)
+getwd()
+```
+
+```{r data}
+df = read.csv("../simu1_data/simu1_David_Az.csv")
+df$log_lag_disp = factor(df$log_lag_disp, levels = c(1, 8, 21, 55, 149))
+df$roll_cat_len_level = factor(df$roll_cat_len_level, levels = c("0-1", ">=2"))
+```
+
+```{r func}
+format.random.effect.zc = function(random.effect, group="subject_ID"){
+  return(paste("(", random.effect, "||", group, ")"))
+}
+
+format.random.effect.wc = function(random.effect, group="subject_ID"){
+  return(paste("(", random.effect, "|", group, ")"))
+}
+```
+
+### Full LMM
+
+If we fit the full LMM, there is too many parameters.
+
+```{r}
+# lmer(Az ~ log_lag_disp * roll_cat_len_level + (log_lag_disp * roll_cat_len_level | subject_ID), data=df)
+```
+
+### Zero-corr LMM
+
+Now we try zero-correlation LLM. With all factors, it is singular.
+
+```{r}
+full.fixed.effect = "log_lag_disp * roll_cat_len_level"
+full.random.effect = "(dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"55\") + dummy(log_lag_disp, \"149\")) * dummy(roll_cat_len_level, \">=2\")"
+
+formula.zc.full = paste("Az ~", full.fixed.effect, "+", format.random.effect.zc(full.random.effect))
+cat(formula.zc.full)
+mod.zc.full = lmer(formula.zc.full, data=df)
+summary(mod.zc.full)
+summary(rePCA(mod.zc.full))
+```
+### Zero-corr LMM -1
+
+Eliminate those with near-zero variance. Only eliminate `log_lag_disp = 21` is not enough.
+
+```{r}
+random.effect.todrop = "dummy(log_lag_disp, \"21\")"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+
+formula.zc.drop1 = paste("Az ~", full.fixed.effect, "+", format.random.effect.zc(reduced.random.effect))
+cat(formula.zc.drop1)
+lmer(formula.zc.drop1, data=df)
+```
+
+### Zero-corr LMM -2
+
+Eliminate the two components with near-zero variance. Not singular!
+
+```{r}
+random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\"))"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+
+formula.zc.drop2 = paste("Az ~", full.fixed.effect, "+", format.random.effect.zc(reduced.random.effect))
+cat(formula.zc.drop2)
+mod.zc.drop2 = lmer(formula.zc.drop2, data=df)
+summary(mod.zc.drop2)
+```
+
+### LMM -2 full corr
+
+In the following we want to find a maximal correlation matrix.
+
+Extend the reduced LMM with all correlation parameters. Singular!
+
+```{r}
+random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\"))"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+
+formula.wc.drop2.full = paste("Az ~", full.fixed.effect, "+", format.random.effect.wc(reduced.random.effect))
+cat(formula.wc.drop2.full)
+mod.wc.drop2.full = lmer(formula.wc.drop2.full, data=df)
+summary(mod.wc.drop2.full)
+# Matrix::bdiag(VarCorr(mod.wc.drop2.full))
+attr(VarCorr(mod.wc.drop2.full)[["subject_ID"]], "correlation")
+```
+
+### LMM -2 corr -1
+
+Cut out `dummy(log_lag_disp, "55"):dummy(roll_cat_len_level, ">=2")` whose correlations are most near zero. Singular.
+
+```{r}
+random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\"))"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+random.effect2 = "0 + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\")"
+
+formula.wc.drop2.cut1 = paste("Az ~", full.fixed.effect, "+", format.random.effect.wc(reduced.random.effect), "+", format.random.effect.wc(random.effect2))
+cat(formula.wc.drop2.cut1)
+mod.wc.drop2.cut1 = lmer(formula.wc.drop2.cut1, data=df)
+summary(mod.wc.drop2.cut1)
+# Matrix::bdiag(VarCorr(mod.wc.drop2.cut1))
+Matrix::bdiag(sapply(VarCorr(mod.wc.drop2.cut1), attr, "correlation"))
+```
+
+### LMM -2 corr -2
+
+Cut out `dummy(roll_cat_len_level, ">=2")` whose correlations are most near zero. Not singular!!
+
+```{r}
+random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\") + dummy(roll_cat_len_level, \">=2\"))"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+random.effect2 = "0 + dummy(roll_cat_len_level, \">=2\")"
+random.effect3 = "0 + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\")"
+
+formula.wc.drop2.cut2 = paste("Az ~", full.fixed.effect, "+", format.random.effect.wc(reduced.random.effect), "+", format.random.effect.wc(random.effect2), "+", format.random.effect.wc(random.effect3))
+cat(formula.wc.drop2.cut2)
+mod.wc.drop2.cut2 = lmer(formula.wc.drop2.cut2, data=df)
+summary(mod.wc.drop2.cut2)
+```
+
+Try to combine the two cut out components. Not work.
+
+```{r}
+random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\") + dummy(roll_cat_len_level, \">=2\"))"
+reduced.random.effect = paste(full.random.effect, "-", random.effect.todrop)
+random.effect2 = "0 + dummy(roll_cat_len_level, \">=2\") + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\")"
+
+formula.wc.drop2.cut2.comb = paste("Az ~", full.fixed.effect, "+", format.random.effect.wc(reduced.random.effect), "+", format.random.effect.wc(random.effect2))
+cat(formula.wc.drop2.cut2.comb)
+mod.wc.drop2.cut2.comb = lmer(formula.wc.drop2.cut2.comb, data=df)
+summary(mod.wc.drop2.cut2.comb)
+```
+
+### Summary
+
+In summary, we will adopt mod.wc.drop2.cut2.
+
+```{r}
+summary(mod.wc.drop2.cut2)
+anova(mod.wc.drop2.cut2)
+```
+```{r}
+coef(summary(mod.wc.drop2.cut2))
+```
+
+
