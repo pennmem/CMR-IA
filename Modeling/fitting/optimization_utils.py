@@ -17,7 +17,6 @@ def param_vec_to_dict(param_vec, sim_name):
 
     # Generate a base paramater dictionary
     param_dict = cmr.make_default_params()
-    # param_dict.update(c_thresh = 0.4)
 
     # Put vector values into dict
     _, _, what_to_fit = make_boundary(sim_name)
@@ -83,33 +82,234 @@ def make_boundary(sim_name):
         thresh_sigma=0.5,
     )
 
-    # Which Parameters to fit
+    # Determine which parameters to fit and their boundary for different simulations
     if sim_name == "1":
-        # what_to_fit = ['beta_enc','beta_rec_post','s_fc','gamma_fc']
-        what_to_fit = ["beta_enc", "beta_rec_post", "s_fc", "gamma_fc", "c_thresh_itm"]
-        # simulation specific boundary
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec_post",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+            "recog_slope",
+        ]
         lb_dict.update(
-            c_thresh_itm=0.2,
+            # c_thresh_itm=0.2,
+            recog_slope=0,
         )
         ub_dict.update(
             beta_enc=0.4,
             beta_rec_post=0.4,
             s_fc=0.4,
             gamma_fc=0.4,
-            c_thresh_itm=0.8,
+            recog_slope=10,
+            # c_thresh_itm=0.8,
+        )
+    
+    elif sim_name == "2":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            # "beta_distract",
+            "beta_rec_post",
+            "s_fc",
+            "gamma_fc",
+            # "c_thresh_itm",
+        ]
+        lb_dict.update(
+            beta_enc=0.2,
+        )
+        ub_dict.update(
+            beta_enc=0.8,
+            gamma_fc=0.5,
         )
 
     elif sim_name == "3":
-        what_to_fit = ["beta_enc", "beta_cue", "beta_rec_post", "s_fc", "gamma_fc", "c_thresh_itm", "c_thresh_assoc"]
-        # simulation specific boundary
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            "beta_rec_post",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+            "c_thresh_assoc",
+        ]
         ub_dict.update(
             beta_enc=0.5,
             beta_cue=0.5,
             beta_rec_post=0.5,
         )
 
+    elif sim_name == "4":
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            # "beta_distract",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+            "c_s",
+            "psi_s",
+            "psi_c",
+        ]
+        lb_dict.update(
+            c_thresh_itm=-1,
+            c_s=0,
+            psi_s=0,
+            psi_c=-10,
+        )
+        ub_dict.update(
+            s_fc=0.3,
+            c_thresh_itm=1,
+            c_s=10,
+            psi_s=100,
+            psi_c=10,
+        )
+    
+    elif sim_name == "4ctrl":
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            # "beta_distract",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+        ]
+
+    elif sim_name == "4shift":
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            # "beta_distract",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+            "c_s",
+        ]
+        lb_dict.update(
+            c_thresh_itm=-1,
+            c_s=0,
+        )
+        ub_dict.update(
+            c_thresh_itm=1,
+            c_s=10,
+        )
+
+    elif sim_name == "5":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec",
+            "beta_cue",
+            "beta_rec_post",
+            "beta_distract",
+            "gamma_fc",
+            "gamma_cf",
+            "s_fc",
+            "s_cf",
+            "phi_s",
+            "phi_d",
+            "kappa",
+            "lamb",
+            "eta",
+            "omega",
+            "alpha",
+            "c_thresh",
+        ]
+
+    elif sim_name == "6a":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec",
+            "beta_cue",
+            "beta_rec_post",
+            "beta_distract",
+            "gamma_fc",
+            "gamma_cf",
+            "s_fc",
+            "s_cf",
+            "phi_s",
+            "phi_d",
+            "kappa",
+            "lamb",
+            "eta",
+            "omega",
+            "alpha",
+            "c_thresh",
+        ]
+
+    elif sim_name == "6b":
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec",
+            "beta_cue",
+            "beta_rec_post",
+            "beta_distract",
+            "gamma_fc",
+            "gamma_cf",
+            "s_fc",
+            "s_cf",
+            "phi_s",
+            "phi_d",
+            "kappa",
+            "lamb",
+            "eta",
+            "omega",
+            "alpha",
+            "c_thresh",
+        ]
+    
+    elif sim_name == "7":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec",
+            "beta_cue",
+            "beta_rec_post",
+            "beta_distract",
+            "gamma_fc",
+            "gamma_cf",
+            "s_fc",
+            "s_cf",
+            "phi_s",
+            "phi_d",
+            "kappa",
+            "lamb",
+            "eta",
+            "omega",
+            "alpha",
+            "c_thresh",
+        ]
+    
+    elif sim_name == "8":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_rec",
+            "beta_cue",
+            "beta_distract",
+            "gamma_fc",
+            "gamma_cf",
+            "s_fc",
+            "phi_s",
+            "phi_d",
+            "kappa",
+            "lamb",
+            "eta",
+            "omega",
+            "alpha",
+            "c_thresh",
+        ]
+    
     elif sim_name == "S1":
-        # what_to_fit = ['beta_enc', 'beta_rec', 'beta_cue', 'beta_rec_post', 'beta_distract', 'gamma_fc', 'gamma_cf', 's_fc', 's_cf', 'phi_s', 'phi_d', 'kappa', 'lamb', 'eta', 'omega', 'alpha', 'c_thresh', 'c_thresh_itm', 'c_thresh_ass', 'd_ass']
+        
         what_to_fit = [
             "beta_enc",
             "beta_rec",
@@ -131,7 +331,6 @@ def make_boundary(sim_name):
             "c_thresh_itm",
             "c_thresh_assoc",
         ]
-        # simulation specific boundary
         lb_dict.update(
             beta_enc=0.4,
             beta_rec=0,
@@ -176,9 +375,18 @@ def make_boundary(sim_name):
         )
 
     elif sim_name == "S2":
-        # what_to_fit = ['beta_enc', 'beta_rec', 'beta_cue', 'beta_rec_post', 'beta_distract', 'gamma_fc', 's_fc', 'c_thresh_itm', 'c_thresh_ass', 'd_ass', 'thresh_sigma']
-        what_to_fit = ["beta_enc", "beta_cue", "beta_rec_post", "beta_distract", "gamma_fc", "s_fc", "c_thresh_itm", "c_thresh_assoc", "thresh_sigma"]
-        # simulation specific boundary
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            "beta_rec_post",
+            "beta_distract",
+            "gamma_fc",
+            "s_fc",
+            "c_thresh_itm",
+            "c_thresh_assoc",
+            "thresh_sigma",
+        ]
         lb_dict.update(
             beta_enc=0,
             beta_cue=0,
@@ -202,44 +410,17 @@ def make_boundary(sim_name):
             thresh_sigma=0.2,
         )
 
-    elif sim_name == "6b":
-        what_to_fit = [
-            "beta_enc",
-            "beta_rec",
-            "beta_cue",
-            "beta_rec_post",
-            "beta_distract",
-            "gamma_fc",
-            "gamma_cf",
-            "s_fc",
-            "s_cf",
-            "phi_s",
-            "phi_d",
-            "kappa",
-            "lamb",
-            "eta",
-            "omega",
-            "alpha",
-            "c_thresh",
-        ]
-        # what_to_fit = ['beta_enc', 'beta_rec', 'beta_cue', 'beta_rec_post', 'beta_distract', 'gamma_fc', 'gamma_cf', 's_fc', 's_cf', 'phi_s', 'phi_d', 'kappa', 'lamb', 'eta', 'omega', 'alpha', 'c_thresh', 'd_ass']
-
-    elif sim_name == "4ctrl":
-        what_to_fit = ["beta_enc", "beta_cue", "beta_distract", "s_fc", "gamma_fc", "c_thresh_itm"]
-
-    elif sim_name == "4shift":
-        what_to_fit = ["beta_enc", "beta_cue", "beta_distract", "s_fc", "gamma_fc", "c_thresh_itm", "c_s"]
-        lb_dict.update(
-            c_thresh_itm=-1,
-            c_s=0,
-        )
-        ub_dict.update(
-            c_thresh_itm=1,
-            c_s=10,
-        )
-
     # create lb and ub as list
     lb = [lb_dict[key] for key in what_to_fit]
     ub = [ub_dict[key] for key in what_to_fit]
 
     return lb, ub, what_to_fit
+
+
+def get_wls(y_true, y_pred, y_sem):
+    """
+    Calculate weighted least squares.
+    """
+
+    wls = np.sum((y_true - y_pred) ** 2 / y_sem ** 2)
+    return wls

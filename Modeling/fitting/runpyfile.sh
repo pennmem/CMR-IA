@@ -11,7 +11,7 @@ umask 022
 # PY_COMMAND="/usr/local/python/bin/python"
 # PY_COMMAND="/usr/global/python/bin/python"
 # PY_COMMAND="~/anaconda3/bin/python"
-# PYFILE="/home1/beigejin/CMR_IA/Modeling/fitting/pso_cmr.py"
+PYFILE="/home1/beigejin/CMR-IA/Modeling/fitting/pso_cmr.py"
 PY_COMMAND="/home1/beigejin/.conda/envs/CMR_IA/bin/python"
 
 # go to the working directory

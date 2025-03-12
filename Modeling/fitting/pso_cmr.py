@@ -10,18 +10,35 @@ import pickle as pkl
 from glob import glob
 from noise_maker_pso import make_noise
 from optimization_utils import make_boundary
-from object_funcs import obj_func_S1, obj_func_S2, obj_func_6b, obj_func_3, obj_func_1, obj_func_4ctrl, obj_func_4shift
+from object_funcs import *
 
 # Set where you want your noise files and output files to be saved
 global OUTDIR
 global NOISE_DIR
-OUTDIR = 'outfiles/'
-NOISE_DIR = 'noise_files/'
+OUTDIR = "outfiles/"
+NOISE_DIR = "noise_files/"
 
 if not os.path.exists(OUTDIR):
     os.makedirs(OUTDIR)
 if not os.path.exists(NOISE_DIR):
     os.makedirs(NOISE_DIR)
+
+# Set obj_func dict
+obj_func_dict = {
+    "1": obj_func_1,
+    "2": obj_func_2,
+    "3": obj_func_3,
+    "4": obj_func_4,
+    "4ctrl": obj_func_4ctrl,
+    "4shift": obj_func_4shift,
+    "5": obj_func_5,
+    "6a": obj_func_6a,
+    "6b": obj_func_6b,
+    "7": obj_func_7,
+    "8": obj_func_8,
+    "S1": obj_func_S1,
+    "S2": obj_func_S2
+}
 
 """
 Dependencies: CMR_IA plus all the package imports above.
@@ -507,8 +524,8 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 
     # Set PSO parameters
     alg = 'pso2'
-    swarmsize = 100
-    n_iter = 100
+    swarmsize = 200
+    n_iter = 200
     omega_min = .72984 if alg in ('pso2', 'awl') else .3 if alg == 'apso6' else .4
     omega_max = .72984 if alg in ('pso2', 'awl') else .9
     d_omega = .1  # Delta omega for apso6 algorithm
@@ -523,23 +540,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
     
     # Set parameter boundaries
     lb, ub, _ = make_boundary(sim_name)
-    if sim_name == 'S1':
-        func = obj_func_S1
-    elif sim_name == 'S2':
-        func = obj_func_S2
-    elif sim_name == '6b':
-        func = obj_func_6b
-    elif sim_name == '3':
-        func = obj_func_3
-    elif sim_name == '1':
-        func = obj_func_1
-    elif sim_name == '4ctrl':
-        func = obj_func_4ctrl
-    elif sim_name == '4shift':
-        func = obj_func_4shift
-    else:
-        raise ValueError('No objective function found!')
-    
+    func = obj_func_dict[sim_name]
     print('Generating noise files...')
     make_noise(swarmsize, n_iter, lb, ub, NOISE_DIR)
 
@@ -559,69 +560,102 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 if __name__ == "__main__":
     
     # define simulation name
-    # SIM = '1'
-    # SIM = 'S1'
-    # SIM = 'S2'
-    # SIM = '3'
-    # SIM = '6b'
-    # SIM = '4ctrl'
-    SIM = '4shift'
-    
-    # semantic file in general, but could be different for specific simulations
-    sem_file = '../../Analysis/wordpools/ltp_FR_similarity_matrix.npy' 
+    SIM_NAME = "7"
 
-    if SIM == '1':
+    # Load df_study, df_test, sem_file
+    ANAL_DIR = "../../Analysis/"
+    
+    if SIM_NAME == "1":
         
-        with open("../../Analysis/simu1_recog_recsim/simu1_data/simu1_design.pkl", 'rb') as inp:
-            df_test = pkl.load(inp)
-        df_test = df_test.loc[df_test.session < 500]
         df_study = None
-        sources = None
-        sem_file = '../../Analysis/simu1_recog_recsim/simu1_data/simu1_300_smat.npy'
+        with open(ANAL_DIR + f"simu1_recog_recsim/simu1_data/simu1_design.pkl", "rb") as inp:
+            df_test = pkl.load(inp)
+        sem_file = ANAL_DIR + f"simu1_recog_recsim/simu1_data/simu1_300_smat.npy"
     
-    elif SIM == 'S1':
-
-        with open("../../Analysis/simuS1_recog_cr/simuS1_data/simuS1_design.pkl", 'rb') as inp:
+    elif SIM_NAME == "2":
+        
+        with open(ANAL_DIR + f"simu2_recog_conti/simu2_data/simu2_design.pkl", "rb") as inp:
             df_study = pkl.load(inp)
             df_test = pkl.load(inp)
-        sources = None
+        sem_file = ANAL_DIR + f"simu2_recog_conti/simu2_data/simu2_smat.npy"
+    
+    elif SIM_NAME == "3":
+        
+        df_study = None
+        with open(ANAL_DIR + f"simu3_recog_forget/simu3_data/simu3_design.pkl", "rb") as inp:
+            df_test = pkl.load(inp)
+        df_test = df_test.loc[df_test.session < 300].copy()
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
+        
+    elif SIM_NAME == "4" or SIM_NAME == "4ctrl" or SIM_NAME == "4shift":
+        
+        with open(ANAL_DIR + f"simu4_recog_wfe/simu4_data/simu4_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        sem_file = ANAL_DIR + f"simu4_recog_wfe/simu4_data/simu4_smat.npy"
+    
+    elif SIM_NAME == "5":
+        
+        with open(ANAL_DIR + f"simu5_cr_rec/simu5_data/simu5_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        df_study = df_study.loc[df_study.session < 100].copy()
+        df_test = df_test.loc[df_test.session < 100].copy()
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
 
-    elif SIM == 'S2':
+    elif SIM_NAME == "6a":
+        
+        with open(ANAL_DIR + f"simu6a_cr_recsym/simu6a_data/simu6a_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        df_study = df_study.loc[df_study.session < 100].copy()
+        df_test = df_test.loc[df_test.session < 100].copy()
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
+        
+    elif SIM_NAME == "6b":
+
+        with open(ANAL_DIR + f"simu6b_cr_sym/simu6b_data/simu6b_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        df_study = df_study.loc[df_study.session < 100].copy()
+        df_test = df_test.loc[df_test.session < 100].copy()
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
+    
+    elif SIM_NAME == "7":
+        with open(ANAL_DIR + f"simu7_cr_pliili/simu7_data/simu7_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        df_study = df_study.loc[df_study.session < 500].copy()
+        df_test = df_test.loc[df_test.session < 500].copy()
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
+    
+    elif SIM_NAME == "8":
+        with open(ANAL_DIR + f"simu8_cr_sim/simu8_data/simu8_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        sem_file = ANAL_DIR + f"simu8_cr_sim/simu8_data/simu8_smat.npy"
+    
+    elif SIM_NAME == "S1":
+
+        with open(ANAL_DIR + f"simuS1_recog_cr/simuS1_data/simuS1_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
+
+    elif SIM_NAME == "S2":
          
-        with open("../../Analysis/simuS2_recog_recog/simuS2_data/simuS2_design.pkl", 'rb') as inp:
+        with open(ANAL_DIR + f"simuS2_recog_recog/simuS2_data/simuS2_design.pkl", "rb") as inp:
             df_study = pkl.load(inp)
             df_test = pkl.load(inp)
-        sources = None
-
-    elif SIM == '6b':
-
-        with open("../../Analysis/simu6b_cr_sym/simu6b_data/simu6b_design.pkl", 'rb') as inp:
-            df_study = pkl.load(inp)
-            df_test = pkl.load(inp)
-        df_study = df_study.loc[df_study.session < 100]
-        df_test = df_test.loc[df_test.session < 100]
-        sources = None
-    
-    elif SIM == '3':
-        
-        with open("../../Analysis/simu3_recog_forget/simu3_data/simu3_design.pkl", 'rb') as inp:
-            df_test = pkl.load(inp)
-        df_test = df_test.loc[df_test.session < 300]
-        df_study = None
-        sources = None
-        
-    elif SIM == "4ctrl" or SIM == "4shift":
-        
-        with open("../../Analysis/simu4_recog_wfe/simu4_data/simu4_design.pkl", 'rb') as inp:
-            df_study = pkl.load(inp)
-            df_test = pkl.load(inp)
-        sources = None
-        sem_file = "../../Analysis/simu4_recog_wfe/simu4_data/simu4_smat.npy"
+        sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
 
     else:
-        raise ValueError('Simulation name not recognized!')
+    
+        raise ValueError("Simulation name not recognized!")
         
     # Load semantic similarity matrix (word2vec)
     sem_mat = np.load(sem_file)
 
-    run_pso(df_study, df_test, sem_mat, sources, sim_name=SIM)
+    # Run PSO
+    run_pso(df_study, df_test, sem_mat, sources=None, sim_name=SIM_NAME)
+    

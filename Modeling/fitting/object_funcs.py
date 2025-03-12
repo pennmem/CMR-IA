@@ -7,7 +7,8 @@ import math
 import pickle
 import scipy as sp
 from scipy.stats import norm
-from optimization_utils import param_vec_to_dict
+from optimization_utils import *
+from sklearn.cluster import KMeans
 
 
 def obj_func_S1(param_vec, df_study, df_test, sem_mat, sources, return_df=False):
@@ -216,6 +217,475 @@ def anal_perform_S2(df_simu):
     return stats
 
 
+def obj_func_1(param_vec, df_study, df_test, sem_mat, sources):
+
+    assert df_study == None
+    df = df_test
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="1")
+    param_dict.update(use_new_context=True)
+
+    # Run model with the parameters given in param_vec
+    df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, mode="Continuous")
+    df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
+
+    # calculate perceptron loss
+    # csim = df_simu["csim"].to_numpy()
+    # 1
+    # score = csim - param_dict["c_thresh_itm"]
+    # true_resp = df_simu["yes"].to_numpy() * 2 - 1
+    # err = np.nansum(np.maximum(0, -true_resp * score))
+    # 2
+    # true_resp = df_simu["yes"].to_numpy()
+    # err = np.nansum(np.abs(true_resp - csim))
+    # 3
+    # csim_threshs = np.linspace(0, 1, 8)
+    # conf = df_simu["confidence"].to_numpy() - 1
+    # target_csim = np.array([csim_threshs[int(i)] if not np.isnan(i) else i for i in conf])
+    # err = np.nansum(np.abs(target_csim - csim))
+    # 4
+    # kmeans = KMeans(n_clusters=8, random_state=0, n_init="auto").fit(csim.reshape(-1, 1))
+    # labels = kmeans.labels_
+    # cluster_means = {i: csim[labels == i].mean() for i in range(8)}
+    # sorted_clusters = sorted(cluster_means, key=cluster_means.get)
+    # label_mapping = {old: new for new, old in enumerate(sorted_clusters)}
+    # sorted_labels = np.vectorize(label_mapping.get)(labels)
+    # conf = df_simu["confidence"].to_numpy() - 1
+    # err = np.nansum(np.abs(conf - sorted_labels))
+    # 5
+    # yes = df_simu["yes"].to_numpy()
+    # nan_idx = np.isnan(conf)
+    # err1 = np.nansum(conf[~nan_idx] != sorted_labels[~nan_idx])
+    # err2 = np.nansum(yes[~nan_idx] != (sorted_labels[~nan_idx] > 3))
+    # err = err1 + err2
+    # 6
+    # conf_freq_group = np.histogram(conf, bins=np.arange(9))[0] / 10000
+    # conf_freq = conf_freq_group[conf[~nan_idx].astype(int)]
+    # err = np.nansum((conf[~nan_idx] != sorted_labels[~nan_idx]) / conf_freq)
+    # 7
+    # s_resp = df_simu["s_resp"].to_numpy()
+    # position = df_simu["position"].to_numpy()
+    # is_position_later = position >= 20
+    # err = np.nansum(np.abs(s_resp[is_position_later] - yes[is_position_later]))
+    
+    # 8 fit HR and FAR
+    # calculate the rolling category length
+    # rolling_window = 9
+    # category_label_dummies = df_simu["category_label"].str.get_dummies()
+    # category_label_dummies.columns = ["cl_" + col for col in category_label_dummies.columns]
+    # category_label_dummies_events = pd.concat([df_simu, category_label_dummies], axis=1)  # record the occurrence of every cat label
+    # cl_rolling_sum = category_label_dummies_events.groupby("session").rolling(rolling_window, min_periods=1, on="position")[category_label_dummies.columns].sum().reset_index()
+    # df_rollcat = df_simu.merge(cl_rolling_sum, on=["session", "position"])
+    # df_simu["roll_cat_label_length"] = df_rollcat.apply(lambda x: x["cl_" + x["category_label"]], axis=1)  # how many cat within 10 window
+    # df_simu["roll_cat_label_length"] = df_simu["roll_cat_label_length"] - 1  # how many cat in previous 9 window. not include self
+    # df_simu["roll_cat_len_level"] = pd.cut(x=df_simu.roll_cat_label_length, bins=[0, 2, np.inf], right=False, include_lowest=True, labels=["0-1", ">=2"]).astype("str")
+
+    # # add log and log lag bin
+    # df_simu["log_lag"] = np.log(df_simu["lag"])
+    # df_simu["log_lag_bin"] = pd.cut(df_simu["log_lag"], np.arange(df_simu["log_lag"].max() + 1), labels=False, right=False)
+    # df_simu["log_lag_bin"] = df_simu.apply(lambda x: 0 if x["log_lag_bin"] == 1 else x["log_lag_bin"], axis=1)
+    # df_simu["log_lag_bin"] = df_simu.apply(lambda x: 5 if x["log_lag_bin"] > 5 else x["log_lag_bin"], axis=1)
+    
+    # # calculate hr
+    # df_simu = df_simu.query("position >= 20")
+    # df_rollcat_laggp = df_simu.query("old == True").groupby(["session", "roll_cat_len_level", "log_lag_bin"])["s_resp"].agg(["mean", "sum", "count"]).reset_index()
+    # df_rollcat_laggp["yes_rate_adj"] = (df_rollcat_laggp["sum"] + 0.5) / (df_rollcat_laggp["count"] + 1)
+    # df_hr = df_rollcat_laggp.groupby(["roll_cat_len_level", "log_lag_bin"]).yes_rate_adj.mean().to_frame(name="hr_adj").reset_index()
+    # hr_lowsim = df_hr.query("roll_cat_len_level == '0-1'")["hr_adj"].values
+    # hr_highsim = df_hr.query("roll_cat_len_level == '>=2'")["hr_adj"].values
+    
+    # # calculate far
+    # df_far = df_simu.query("old == False").groupby(["session", "roll_cat_len_level"])["s_resp"].mean().to_frame(name="far").reset_index()
+    # far_lowsim = df_far.groupby("roll_cat_len_level")["far"].mean()["0-1"]
+    # far_highsim = df_far.groupby("roll_cat_len_level")["far"].mean()[">=2"]
+    
+    # # calculate error
+    # hr_lowsim_gt = np.array([0.73528314, 0.71190804, 0.66474925, 0.60056249, 0.57024019])
+    # hr_highsim_gt = np.array([0.74021639, 0.71836619, 0.6732462, 0.630465, 0.60805243])
+    # far_lowsim_gt = 0.277827
+    # far_highsim_gt = 0.292636
+    # err = np.mean(np.abs(hr_lowsim - hr_lowsim_gt)) + np.mean(np.abs(hr_highsim - hr_highsim_gt)) + np.abs(far_lowsim - far_lowsim_gt) + np.abs(far_highsim - far_highsim_gt)
+
+    # 9 calculate cross entropy by prob and yes
+    prob = df_simu["prob"].to_numpy()
+    yes = df_simu["yes"].to_numpy()
+    err = -np.nansum(yes * np.log(prob) + (1 - yes) * np.log(1 - prob))
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = []
+
+    return err, cmr_stats
+
+
+def obj_func_2(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="2")
+    param_dict.update(use_new_context=True, beta_distract=0)
+
+    # Run model with the parameters given in param_vec
+    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
+
+    # calculate loss
+    # s_resp = df_simu["s_resp"].values
+    # yes = df_simu["yes"].values
+    # err = np.nansum(np.abs(s_resp - yes))
+
+    # add lag condition
+    def conditions(s):
+        if s.old_lag == -999:
+            return np.nan
+        elif np.absolute(s.old_lag) == 1:
+            return "a"
+        elif np.absolute(s.old_lag) > 10:
+            return "r"
+        else:
+            return np.nan
+
+    df_simu["lag_cat"] = df_simu.apply(conditions, axis=1)
+    
+    # 1
+    # # calculate HR and FAR
+    # far = df_simu.query("old==False").s_resp.mean()
+    # df_overall = df_simu.query("old==True").groupby(["subject", "lag_cat"]).s_resp.mean().reset_index()
+    # hr_a = df_overall.groupby(["lag_cat"]).s_resp.mean()["a"]
+    # hr_r = df_overall.groupby(["lag_cat"]).s_resp.mean()["r"]
+
+    # # calcualte err
+    # hr_a_gt = 0.724046
+    # hr_r_gt = 0.693084
+    # far_gt = 0.268861
+    # err = (np.abs(hr_a - hr_a_gt) + np.abs(hr_r - hr_r_gt)) / 2 + np.abs(far - far_gt)
+    
+    # 2
+    # construct local FAR
+    recog_pos = df_simu.recog_pos.values
+    old = df_simu.old.values
+    lag_cat = df_simu.lag_cat.values
+    lag_cat_with_new = []
+    for i in range(len(df_simu)):
+        if recog_pos[i] > 1:
+            if not old[i] and old[i - 1]:
+                lag_cat_with_new.append(lag_cat[i - 1])
+            else:
+                lag_cat_with_new.append(lag_cat[i])
+        else:
+            lag_cat_with_new.append(lag_cat[i])
+    df_simu["lag_cat"] = lag_cat_with_new
+    
+    # get conditions
+    df_t = df_simu.loc[pd.notna(df_simu.lag_cat)].copy()
+    create_level = {0: "new_r", 1: "new_a", 2: "old_r", 3: "old_a"}
+    df_t["level"] = df_t.apply(lambda x: create_level[x["old"] * 2 + (x["lag_cat"] == "a")], axis=1)
+    
+    # get roc
+    thresh_arr = np.arange(0, 1, 0.001)
+    df_thin = df_t.loc[:, ["csim", "level", "session"]]
+    df_roc = pd.DataFrame()
+    for t in thresh_arr:
+        df_thin["above"] = df_thin.csim > t
+        df_sess_lv = df_thin.groupby(["session", "level"]).above.mean().to_frame(name="above")
+        df_lv = df_sess_lv.groupby("level").above.mean()
+        df_roc = pd.concat([df_roc, df_lv], axis=1, ignore_index=True)
+    df_roc = df_roc.transpose()
+    
+    # calculate err
+    with open("../../Analysis/simu2_recog_conti/simu2_data/simu2_gt.pkl", "rb") as f:
+        far_a_gt = pickle.load(f)
+        hr_a_gt = pickle.load(f)
+        far_r_gt = pickle.load(f)
+        hr_r_gt = pickle.load(f)
+    far_a = np.sort(df_roc["new_a"].values)
+    hr_a = np.sort(df_roc["old_a"].values)
+    far_r = np.sort(df_roc["new_r"].values)
+    hr_r = np.sort(df_roc["old_r"].values)
+    hr_a_interp = []
+    for x in far_a_gt:
+        idx = np.searchsorted(far_a, x)
+        if idx < len(far_a):
+            tmp_interp = hr_a[idx - 1] + (x - far_a[idx - 1]) * (hr_a[idx] - hr_a[idx - 1]) / (far_a[idx] - far_a[idx - 1])
+        else:
+            tmp_interp = hr_a[idx - 1]
+            print("Warning: far_a_gt out of range")
+        hr_a_interp.append(tmp_interp)
+    hr_a_interp = np.array(hr_a_interp)
+    hr_r_interp = []
+    for x in far_r_gt:
+        idx = np.searchsorted(far_r, x)
+        if idx < len(far_r):
+            tmp_interp = hr_r[idx - 1] + (x - far_r[idx - 1]) * (hr_r[idx] - hr_r[idx - 1]) / (far_r[idx] - far_r[idx - 1])
+        else:
+            tmp_interp = hr_r[idx - 1]
+            print("Warning: far_r_gt out of range")
+        hr_r_interp.append(tmp_interp)
+    hr_r_interp = np.array(hr_r_interp)
+    err = np.power(hr_a_interp - hr_a_gt, 2).sum() + np.power(hr_r_interp - hr_r_gt, 2).sum()
+    
+    # ensure a is above r in a range
+    above_range = np.arange(0.08, 0.61, 0.01)
+    hr_a_interp_range = []
+    for x in above_range:
+        idx = np.searchsorted(far_a, x)
+        if idx < len(far_a):
+            tmp_interp = hr_a[idx - 1] + (x - far_a[idx - 1]) * (hr_a[idx] - hr_a[idx - 1]) / (far_a[idx] - far_a[idx - 1])
+        else:
+            tmp_interp = hr_a[idx - 1]
+            print("Warning: above_range out of range")
+        hr_a_interp_range.append(tmp_interp)
+    hr_a_interp_range = np.array(hr_a_interp_range)
+    hr_r_interp_range = []
+    for x in above_range:
+        idx = np.searchsorted(far_r, x)
+        if idx < len(far_r):
+            tmp_interp = hr_r[idx - 1] + (x - far_r[idx - 1]) * (hr_r[idx] - hr_r[idx - 1]) / (far_r[idx] - far_r[idx - 1])
+        else:
+            tmp_interp = hr_r[idx - 1]
+            print("Warning: above_range out of range")
+        hr_r_interp_range.append(tmp_interp)
+    hr_r_interp_range = np.array(hr_r_interp_range)
+    if not np.all((hr_a_interp_range > hr_r_interp_range)):
+        err += 0.5
+
+    if not np.all((hr_a_interp > hr_r_interp)[1:]):
+        err += 0.5
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [hr_a_interp, hr_r_interp]
+
+    return err, cmr_stats
+
+
+def obj_func_3(param_vec, df_study, df_test, sem_mat, sources):
+
+    assert df_study == None
+    df = df_test
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="3")
+    param_dict.update(use_new_context=True)
+
+    # Run model with the parameters given in param_vec
+    df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, mode="Hockley")
+    df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
+
+    # group by type and lag
+    df_laggp = df_simu.groupby(["type", "lag"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
+
+    # get d prime
+    # df_dprime = pd.DataFrame()
+    # df_dprime['lag'] = [2,4,6,8,16]
+    # df_dprime['I_z_hr'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 1, 'yes_rate'].astype(float))
+    # df_dprime['I_z_far'] = np.mean(sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 0, 'yes_rate'].astype(float)))
+    # df_dprime['I_dprime'] = df_dprime['I_z_hr'] - df_dprime['I_z_far']
+    # df_dprime['A_z_hr'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 2, 'yes_rate'].astype(float))
+    # df_dprime['A_z_far'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 3, 'yes_rate'].astype(float))
+    # df_dprime['A_dprime'] = df_dprime['A_z_hr'] - df_dprime['A_z_far']
+
+    # get the vectors
+    I_hr = df_laggp.loc[df_laggp.type == "single_old", "yes_rate"].to_numpy()
+    I_far = np.mean(df_laggp.loc[df_laggp.type == "single_new", "yes_rate"].astype(float))
+    A_hr = df_laggp.loc[df_laggp.type == "pair_old", "yes_rate"].to_numpy()
+    A_far = df_laggp.loc[df_laggp.type == "pair_new", "yes_rate"].to_numpy()
+
+    # ground truth
+    I_hr_gt = np.array([0.865, 0.811, 0.752, 0.746, 0.708])
+    I_far_gt = 0.15  # 0.12
+    A_hr_gt = np.array([0.843, 0.787, 0.720, 0.735, 0.646])
+    A_far_gt = np.array([0.406, 0.371, 0.285, 0.259, 0.202])
+
+    # calculate the error
+    pow_err = np.mean(np.power(I_hr - I_hr_gt, 2)) + np.mean(np.power(A_hr - A_hr_gt, 2)) + np.power(I_far - I_far_gt, 2) * 5 + np.mean(np.power(A_far - A_far_gt, 2))
+    abs_err = np.mean(np.abs(I_hr - I_hr_gt)) + np.mean(np.abs(A_hr - A_hr_gt)) + np.abs(I_far - I_far_gt) * 5 + np.mean(np.abs(A_far - A_far_gt))
+    err = pow_err + abs_err / 10
+
+    # apply some constraints
+    if not (I_hr[0] > I_hr[1] and I_hr[1] > I_hr[2] and I_hr[2] > I_hr[3] and I_hr[3] > I_hr[4]):
+        err += 1
+    if not (A_hr[0] > A_hr[1] and A_hr[1] > A_hr[2] and A_hr[2] > A_hr[3] and A_hr[3] > A_hr[4]):
+        err += 1
+    if not (I_hr > A_hr).all():
+        err += 1
+    if not (A_far[0] > A_far[1] and A_far[1] > A_far[2] and A_far[2] > A_far[3] and A_far[3] > A_far[4]):
+        err += 1
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [I_hr, I_far, A_hr, A_far]
+
+    return err, cmr_stats
+
+
+def obj_func_4(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="4")
+
+    # Run model with the parameters given in param_vec
+    param_dict.update(use_new_context=True, beta_distract=0)
+    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
+
+    # session-wise, get yes rate for each condition
+    df_sess_q = df_simu.groupby(["session", "quantile", "old"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
+
+    # collapse across session
+    df_q = df_sess_q.groupby(["quantile", "old"]).yes_rate.mean().to_frame().reset_index()
+
+    # Get behavioral stats and compare with ground truth
+    with open("../../Analysis/simu4_recog_wfe/simu4_data/simu4_gt.pkl", "rb") as f:
+        hr_gt = pickle.load(f)
+        far_gt = pickle.load(f)
+    hr = df_q.query("old == True")["yes_rate"].values
+    far = df_q.query("old == False")["yes_rate"].values
+    # hr_gt = np.array([0.903, 0.885, 0.888, 0.880, 0.879, 0.880, 0.870, 0.862, 0.842, 0.837])
+    # far_gt = np.array([0.114, 0.132, 0.143, 0.164, 0.171, 0.183, 0.187, 0.193, 0.192, 0.193])
+    err = np.power(hr - hr_gt, 2).sum() + np.power(far - far_gt, 2).sum()
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [hr, far]
+
+    return err, cmr_stats
+
+
+def obj_func_4ctrl(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="4ctrl")
+
+    # Run model with the parameters given in param_vec
+    param_dict.update(use_new_context=True, beta_distract=0)
+    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
+
+    # session-wise, get yes rate for each condition
+    df_sess_q = df_simu.groupby(["session", "quantile", "old"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
+
+    # collapse across session
+    df_q = df_sess_q.groupby(["quantile", "old"]).yes_rate.mean().to_frame().reset_index()
+
+    # Get behavioral stats and compare with ground truth
+    with open("../../Analysis/simu4_recog_wfe/simu4_data/simu4_gt.pkl", "rb") as f:
+        hr_gt = pickle.load(f)
+        far_gt = pickle.load(f)
+    hr = df_q.query("old == True")["yes_rate"].values
+    far = df_q.query("old == False")["yes_rate"].values
+    err = np.power(hr - hr_gt, 2).sum() + np.power(far - far_gt, 2).sum()
+    
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [hr, far]
+
+    return err, cmr_stats
+
+
+def obj_func_4shift(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="4shift")
+
+    # Run model with the parameters given in param_vec
+    param_dict.update(use_new_context=True, beta_distract=0)
+    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
+
+    # session-wise, get yes rate for each condition
+    df_sess_q = df_simu.groupby(["session", "quantile", "old"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
+
+    # collapse across session
+    df_q = df_sess_q.groupby(["quantile", "old"]).yes_rate.mean().to_frame().reset_index()
+
+    # Get behavioral stats and compare with ground truth
+    with open("../../Analysis/simu4_recog_wfe/simu4_data/simu4_gt.pkl", "rb") as f:
+        hr_gt = pickle.load(f)
+        far_gt = pickle.load(f)
+    hr = df_q.query("old == True")["yes_rate"].values
+    far = df_q.query("old == False")["yes_rate"].values
+    err = np.power(hr - hr_gt, 2).sum() + np.power(far - far_gt, 2).sum()
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [hr, far]
+
+    return err, cmr_stats
+
+
+def obj_func_5(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="5")
+
+    # Run model with the parameters given in param_vec
+    param_dict.update(use_new_context=True, nitems_in_accumulator=48)
+    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "test_itemno"])
+    df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
+
+    # session-wise, calculate correct rate for each lag
+    df_sess_lag = df_simu.groupby(["session", "lag"]).correct.mean().to_frame(name="correct_rate").reset_index()
+    
+    # collapse across sessions
+    hr = df_sess_lag.groupby("lag").correct_rate.mean().to_numpy()
+    
+    # Get error
+    with open("../../Analysis/simu5_cr_rec/simu5_data/simu5_gt.pkl", "rb") as f:
+        hr_gt = pickle.load(f)
+        sem_gt = pickle.load(f)
+    err = get_wls(hr_gt, hr, sem_gt)
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = hr
+
+    return err, cmr_stats
+
+def obj_func_6a(param_vec, df_study, df_test, sem_mat, sources):
+
+    # Reformat parameter vector to the dictionary format expected by CMR2
+    param_dict = param_vec_to_dict(param_vec, sim_name="6a")
+
+    # Run model with the parameters given in param_vec
+    param_dict.update(use_new_context=True, nitems_in_accumulator=48)
+    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
+    df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
+    
+    # clean first 2 list
+    df_simu = df_simu.query("list > 1")
+
+    # session-wise, calculate correct rate for each condition
+    df_sess_lag = df_simu.groupby(["session", "lag", "order"]).correct.mean().to_frame(name="correct_rate").reset_index()
+    
+    # collapse across sessions
+    df_lag = df_sess_lag.groupby(["lag", "order"]).correct_rate.mean().to_frame(name="correct_rate").reset_index()
+    fw = df_lag.query("order == 1").correct_rate.values
+    bw = df_lag.query("order == 2").correct_rate.values
+    
+    # Get error
+    with open("../../Analysis/simu6a_cr_recsym/simu6a_data/simu6a_gt.pkl", "rb") as f:
+        fw_gt = pickle.load(f)
+        bw_gt = pickle.load(f)
+    err = np.power(fw - fw_gt, 2).sum() + np.power(bw - bw_gt, 2).sum()
+
+    cmr_stats = {}
+    cmr_stats["err"] = err
+    cmr_stats["params"] = param_vec
+    cmr_stats["stats"] = [fw, bw]
+
+    return err, cmr_stats
+
+
 def obj_func_6b(param_vec, df_study, df_test, sem_mat, sources):
 
     # Reformat parameter vector to the dictionary format expected by CMR2
@@ -307,377 +777,266 @@ def anal_perform_6b(df_simu):
     return t1_t2, t1_f2, f1_t2, f1_f2, q
 
 
-def obj_func_3(param_vec, df_study, df_test, sem_mat, sources):
-
-    assert df_study == None
-    df = df_test
+def obj_func_7(param_vec, df_study, df_test, sem_mat, sources):
 
     # Reformat parameter vector to the dictionary format expected by CMR2
-    param_dict = param_vec_to_dict(param_vec, sim_name="3")
-    param_dict.update(use_new_context=True)
+    param_dict = param_vec_to_dict(param_vec, sim_name="7")
 
     # Run model with the parameters given in param_vec
-    df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, mode="Hockley")
-    df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
+    param_dict.update(use_new_context=True, nitems_in_accumulator=96)
+    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
+    df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
+    
+    # get the study list and study pos of response
+    sessions = np.unique(df_simu.session)
+    nlist = len(np.unique(df_simu.list))
+    resp_study_list, resp_study_pos = [], []
+    for sess in sessions:
+        pres_words = df_study.loc[df_study.session == sess, ["study_itemno1", "study_itemno2"]].to_numpy()
+        pres_words = np.reshape(pres_words, (nlist, -1, 2))
+        responses = df_simu.loc[df_simu.session == sess, "s_resp"]
+        for r in responses:
+            if r == -1 or r == -2:
+                r_list, r_pos = None, None
+            else:
+                r_list = np.where(pres_words == r)[0].item()
+                r_pos = np.where(pres_words == r)[1].item()
+            resp_study_list.append(r_list)
+            resp_study_pos.append(r_pos)
+    df_simu["resp_study_list"] = resp_study_list
+    df_simu["resp_study_pos"] = resp_study_pos
+    df_simu["list_lag"] = df_simu["resp_study_list"] - df_simu["list"]
+    df_simu["pos_lag"] = df_simu["resp_study_pos"] - df_simu["study_pos"]
+    
+    # get intrution type
+    def which_intrusion(x):
+        x_list_lag = x["list_lag"]
+        x_pos_lag = x["pos_lag"]
+        if np.isnan(x_list_lag):
+            return "NoResp"
+        elif x_list_lag == 0 and x_pos_lag == 0:
+            return "Correct"
+        elif x_list_lag < 0:
+            return "PLI"
+        elif x_list_lag == 0 and x_pos_lag != 0:
+            return "ILI"
+        else:
+            return np.nan
 
-    # group by type and lag
-    df_laggp = df_simu.groupby(["type", "lag"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
 
-    # get d prime
-    # df_dprime = pd.DataFrame()
-    # df_dprime['lag'] = [2,4,6,8,16]
-    # df_dprime['I_z_hr'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 1, 'yes_rate'].astype(float))
-    # df_dprime['I_z_far'] = np.mean(sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 0, 'yes_rate'].astype(float)))
-    # df_dprime['I_dprime'] = df_dprime['I_z_hr'] - df_dprime['I_z_far']
-    # df_dprime['A_z_hr'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 2, 'yes_rate'].astype(float))
-    # df_dprime['A_z_far'] = sp.stats.norm.ppf(df_laggp.loc[df_laggp.type == 3, 'yes_rate'].astype(float))
-    # df_dprime['A_dprime'] = df_dprime['A_z_hr'] - df_dprime['A_z_far']
+    df_simu["intrusion_type"] = df_simu.apply(lambda x: which_intrusion(x), axis=1)
+    df_simu["intrusion_type"] = pd.Categorical(df_simu["intrusion_type"], categories=["NoResp", "Correct", "PLI", "ILI"])
+    
+    # clean list 1
+    df_simu = df_simu.query("list > 0").copy()
+    
+    ## get overall prob
+    df_cnt = df_simu.groupby(["session", "intrusion_type"]).s_resp.count().to_frame(name="count").reset_index()
+    
+    # check correct
+    df_cnt_correct = df_cnt.query("intrusion_type == 'Correct'").copy()
+    df_cnt_correct["total"] = df_simu.groupby("session").test_item.count().tolist()
+    df_cnt_correct["p"] = df_cnt_correct["count"] / df_cnt_correct["total"]
+    p_correct_mean = np.mean(df_cnt_correct["p"])
+    
+    # check ILI
+    df_cnt_ILI = df_cnt.query("intrusion_type == 'ILI'").copy()
+    df_cnt_ILI["total"] = df_simu.groupby("session").test_item.count().tolist()
+    df_cnt_ILI["p"] = df_cnt_ILI["count"] / df_cnt_ILI["total"]
+    p_ILI_mean = np.mean(df_cnt_ILI["p"])
+    
+    # check PLI
+    df_cnt_PLI = df_cnt.query("intrusion_type == 'PLI'").copy()
+    df_cnt_PLI["total"] = df_simu.groupby("session").test_item.count().tolist()
+    df_cnt_PLI["p"] = df_cnt_PLI["count"] / df_cnt_PLI["total"]
+    p_PLI_mean = np.mean(df_cnt_PLI["p"])
 
-    # get the vectors
-    I_hr = df_laggp.loc[df_laggp.type == "single_old", "yes_rate"].to_numpy()
-    I_far = np.mean(df_laggp.loc[df_laggp.type == "single_new", "yes_rate"].astype(float))
-    A_hr = df_laggp.loc[df_laggp.type == "pair_old", "yes_rate"].to_numpy()
-    A_far = df_laggp.loc[df_laggp.type == "pair_new", "yes_rate"].to_numpy()
+    try:
+        ## PLI
+        # pick list > 5 and list_lag -5 to -1
+        df_PLI = df_simu.query("intrusion_type == 'PLI' and list > 5 and list_lag > -6").copy()
+        df_PLI["abs_list_lag"] = df_PLI["list_lag"].abs().astype(int)
+        df_PLI["abs_list_lag"] = pd.Categorical(df_PLI["abs_list_lag"], categories=[1, 2, 3, 4, 5], ordered=True)
 
-    # ground truth
-    I_hr_gt = np.array([0.865, 0.811, 0.752, 0.746, 0.708])
-    I_far_gt = 0.15  # 0.12
-    A_hr_gt = np.array([0.843, 0.787, 0.720, 0.735, 0.646])
-    A_far_gt = np.array([0.406, 0.371, 0.285, 0.259, 0.202])
+        # session-wise, count PLI
+        df_PLI_sess = df_PLI.groupby(["session"]).test_item.count().to_frame(name="PLI_cnt_sess").reset_index()
+        
+        # session-wise, count PLI by list_lag
+        df_PLI_sess_lag = df_PLI.groupby(["session", "abs_list_lag"]).test_item.count().to_frame(name="PLI_cnt").reset_index()
+        
+        # calculate PLI probability
+        df_PLI_sess_lag = pd.merge(df_PLI_sess_lag, df_PLI_sess, on="session")
+        df_PLI_sess_lag["PLI_prob"] = df_PLI_sess_lag["PLI_cnt"] / df_PLI_sess_lag["PLI_cnt_sess"]
+        lag_PLI_mean = df_PLI_sess_lag.groupby("abs_list_lag").PLI_prob.mean().values
+        
+        ## ILI
+        df_ILI = df_simu.query("intrusion_type == 'ILI'").copy()
+        df_ILI["pos_lag"] = df_ILI["pos_lag"].astype(int)
+        df_ILI["pos_lag"] = pd.Categorical(df_ILI["pos_lag"], categories=np.concatenate([np.arange(-11, 0), np.arange(1, 12)]), ordered=True)
 
-    # calculate the error
-    pow_err = np.mean(np.power(I_hr - I_hr_gt, 2)) + np.mean(np.power(A_hr - A_hr_gt, 2)) + np.power(I_far - I_far_gt, 2) * 5 + np.mean(np.power(A_far - A_far_gt, 2))
-    abs_err = np.mean(np.abs(I_hr - I_hr_gt)) + np.mean(np.abs(A_hr - A_hr_gt)) + np.abs(I_far - I_far_gt) * 5 + np.mean(np.abs(A_far - A_far_gt))
-    err = pow_err + abs_err / 10
+        # session-wise, calculate ILI probability for each lag
+        def get_ILI_prob(df_tmp):
+            # get possible ILI count
+            possible_ILI_cnt = {}
+            for pair_pos in df_tmp.study_pos:
+                l_bound = -pair_pos
+                r_bound = 11 - pair_pos
+                for i in np.arange(l_bound, r_bound + 1):
+                    if i in possible_ILI_cnt:
+                        possible_ILI_cnt[i] += 1
+                    else:
+                        possible_ILI_cnt[i] = 1
+            # get ILI count
+            df_tmp_lag = df_tmp.groupby("pos_lag")["test_item"].count().to_frame(name="ILI_cnt")
+            # merge possible ILI count
+            df_tmp_lag["possible_ILI_cnt"] = df_tmp_lag.index.map(possible_ILI_cnt).astype(float)
+            df_tmp_lag["ILI_prob"] = df_tmp_lag["ILI_cnt"] / df_tmp_lag["possible_ILI_cnt"]
+            return df_tmp_lag
 
-    # apply some constraints
-    if not (I_hr[0] > I_hr[1] and I_hr[1] > I_hr[2] and I_hr[2] > I_hr[3] and I_hr[3] > I_hr[4]):
-        err += 1
-    if not (A_hr[0] > A_hr[1] and A_hr[1] > A_hr[2] and A_hr[2] > A_hr[3] and A_hr[3] > A_hr[4]):
-        err += 1
-    if not (I_hr > A_hr).all():
-        err += 1
-    if not (A_far[0] > A_far[1] and A_far[1] > A_far[2] and A_far[2] > A_far[3] and A_far[3] > A_far[4]):
-        err += 1
+
+        df_ILI_sess_lag = df_ILI.groupby("session").apply(get_ILI_prob).reset_index()
+        df_ILI_sess_lag = df_ILI_sess_lag.query("pos_lag > -6 and pos_lag < 6").copy()
+        df_ILI_sess_lag["pos_lag_int"] = df_ILI_sess_lag["pos_lag"].astype(int)  # avoid nan from category vairables
+        lag_ILI_mean = df_ILI_sess_lag.groupby("pos_lag_int").ILI_prob.mean().values
+
+    except:  # sometimes there is no PLI or ILI
+        lag_PLI_mean = np.full(5, 0)
+        lag_ILI_mean = np.full(10, 0)
+    
+    # Get error
+    with open("../../Analysis/simu7_cr_pliili/simu7_data/simu7_gt.pkl", "rb") as f:
+        p_correct_mean_gt = pickle.load(f)
+        p_correct_se_gt = pickle.load(f)
+        p_PLI_mean_gt = pickle.load(f)
+        p_PLI_se_gt = pickle.load(f)
+        p_ILI_mean_gt = pickle.load(f)
+        p_ILI_se_gt = pickle.load(f)
+        lag_PLI_mean_gt = pickle.load(f)
+        lag_PLI_se_gt = pickle.load(f)
+        lag_ILI_mean_gt = pickle.load(f)
+        lag_ILI_se_gt = pickle.load(f)
+    wls_p_correct = (p_correct_mean - p_correct_mean_gt) ** 2 / (p_correct_se_gt**2)
+    wls_p_PLI = (p_PLI_mean - p_PLI_mean_gt) ** 2 / (p_PLI_se_gt**2)
+    wls_p_ILI = (p_ILI_mean - p_ILI_mean_gt) ** 2 / (p_ILI_se_gt**2)
+    wls_lag_PLI = np.nanmean((lag_PLI_mean - lag_PLI_mean_gt) ** 2 / (lag_PLI_se_gt**2))
+    wls_lag_ILI = np.nanmean((lag_ILI_mean - lag_ILI_mean_gt) ** 2 / (lag_ILI_se_gt**2))
+    err = wls_p_correct + wls_p_PLI + wls_p_ILI + wls_lag_PLI + wls_lag_ILI
+    # if np.any(np.diff(lag_PLI_mean) >= 0):
+    #     err += 5
+    # if np.any(np.diff(lag_ILI_mean[:5]) <= 0) or np.any(np.diff(lag_ILI_mean[5:]) >= 0):
+    #     err += 5
 
     cmr_stats = {}
     cmr_stats["err"] = err
     cmr_stats["params"] = param_vec
-    cmr_stats["stats"] = [I_hr, I_far, A_hr, A_far]
+    cmr_stats["stats"] = [p_correct_mean, p_PLI_mean, p_ILI_mean, lag_PLI_mean, lag_ILI_mean]
 
     return err, cmr_stats
 
 
-def obj_func_1(param_vec, df_study, df_test, sem_mat, sources):
-
-    assert df_study == None
-    df = df_test
+def obj_func_8(param_vec, df_study, df_test, sem_mat, sources):
 
     # Reformat parameter vector to the dictionary format expected by CMR2
-    param_dict = param_vec_to_dict(param_vec, sim_name="1")
-    param_dict.update(use_new_context=True)
+    param_dict = param_vec_to_dict(param_vec, sim_name="8")
 
     # Run model with the parameters given in param_vec
-    df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, mode="Continuous")
-    df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
+    param_dict.update(use_new_context=True, nitems_in_accumulator=16, ban_recall=np.arange(0, 8))
+    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
+    df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
+    correct_rate = sum(df_simu.correct) / len(df_simu.correct)
+    
+    # load and get face distance
+    face_distance = np.load("../../Analysis/simu8_cr_sim/simu8_data/simu8_distance.npy")
+    thresh = 3.0
 
-    # calculate the rolling category length
-    rolling_window = 9
-    category_label_dummies = df_simu["category_label"].str.get_dummies()
-    category_label_dummies.columns = ["cl_" + col for col in category_label_dummies.columns]
-    category_label_dummies_events = pd.concat([df_simu, category_label_dummies], axis=1)  # record the occurrence of every cat label
-    cl_rolling_sum = category_label_dummies_events.groupby("session").rolling(rolling_window, min_periods=1, on="position")[category_label_dummies.columns].sum().reset_index()
-    df_rollcat = df_simu.merge(cl_rolling_sum, on=["session", "position"])
-    df_simu["roll_cat_label_length"] = df_rollcat.apply(lambda x: x["cl_" + x["category_label"]], axis=1)  # how many cat within 10 window
-    df_simu["roll_cat_label_length"] = df_simu["roll_cat_label_length"] - 1  # how many cat in previous 9 window. not include self
-    df_simu["roll_cat_len_level"] = pd.cut(x=df_simu.roll_cat_label_length, bins=[0, 2, np.inf], right=False, include_lowest=True, labels=["0-1", ">=2"]).astype("str")
+    ## Neighbor
+    # get number of neighbours by distance
+    def get_distance(df_tmp):
+        faces = np.unique(df_tmp.test_itemno)
+        face_dist = {}
+        for face in faces:
+            this_dist = []
+            for other_face in faces:
+                if face != other_face:
+                    this_dist.append(face_distance[face - 1, other_face - 1])
+            this_dist = np.array(this_dist)
+            face_dist[face] = this_dist
+        y = df_tmp.apply(lambda x: face_dist[x["test_itemno"]], axis=1)
+        return y
 
-    # add log and log lag bin
-    df_simu["log_lag"] = np.log(df_simu["lag"])
-    df_simu["log_lag_bin"] = pd.cut(df_simu["log_lag"], np.arange(df_simu["log_lag"].max() + 1), labels=False, right=False)
+   
+    df_simu["distance"] = df_simu.groupby("session").apply(get_distance).to_frame(name="distance").reset_index()["distance"]
+    df_simu["neighbour"] = df_simu.apply(lambda x: sum(x["distance"] < thresh), axis=1)
+    distance_lsts = df_simu["distance"].to_list()
+    df_simu.drop(columns=["distance"], inplace=True)
+    df_simu["neighbour_group"] = df_simu.apply(lambda x: 6 if x["neighbour"] == 7 else x["neighbour"], axis=1)
+    
+    # get the correct rate by neighbour group
+    df_neighbour_group = df_simu.query("neighbour_group > 0").groupby("neighbour_group").correct.mean().reset_index()
+    neighbor_mean = df_neighbour_group["correct"].to_numpy()
+    
+    ## ILI
+    try:
+        # detect ILI
+        def get_ILI(df_tmp):
+            resp_names = df_tmp["s_resp"].values
+            study_names = df_tmp["correct_ans"].values  # all correct answers are all studied names
+            is_studied = np.isin(resp_names, study_names)
+            is_incorrect = df_tmp["correct"] == False
+            is_ILI = is_studied & is_incorrect
+            return is_ILI
 
-    # construct local FAR
-    old_vec = df_simu.old.to_numpy()
-    log_lag_bin_vec = df_simu.log_lag_bin.to_numpy()
-    position_vec = df_simu.position.to_numpy()
-    max_position = np.max(position_vec)
-    log_lag_bin_newpre_lst = []
-    log_lag_bin_newpost_lst = []
-    for i in range(len(df_simu)):
-        if position_vec[i] > 0:
-            if old_vec[i] == False and old_vec[i - 1] == True:
-                log_lag_bin_newpre_lst.append(log_lag_bin_vec[i - 1])
-            else:
-                log_lag_bin_newpre_lst.append("N")
-        else:
-            log_lag_bin_newpre_lst.append("N")
 
-        if position_vec[i] < max_position:
-            if old_vec[i] == False and old_vec[i + 1] == True:
-                log_lag_bin_newpost_lst.append(log_lag_bin_vec[i + 1])
-            else:
-                log_lag_bin_newpost_lst.append("N")
-        else:
-            log_lag_bin_newpost_lst.append("N")
-    df_simu["log_lag_bin_newpre"] = log_lag_bin_newpre_lst
-    df_simu["log_lag_bin_newpost"] = log_lag_bin_newpost_lst
-    df_simu["log_lag_bin"] = df_simu.apply(lambda x: 0 if x["log_lag_bin"] == 1 else x["log_lag_bin"], axis=1)
-    df_simu["log_lag_bin_newpre"] = df_simu.apply(lambda x: 0 if x["log_lag_bin_newpre"] == 1 else x["log_lag_bin_newpre"], axis=1)
-    df_simu["log_lag_bin_newpost"] = df_simu.apply(lambda x: 0 if x["log_lag_bin_newpost"] == 1 else x["log_lag_bin_newpost"], axis=1)
+        df_simu["ILI"] = df_simu.groupby("session").apply(get_ILI).to_frame(name="ILI").reset_index()["ILI"].to_list()
+        df_ILI = df_simu.query("ILI == True").copy()
+        
+        # get name face pair dict for each session
+        sess_name_face = {}
+        for sess in df_study.session.unique():
+            sess_name_face[sess] = df_study.query(f"session == {sess}")[["study_itemno1", "study_itemno2"]].set_index("study_itemno2").to_dict()["study_itemno1"]
+            
+        # get distance between ILI and correct faces
+        df_ILI["resp_face"] = df_ILI.apply(lambda x: sess_name_face[x["session"]][x["s_resp"]], axis=1)
+        df_ILI["resp_corr_distance"] = df_ILI.apply(lambda x: face_distance[x["test_itemno"] - 1, x["resp_face"] - 1], axis=1)
+        df_ILI["distance_bin"] = df_ILI.apply(lambda x: str(0.5 * (x["resp_corr_distance"] // 0.5 + 1)) if x["resp_corr_distance"] < 3.5 else ">3.5", axis=1)
+        df_ILI["distance_bin"] = pd.Categorical(df_ILI["distance_bin"], categories=["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", ">3.5"], ordered=True)
 
-    # distribute items into bins
-    log_lag_bins = [0, 2, 3, 4, 5]
-    for bin in log_lag_bins:
-        col_name = "log_lag_bin_" + str(bin)
-        df_simu[col_name] = (df_simu.log_lag_bin == bin) | (df_simu.log_lag_bin_newpre == bin) | (df_simu.log_lag_bin_newpost == bin)
-
-    # group by rollcat and lagbin
-    df_lst = []
-    for bin in log_lag_bins:
-        col_name = "log_lag_bin_" + str(bin)
-        df_tmp = df_simu.query(col_name + " == True").groupby(["session", "old", "roll_cat_len_level"])["s_resp"].mean().to_frame(name="yes_rate").reset_index()
-        df_tmp["log_lag_bin"] = bin
-        df_lst.append(df_tmp)
-    df_rollcat_laggp = pd.concat(df_lst)
-
-    # pivot for hr and far
-    df_rollcat_laggp["old"] = df_rollcat_laggp["old"].astype("str")
-    df_dprime = pd.pivot_table(df_rollcat_laggp, values="yes_rate", index=["session", "roll_cat_len_level", "log_lag_bin"], columns="old").reset_index()
-    df_dprime = df_dprime.rename(columns={"False": "far", "True": "hr"})
-
-    # get hr and far
-    df_hrfar = df_dprime.groupby(["roll_cat_len_level", "log_lag_bin"])[["hr", "far"]].mean().reset_index()
-    hr_lowsim = df_hrfar.query('roll_cat_len_level == "0-1"').hr.to_numpy()
-    hr_highsim = df_hrfar.query('roll_cat_len_level == ">=2"').hr.to_numpy()
-    far_lowsim = df_hrfar.query('roll_cat_len_level == "0-1"').far.to_numpy()
-    far_highsim = df_hrfar.query('roll_cat_len_level == ">=2"').far.to_numpy()
-
-    # ground truth
-    hr_lowsim_gt = np.array([0.885, 0.853, 0.787, 0.682, 0.630])
-    hr_highsim_gt = np.array([0.893, 0.858, 0.795, 0.720, 0.671])
-    far_lowsim_gt = np.array([0.190, 0.190, 0.190, 0.195, 0.212])
-    far_highsim_gt = np.array([0.202, 0.210, 0.216, 0.229, 0.237])  # a bit diff from real gt
-
-    # calculate the error
-    pow_err = np.mean(np.power(hr_lowsim - hr_lowsim_gt, 2)) + np.mean(np.power(hr_highsim - hr_highsim_gt, 2)) + np.mean(np.power(far_lowsim - far_lowsim_gt, 2)) + np.mean(np.power(far_highsim - far_highsim_gt, 2))
-    abs_err = np.mean(np.abs(hr_lowsim - hr_lowsim_gt)) + np.mean(np.abs(hr_highsim - hr_highsim_gt)) + np.mean(np.abs(far_lowsim - far_lowsim_gt)) + np.mean(np.abs(far_highsim - far_highsim_gt))
-    err = pow_err + abs_err / 10
-    if np.isnan(err):
-        err = 10
+        # count possible ILI from all distance
+        distance_cnt = {}
+        for lst in distance_lsts:
+            for d in lst:
+                d_group = str(0.5 * (d // 0.5 + 1)) if d < 3.5 else ">3.5"
+                if d_group in distance_cnt:
+                    distance_cnt[d_group] += 1
+                else:
+                    distance_cnt[d_group] = 1
+                    
+        # get ILI probability
+        df_ILI_distance = df_ILI.groupby("distance_bin")["test_itemno"].count().to_frame(name="ILI_cnt").reset_index()
+        df_ILI_distance["ILI_poss"] = df_ILI_distance.apply(lambda x: distance_cnt[x["distance_bin"]], axis=1)
+        df_ILI_distance["ILI_prob"] = df_ILI_distance["ILI_cnt"] / df_ILI_distance["ILI_poss"]
+        ILI_mean = df_ILI_distance["ILI_prob"].to_numpy()
+    
+    except:  # sometimes there is no ILI
+        ILI_mean = np.full(7, 0)
+    
+    # Get error
+    with open("../../Analysis/simu8_cr_sim/simu8_data/simu8_gt.pkl", "rb") as f:
+        neighbor_mean_gt = pickle.load(f)
+        neighbor_se_gt = pickle.load(f)
+        ILI_mean_gt = pickle.load(f)
+        ILI_se_gt = pickle.load(f)
+    wls_neighbor = np.nanmean((neighbor_mean - neighbor_mean_gt) ** 2 / neighbor_se_gt**2)
+    wls_ILI = np.nanmean((ILI_mean - ILI_mean_gt) ** 2 / ILI_se_gt**2)
+    err = wls_neighbor + wls_ILI
+    if correct_rate < 0.6:
+        err += 5
 
     cmr_stats = {}
     cmr_stats["err"] = err
     cmr_stats["params"] = param_vec
-    cmr_stats["stats"] = [hr_lowsim, hr_highsim, far_lowsim, far_highsim]
-
-    return err, cmr_stats
-
-
-def obj_func_1_Az(param_vec, df_study, df_test, sem_mat, sources):
-
-    assert df_study == None
-    df = df_test
-
-    # Reformat parameter vector to the dictionary format expected by CMR2
-    param_dict = param_vec_to_dict(param_vec, sim_name="1")
-    param_dict.update(use_new_context=True)
-
-    # Run model with the parameters given in param_vec
-    df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, mode="Continuous")
-    df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
-
-    # calculate the rolling category length
-    rolling_window = 9
-    category_label_dummies = df_simu["category_label"].str.get_dummies()
-    category_label_dummies.columns = ["cl_" + col for col in category_label_dummies.columns]
-    category_label_dummies_events = pd.concat([df_simu, category_label_dummies], axis=1)  # record the occurrence of every cat label
-    cl_rolling_sum = category_label_dummies_events.groupby("session").rolling(rolling_window, min_periods=1, on="position")[category_label_dummies.columns].sum().reset_index()
-    df_rollcat = df_simu.merge(cl_rolling_sum, on=["session", "position"])
-    df_simu["roll_cat_label_length"] = df_rollcat.apply(lambda x: x["cl_" + x["category_label"]], axis=1)  # how many cat within 10 window
-    df_simu["roll_cat_label_length"] = df_simu["roll_cat_label_length"] - 1  # how many cat in previous 9 window. not include self
-    df_simu["roll_cat_len_level"] = pd.cut(x=df_simu.roll_cat_label_length, bins=[0, 2, np.inf], right=False, include_lowest=True, labels=["0-1", ">=2"]).astype("str")
-
-    # add log and log lag bin
-    df_simu["log_lag"] = np.log(df_simu["lag"])
-    df_simu["log_lag_bin"] = pd.cut(df_simu["log_lag"], np.arange(df_simu["log_lag"].max() + 1), labels=False, right=False)
-
-    # construct local FAR
-    old_vec = df_simu.old.to_numpy()
-    log_lag_bin_vec = df_simu.log_lag_bin.to_numpy()
-    position_vec = df_simu.position.to_numpy()
-    max_position = np.max(position_vec)
-    log_lag_bin_newpre_lst = []
-    log_lag_bin_newpost_lst = []
-    for i in range(len(df_simu)):
-        if position_vec[i] > 0:
-            if old_vec[i] == False and old_vec[i - 1] == True:
-                log_lag_bin_newpre_lst.append(log_lag_bin_vec[i - 1])
-            else:
-                log_lag_bin_newpre_lst.append("N")
-        else:
-            log_lag_bin_newpre_lst.append("N")
-
-        if position_vec[i] < max_position:
-            if old_vec[i] == False and old_vec[i + 1] == True:
-                log_lag_bin_newpost_lst.append(log_lag_bin_vec[i + 1])
-            else:
-                log_lag_bin_newpost_lst.append("N")
-        else:
-            log_lag_bin_newpost_lst.append("N")
-    df_simu["log_lag_bin_newpre"] = log_lag_bin_newpre_lst
-    df_simu["log_lag_bin_newpost"] = log_lag_bin_newpost_lst
-    df_simu["log_lag_bin"] = df_simu.apply(lambda x: 0 if x["log_lag_bin"] == 1 else x["log_lag_bin"], axis=1)
-    df_simu["log_lag_bin_newpre"] = df_simu.apply(lambda x: 0 if x["log_lag_bin_newpre"] == 1 else x["log_lag_bin_newpre"], axis=1)
-    df_simu["log_lag_bin_newpost"] = df_simu.apply(lambda x: 0 if x["log_lag_bin_newpost"] == 1 else x["log_lag_bin_newpost"], axis=1)
-
-    # distribute items into bins
-    log_lag_bins = [0, 2, 3, 4, 5]
-    for bin in log_lag_bins:
-        col_name = "log_lag_bin_" + str(bin)
-        df_simu[col_name] = (df_simu.log_lag_bin == bin) | (df_simu.log_lag_bin_newpre == bin) | (df_simu.log_lag_bin_newpost == bin)
-
-    # get Az
-    def calculate_Az(df_tmp1):
-        log_lag_bins = [0, 2, 3, 4, 5]
-        Azs = []
-        for bin in log_lag_bins:
-            # get the df of this log_lag_bin
-            col_name = "log_lag_bin_" + str(bin)
-            df_tmp = df_tmp1.query(col_name + " == True").copy()
-            # get variables
-            conf = df_tmp.csim.to_numpy()
-            truth = df_tmp.old.to_numpy()
-            old_num = np.sum(truth)
-            new_num = np.sum(~truth)
-            is_old = truth
-            is_new = ~truth
-            if np.sum(truth) == 0 or np.sum(~truth) == 0:
-                Azs.append(np.nan)
-                continue
-            min_conf = np.round(np.min(conf), 2)
-            max_conf = np.round(np.max(conf), 2)
-            if max_conf - min_conf < 0.1:
-                Azs.append(np.nan)
-                continue
-            # calculate HR and FAR for different thresholds
-            step = 0.02
-            thresholds = np.arange(min_conf + step, max_conf, step)
-            hrs = []
-            fars = []
-            old_conf = conf * is_old
-            new_conf = conf * is_new
-            for thresh in thresholds:
-                hr = (np.sum(old_conf > thresh) + 0.5) / (old_num + 1)
-                far = (np.sum(new_conf > thresh) + 0.5) / (new_num + 1)
-                hrs.append(hr)
-                fars.append(far)
-            # calculate z_hr and z_far
-            z_hr = norm.ppf(hrs)
-            z_far = norm.ppf(fars)
-            # linear regression on z_hr and z_far manually
-            try:
-                n = len(z_far)
-                X = np.column_stack((np.ones(n), z_far))
-                beta = np.linalg.inv(X.T @ X) @ X.T @ z_hr
-                intercept, slope = beta
-                # get A_z
-                Az = norm.cdf(intercept / np.sqrt(1 + slope**2))
-                Azs.append(Az)
-            except:
-                Azs.append(np.nan)
-        # df to return
-        df_return = pd.DataFrame({"log_lag_bin": log_lag_bins, "Az": Azs})
-        return df_return
-
-    df_Az = df_simu.groupby(["session", "roll_cat_len_level"]).apply(calculate_Az).reset_index()
-    df_plot = df_Az.groupby(["roll_cat_len_level", "log_lag_bin"]).Az.mean().to_frame(name="Az").reset_index()
-    Az_lowsim = df_plot.query("roll_cat_len_level == '0-1'").Az.to_numpy()
-    Az_highsim = df_plot.query("roll_cat_len_level == '>=2'").Az.to_numpy()
-
-    # ground truth
-    Az_lowsim_gt = np.array([0.82, 0.82, 0.80, 0.73, 0.63])
-    Az_highsim_gt = np.array([0.81, 0.78, 0.76, 0.69, 0.61])
-
-    # calculate the error
-    err = np.mean(np.power(Az_lowsim - Az_lowsim_gt, 2)) + np.mean(np.power(Az_highsim - Az_highsim_gt, 2))
-    if np.isnan(err):
-        err = 10
-
-    cmr_stats = {}
-    cmr_stats["err"] = err
-    cmr_stats["params"] = param_vec
-    cmr_stats["stats"] = [Az_lowsim, Az_highsim]
-
-    return err, cmr_stats
-
-
-def obj_func_4ctrl(param_vec, df_study, df_test, sem_mat, sources):
-
-    # Reformat parameter vector to the dictionary format expected by CMR2
-    param_dict = param_vec_to_dict(param_vec, sim_name="4ctrl")
-
-    # Run model with the parameters given in param_vec
-    param_dict.update(use_new_context=True)
-    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
-    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
-
-    # get the stats of each item
-    df_itemgp = pd.pivot_table(df_simu, values="s_resp", index=["itemno"], columns=["old"], aggfunc="mean")
-    df_itemgp.columns = ["far", "hr"]
-    df_itemgp = df_itemgp.reset_index()
-    df_itemfq = df_simu.groupby(["itemno"])[["freq", "quantile"]].mean().reset_index()
-    df_itemgp = df_itemgp.merge(df_itemfq, on=["itemno"])
-
-    # get the stats of each group
-    df_quantgp = df_itemgp.groupby(["quantile"]).agg({"hr": "mean", "far": "mean", "freq": "mean"}).reset_index()
-    df_quantgp["freq_mean"] = df_quantgp["freq"].round(0)
-
-    # Get behavioral stats and compare with ground truth
-    hr = df_quantgp.hr.to_numpy()
-    far = df_quantgp.far.to_numpy()
-    hr_gt = np.array([0.903, 0.885, 0.888, 0.880, 0.879, 0.880, 0.870, 0.862, 0.842, 0.837])
-    far_gt = np.array([0.114, 0.132, 0.143, 0.164, 0.171, 0.183, 0.187, 0.193, 0.192, 0.193])
-    err = np.mean(np.power(hr - hr_gt, 2)) + np.mean(np.power(far - far_gt, 2))
-
-    cmr_stats = {}
-    cmr_stats["err"] = err
-    cmr_stats["params"] = param_vec
-    cmr_stats["stats"] = [hr, far]
-
-    return err, cmr_stats
-
-
-def obj_func_4shift(param_vec, df_study, df_test, sem_mat, sources):
-
-    # Reformat parameter vector to the dictionary format expected by CMR2
-    param_dict = param_vec_to_dict(param_vec, sim_name="4shift")
-
-    # Run model with the parameters given in param_vec
-    param_dict.update(use_new_context=True)
-    df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat)
-    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
-
-    # get the stats of each item
-    df_itemgp = pd.pivot_table(df_simu, values="s_resp", index=["itemno"], columns=["old"], aggfunc="mean")
-    df_itemgp.columns = ["far", "hr"]
-    df_itemgp = df_itemgp.reset_index()
-    df_itemfq = df_simu.groupby(["itemno"])[["freq", "quantile"]].mean().reset_index()
-    df_itemgp = df_itemgp.merge(df_itemfq, on=["itemno"])
-
-    # get the stats of each group
-    df_quantgp = df_itemgp.groupby(["quantile"]).agg({"hr": "mean", "far": "mean", "freq": "mean"}).reset_index()
-    df_quantgp["freq_mean"] = df_quantgp["freq"].round(0)
-
-    # Get behavioral stats and compare with ground truth
-    hr = df_quantgp.hr.to_numpy()
-    far = df_quantgp.far.to_numpy()
-    hr_gt = np.array([0.903, 0.885, 0.888, 0.880, 0.879, 0.880, 0.870, 0.862, 0.842, 0.837])
-    far_gt = np.array([0.114, 0.132, 0.143, 0.164, 0.171, 0.183, 0.187, 0.193, 0.192, 0.193])
-    err = np.mean(np.power(hr - hr_gt, 2)) + np.mean(np.power(far - far_gt, 2))
-
-    cmr_stats = {}
-    cmr_stats["err"] = err
-    cmr_stats["params"] = param_vec
-    cmr_stats["stats"] = [hr, far]
+    cmr_stats["stats"] = [neighbor_mean, ILI_mean]
 
     return err, cmr_stats

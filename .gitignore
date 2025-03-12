@@ -7,6 +7,7 @@ Modeling/fitting/outfiles
 Modeling/fitting/noise_files
 Modeling/fitting/pso_duplicate
 Modeling/fitting/outfiles_backup
+Modeling/fitting/past_fits
 Modeling/fitting/slurm*
 Modeling/fitting/S1S2_conv_test
 Analysis/**/X*.ipynb
@@ -16,3 +17,4 @@ Modeling/CMR_IA/build
 Modeling/CMR_IA/dist
 Modeling/CMR_IA/CMR_IA.egg-info
 **/notes.md
+Modeling/X*

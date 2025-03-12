@@ -49,15 +49,17 @@ fi
 
 
 # start scripts
+node_list=("node19" "node20" "node21" "node23" "node24")  # "node17" "node18" "node19" "node20" "node21"
 echo Starting $PROCS script\(s\):
-for i in `seq 1 $PROCS`; do
-	echo $i
-	#$2 1>/dev/null 2>/dev/null &
-	# echo qsub -l h_vmem=2G -cwd -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT; 
-	# qsub -l h_vmem=2G -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT;
-    echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w node26 -J $PNAME $SH_SCRIPT
-    sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w node26 -J $PNAME $SH_SCRIPT
-	sleep 2;
+for node in ${node_list[@]}; do
+    echo $node
+    for i in `seq 1 $PROCS`; do
+        echo $i
+        # $2 1>/dev/null 2>/dev/null &
+        # echo qsub -l h_vmem=2G -cwd -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT; 
+        # qsub -l h_vmem=2G -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT;
+        echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
+        sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
+        sleep 2
+    done
 done
-
-
