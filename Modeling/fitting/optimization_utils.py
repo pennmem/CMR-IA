@@ -55,6 +55,7 @@ def make_boundary(sim_name):
         gamma_cf=0,
         d_assoc=0,
         thresh_sigma=0,
+        thresh_rate=0,
     )
 
     ub_dict = cmr.make_params()
@@ -80,6 +81,7 @@ def make_boundary(sim_name):
         gamma_cf=1,
         d_assoc=1,
         thresh_sigma=0.5,
+        thresh_rate=10,
     )
 
     # Determine which parameters to fit and their boundary for different simulations
@@ -91,30 +93,55 @@ def make_boundary(sim_name):
             "s_fc",
             "gamma_fc",
             "c_thresh_itm",
-            "recog_slope",
+            "thresh_rate",
+            # "recog_slope",
         ]
-        lb_dict.update(
-            # c_thresh_itm=0.2,
-            recog_slope=0,
-        )
+        # lb_dict.update(
+        #     # c_thresh_itm=0.2,
+        #     recog_slope=0,
+        # )
         ub_dict.update(
             beta_enc=0.4,
             beta_rec_post=0.4,
             s_fc=0.4,
             gamma_fc=0.4,
-            recog_slope=10,
-            # c_thresh_itm=0.8,
+            # recog_slope=10,
+            c_thresh_itm=2,
         )
-    
+
+    # if sim_name == "1x":
+
+    #     what_to_fit = [
+    #         "beta_enc",
+    #         "beta_rec_post",
+    #         "s_fc",
+    #         "gamma_fc",
+    #         "c_thresh_itm",
+    #         "recog_slope",
+    #     ]
+    #     lb_dict.update(
+    #         # c_thresh_itm=0.2,
+    #         recog_slope=0,
+    #     )
+    #     ub_dict.update(
+    #         beta_enc=0.4,
+    #         beta_rec_post=0.4,
+    #         s_fc=0.4,
+    #         gamma_fc=0.4,
+    #         recog_slope=10,
+    #         c_thresh_itm=10,
+    #     )
+
     elif sim_name == "2":
         
         what_to_fit = [
             "beta_enc",
             "beta_cue",
-            # "beta_distract",
+            "beta_distract",
             "beta_rec_post",
             "s_fc",
             "gamma_fc",
+            "thresh_rate",
             # "c_thresh_itm",
         ]
         lb_dict.update(
@@ -125,6 +152,22 @@ def make_boundary(sim_name):
             gamma_fc=0.5,
         )
 
+    elif sim_name == "2b":
+        
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            "beta_distract",
+            "beta_rec_post",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_assoc",
+            "thresh_rate",
+        ]
+        ub_dict.update(
+            c_thresh_assoc=2,
+        )
+        
     elif sim_name == "3":
 
         what_to_fit = [
@@ -135,11 +178,14 @@ def make_boundary(sim_name):
             "gamma_fc",
             "c_thresh_itm",
             "c_thresh_assoc",
+            "thresh_rate",
         ]
         ub_dict.update(
-            beta_enc=0.5,
-            beta_cue=0.5,
-            beta_rec_post=0.5,
+            # beta_enc=0.5,
+            # beta_cue=0.5,
+            # beta_rec_post=0.5,
+            c_thresh_itm=2,
+            c_thresh_assoc=2,
         )
 
     elif sim_name == "4":
@@ -147,24 +193,25 @@ def make_boundary(sim_name):
         what_to_fit = [
             "beta_enc",
             "beta_cue",
-            # "beta_distract",
+            "beta_distract",
             "s_fc",
             "gamma_fc",
             "c_thresh_itm",
             "c_s",
             "psi_s",
             "psi_c",
+            "thresh_rate",
         ]
         lb_dict.update(
-            c_thresh_itm=-1,
+            c_thresh_itm=-10,
             c_s=0,
             psi_s=0,
             psi_c=-10,
         )
         ub_dict.update(
             s_fc=0.3,
-            c_thresh_itm=1,
-            c_s=10,
+            c_thresh_itm=10,
+            c_s=100,
             psi_s=100,
             psi_c=10,
         )
@@ -174,30 +221,59 @@ def make_boundary(sim_name):
         what_to_fit = [
             "beta_enc",
             "beta_cue",
-            # "beta_distract",
+            "beta_distract",
             "s_fc",
             "gamma_fc",
             "c_thresh_itm",
+            "thresh_rate",
         ]
+        ub_dict.update(
+            c_thresh_itm=10,
+        )
 
     elif sim_name == "4shift":
 
         what_to_fit = [
             "beta_enc",
             "beta_cue",
-            # "beta_distract",
+            "beta_distract",
             "s_fc",
             "gamma_fc",
             "c_thresh_itm",
             "c_s",
+            "thresh_rate",
         ]
         lb_dict.update(
-            c_thresh_itm=-1,
+            c_thresh_itm=-10,
             c_s=0,
         )
         ub_dict.update(
-            c_thresh_itm=1,
-            c_s=10,
+            c_thresh_itm=10,
+            c_s=100,
+        )
+        
+    elif sim_name == "4attn":
+
+        what_to_fit = [
+            "beta_enc",
+            "beta_cue",
+            "beta_distract",
+            "s_fc",
+            "gamma_fc",
+            "c_thresh_itm",
+            "psi_s",
+            "psi_c",
+            "thresh_rate",
+        ]
+        lb_dict.update(
+            c_thresh_itm=-10,
+            psi_s=0,
+            psi_c=-10,
+        )
+        ub_dict.update(
+            c_thresh_itm=10,
+            psi_s=100,
+            psi_c=10,
         )
 
     elif sim_name == "5":
@@ -417,10 +493,10 @@ def make_boundary(sim_name):
     return lb, ub, what_to_fit
 
 
-def get_wls(y_true, y_pred, y_sem):
+def get_wmse(y_true, y_pred, y_std):
     """
-    Calculate weighted least squares.
+    Calculate weighted mean squared error.
     """
 
-    wls = np.sum((y_true - y_pred) ** 2 / y_sem ** 2)
+    wls = np.sum((y_true - y_pred) ** 2 / y_std ** 2)
     return wls

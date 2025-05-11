@@ -27,10 +27,12 @@ if not os.path.exists(NOISE_DIR):
 obj_func_dict = {
     "1": obj_func_1,
     "2": obj_func_2,
+    "2b": obj_func_2b,
     "3": obj_func_3,
     "4": obj_func_4,
     "4ctrl": obj_func_4ctrl,
     "4shift": obj_func_4shift,
+    "4attn": obj_func_4attn,
     "5": obj_func_5,
     "6a": obj_func_6a,
     "6b": obj_func_6b,
@@ -525,7 +527,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
     # Set PSO parameters
     alg = 'pso2'
     swarmsize = 200
-    n_iter = 200
+    n_iter = 100
     omega_min = .72984 if alg in ('pso2', 'awl') else .3 if alg == 'apso6' else .4
     omega_max = .72984 if alg in ('pso2', 'awl') else .9
     d_omega = .1  # Delta omega for apso6 algorithm
@@ -560,7 +562,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 if __name__ == "__main__":
     
     # define simulation name
-    SIM_NAME = "7"
+    SIM_NAME = "2b"
 
     # Load df_study, df_test, sem_file
     ANAL_DIR = "../../Analysis/"
@@ -579,6 +581,13 @@ if __name__ == "__main__":
             df_test = pkl.load(inp)
         sem_file = ANAL_DIR + f"simu2_recog_conti/simu2_data/simu2_smat.npy"
     
+    elif SIM_NAME == "2b":
+        
+        with open(ANAL_DIR + f"simu2b_recog_assoc_conti/simu2b_data/simu2b_design.pkl", "rb") as inp:
+            df_study = pkl.load(inp)
+            df_test = pkl.load(inp)
+        sem_file = ANAL_DIR + f"simu2b_recog_assoc_conti/simu2b_data/simu2b_smat.npy"
+    
     elif SIM_NAME == "3":
         
         df_study = None
@@ -587,7 +596,7 @@ if __name__ == "__main__":
         df_test = df_test.loc[df_test.session < 300].copy()
         sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
         
-    elif SIM_NAME == "4" or SIM_NAME == "4ctrl" or SIM_NAME == "4shift":
+    elif SIM_NAME in ["4", "4ctrl", "4shift", "4attn"]:
         
         with open(ANAL_DIR + f"simu4_recog_wfe/simu4_data/simu4_design.pkl", "rb") as inp:
             df_study = pkl.load(inp)

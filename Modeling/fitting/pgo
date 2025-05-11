@@ -22,7 +22,6 @@ if [ $# -lt 1 ]; then
 fi
 
 
-
 # look for runmfile in current dir
 SH_PATH=`dirname $0`
 if [ "$SH_PATH" = "" ]; then
@@ -49,17 +48,22 @@ fi
 
 
 # start scripts
-node_list=("node19" "node20" "node21" "node23" "node24")  # "node17" "node18" "node19" "node20" "node21"
+# node_list=("node19" "node20" "node21" "node22" "node23")  # "node17" "node18" "node19" "node20" "node21"
+node_list=("node33" "node34" "node35" "node36" "node37")
 echo Starting $PROCS script\(s\):
-for node in ${node_list[@]}; do
+for node_idx in "${!node_list[@]}"; do
+    node=${node_list[$node_idx]}
     echo $node
     for i in `seq 1 $PROCS`; do
         echo $i
-        # $2 1>/dev/null 2>/dev/null &
-        # echo qsub -l h_vmem=2G -cwd -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT; 
-        # qsub -l h_vmem=2G -N $PNAME -v PYFILE=$PYFILE $SH_SCRIPT;
-        echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
-        sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
+        # add email notification on last submission
+        if [[ $node_idx -eq $((${#node_list[@]} - 1)) && $i -eq $PROCS ]]; then
+            echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out --mail-type=END,FAIL --mail-user=jerryjin@andrew.cmu.edu $SH_SCRIPT
+            sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out --mail-type=END,FAIL --mail-user=jerryjin@andrew.cmu.edu $SH_SCRIPT
+        else
+            echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
+            sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
+        fi
         sleep 2
     done
 done
