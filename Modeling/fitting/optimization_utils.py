@@ -406,6 +406,7 @@ def make_boundary(sim_name):
             "c_thresh",
             "c_thresh_itm",
             "c_thresh_assoc",
+            "thresh_rate",
         ]
         lb_dict.update(
             beta_enc=0.4,
@@ -426,7 +427,7 @@ def make_boundary(sim_name):
             alpha=0.5,
             c_thresh=0,
             c_thresh_itm=0,
-            c_thresh_assoc=0.2,
+            c_thresh_assoc=0,
         )
         ub_dict.update(
             beta_enc=1,
@@ -445,9 +446,9 @@ def make_boundary(sim_name):
             eta=0.2,
             omega=10,
             alpha=1,
-            c_thresh=0.8,
-            c_thresh_itm=0.4,
-            c_thresh_assoc=1,
+            c_thresh=1,
+            c_thresh_itm=2,
+            c_thresh_assoc=2,
         )
 
     elif sim_name == "S2":
@@ -462,6 +463,7 @@ def make_boundary(sim_name):
             "c_thresh_itm",
             "c_thresh_assoc",
             "thresh_sigma",
+            "thresh_rate",
         ]
         lb_dict.update(
             beta_enc=0,
@@ -470,8 +472,8 @@ def make_boundary(sim_name):
             beta_distract=0,
             gamma_fc=0,
             s_fc=0.2,
-            c_thresh_itm=0.6,
-            c_thresh_assoc=0.6,
+            c_thresh_itm=0,
+            c_thresh_assoc=0,
             thresh_sigma=0,
         )
         ub_dict.update(
@@ -481,8 +483,8 @@ def make_boundary(sim_name):
             beta_distract=0.6,
             gamma_fc=0.4,
             s_fc=0.8,
-            c_thresh_itm=1,
-            c_thresh_assoc=1,
+            c_thresh_itm=2,
+            c_thresh_assoc=2,
             thresh_sigma=0.2,
         )
 

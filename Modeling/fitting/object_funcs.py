@@ -1023,13 +1023,12 @@ def obj_func_S1(param_vec, df_study, df_test, sem_mat, sources, return_df=False)
         # Separate 3 groups of simulation
         df_study_gp = df_study.query(f"group == {i}").copy()
         df_test_gp = df_test.query(f"group == {i}").copy()
+        mode = "Recog-CR-Assoc" if i == 3 else "Recog-CR"
 
         # Run model with the parameters given in param_vec
         nitems = 4 * 48
-        param_dict.update(nitems_in_accumulator=nitems, learn_while_retrieving=True, rec_time_limit=10000, use_new_context=True)
-        df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_gp, df_test_gp, sem_mat)
-        # print(df_simu)
-        # print(df_test_gp)
+        param_dict.update(nitems_in_accumulator=nitems, learn_while_retrieving=True, rec_time_limit=10000, use_new_context=True, use_flexible_thresh=True)
+        df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_gp, df_test_gp, sem_mat, mode=mode, disable_tqdm=True)
         df_simu["test"] = df_test_gp["test"]
         df_simu = df_simu.merge(df_test_gp, on=["session", "test", "test_itemno1", "test_itemno2"])
 
@@ -1074,7 +1073,7 @@ def anal_perform_S1(df_simu):
     df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
 
     # Recognition performance
-    df_recog = df_simu.query("test==1")
+    df_recog = df_simu.query("test == 1")
     recog_resp = df_recog["s_resp"].to_numpy()
     is_old = df_recog["correct_ans"].to_numpy()
     is_new = 1 - is_old
@@ -1084,7 +1083,7 @@ def anal_perform_S1(df_simu):
     far = np.sum(recog_resp * is_new) / new_num
 
     # Cued recall performance
-    df_cr = df_simu.query("test==2")
+    df_cr = df_simu.query("test == 2")
     cr_resp = df_cr["s_resp"].to_numpy()
     cr_truth = df_cr["correct_ans"].to_numpy()
     p_rc = np.mean(cr_resp == cr_truth)
@@ -1109,8 +1108,8 @@ def obj_func_S2(param_vec, df_study, df_test, sem_mat, sources):
     param_dict = param_vec_to_dict(param_vec, sim_name="S2")
 
     # Run model with the parameters given in param_vec
-    param_dict.update(learn_while_retrieving=True, use_new_context=True)
-    df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study, df_test, sem_mat, mode="Recog-Recog")
+    param_dict.update(learn_while_retrieving=True, use_new_context=True, use_flexible_thresh=True)
+    df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study, df_test, sem_mat, mode="Recog-Recog", disable_tqdm=True)
     df_simu["test"] = df_test["test"]
     df_simu = df_simu.merge(df_test, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
 

@@ -527,7 +527,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
     # Set PSO parameters
     alg = 'pso2'
     swarmsize = 200
-    n_iter = 100
+    n_iter = 200
     omega_min = .72984 if alg in ('pso2', 'awl') else .3 if alg == 'apso6' else .4
     omega_max = .72984 if alg in ('pso2', 'awl') else .9
     d_omega = .1  # Delta omega for apso6 algorithm
@@ -562,7 +562,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 if __name__ == "__main__":
     
     # define simulation name
-    SIM_NAME = "2b"
+    SIM_NAME = "S1"
 
     # Load df_study, df_test, sem_file
     ANAL_DIR = "../../Analysis/"

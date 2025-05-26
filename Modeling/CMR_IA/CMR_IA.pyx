@@ -143,7 +143,7 @@ class CMR(object):
             raise ValueError("%s Must input a cue matrix." % task)
         self.task = task
         # Input mode
-        if mode not in ("IFR", "DFR", "Continuous", "Final", "Hockley", "Osth", "Recog-Recog", "Recog-CR", "CR-Recog", "CR-CR"):
+        if mode not in ("IFR", "DFR", "Continuous", "Final", "Hockley", "Osth", "Recog-Recog", "Recog-CR", "CR-Recog", "CR-CR", "Recog-CR-Assoc"):
             raise ValueError("Mode %s is invalid." % mode)
         self.mode = mode
         # Input learn_while_retrieving
@@ -406,11 +406,17 @@ class CMR(object):
                         idx = self.rng.choice(np.arange(len(presented_pairs) - lag))
                         rearranged_pairs.append([presented_pairs[idx][fw], presented_pairs[idx + lag][1 - fw]])
 
-                else:  # for other experiments where rearranged pairs are totally random
+                elif "Assoc" in self.mode:  # for S1 where rearranged pairs are totally random
                     for _ in range(num):
                         idx1, idx2 = self.rng.choice(np.arange(len(presented_pairs)), 2, replace=False)
                         fw = self.rng.choice([0, 1])
                         rearranged_pairs.append([presented_pairs[idx1][fw], presented_pairs[idx2][1 - fw]])
+
+                else:  # for other experiments where new pairs are totally random
+                    all_new_items = [idx for idx in np.arange(self.nitems_unique) if idx not in np.array(self.presented_items).flatten()]
+                    for _ in range(num):
+                        new_pair = self.rng.choice(all_new_items, 2, replace=False)
+                        rearranged_pairs.append(new_pair)
 
                 return rearranged_pairs
                 
@@ -418,7 +424,6 @@ class CMR(object):
             new_pair_csims = []
             new_pairs = get_rearranged_pairs(self.presented_items, num)
             for pres_idx in new_pairs:
-                c_tmp = self.c_old.copy()
                 self.present_item(pres_idx[0], source=None, update_context=True, update_weights=False)
                 self.present_item(pres_idx[1], source=None, update_context=False, update_weights=False)
                 csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
@@ -618,7 +623,8 @@ class CMR(object):
             self.present_item(cue_idx, source=None, update_context=True, update_weights=False)
         elif self.mode == "Continuous":
             self.present_item(cue_idx, source=None, update_context=False, update_weights=False)
-        elif self.mode == "Hockley" or self.mode == "Osth" or self.mode == "Recog-CR" or self.mode == "Recog-Recog" or self.mode == "CR-Recog":
+        else:
+        # elif self.mode == "Hockley" or self.mode == "Osth" or self.mode == "Recog-CR" or self.mode == "Recog-Recog" or self.mode == "CR-Recog":
             if is_paired_cue:
                 self.present_item(cue_idx[0], source=None, update_context=True, update_weights=False)
                 self.present_item(cue_idx[1], source=None, update_context=True, update_weights=False)
@@ -735,6 +741,7 @@ class CMR(object):
             # Filter intrusions using temporal context comparison, and log item if overtly recalled
             csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
             self.recog_csims.append(csim.item())
+            self.recog_threshs.append(self.params["c_thresh"])
             if csim >= self.params["c_thresh"]:
 
                 # Set the retrieved item's threshold to maximum
@@ -743,7 +750,7 @@ class CMR(object):
 
                 # Output encoding for the pair of cue and recalled item
                 if self.learn_while_retrieving:
-                    self.present_item([item, cue_idx], source=None, update_context=False, update_weights=True, use_new_context=self.params["use_new_context"])
+                    self.present_item(np.array([item, cue_idx]), source=None, update_context=False, update_weights=True, use_new_context=self.params["use_new_context"])
 
                 rec_itemno = self.all_nos_unique[item]
                 self.rec_items.append(rec_itemno)
@@ -756,6 +763,7 @@ class CMR(object):
             self.rec_items.append(-1) # fail
             self.rec_times.append(-1)
             self.recog_csims.append(-1)
+            self.recog_threshs.append(-1)
 
 
     @cython.boundscheck(False)  # Deactivate bounds checking
@@ -1150,16 +1158,16 @@ class CMR(object):
         :param test1_num: Integer indicating the number of items tested in test1 during successive tests.
         """
 
-        if self.mode == "Recog-Recog":
+        if "Recog-Recog" in self.mode:
             test1 = "recognition"
             test2 = "recognition"
-        elif self.mode == "Recog-CR":
+        elif "Recog-CR" in self.mode:
             test1 = "recognition"
             test2 = "cued recall"
-        elif self.mode == "CR-Recog":
+        elif "CR-Recog" in self.mode:
             test1 = "cued recall"
             test2 = "recognition"
-        elif self.mode == "CR-CR":
+        elif "CR-CR" in self.mode:
             test1 = "cued recall"
             test2 = "cued recall"
 
@@ -1181,6 +1189,8 @@ class CMR(object):
                     self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
+                    self.init_csims_flag = False
+                    self.presented_items = []
 
                 if self.phase == "prerecall":
                     #####
@@ -1191,6 +1201,8 @@ class CMR(object):
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
                     self.ret_thresh = np.ones(self.nitems_unique, dtype=np.float32)  # reset threshold
+                    self.init_recent_csims(do_item=True, do_pair=True)
+                    self.init_csims_flag = True
 
                 if self.phase == "encoding":
                     #####
@@ -1211,12 +1223,13 @@ class CMR(object):
                                 elif enc_state == 0:
                                     self.L_FC.fill(self.params["gamma_fc"] * self.params["bad_enc_ratio"])
                                     self.L_CF.fill(self.params["gamma_cf"] * self.params["bad_enc_ratio"])
-                        if self.params["beta_enc_inpair"] == 0:  # default is Gestalt
+                        if self.params["beta_enc_inpair"] < 0:  # default is Gestalt
                             self.present_item(pres_idx, source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
                         else:  # alternatively, we can let the context drift within a pair
                             self.present_item(pres_idx[0], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
                             self.beta = self.params["beta_enc_inpair"]
                             self.present_item(pres_idx[1], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
+                        self.presented_items.append(pres_idx)
                 
                 if self.phase == "recognition":
                     #####
@@ -1275,8 +1288,8 @@ def make_params(source_coding=False):
         # Primacy and semantic scaling
         "phi_s": None,
         "phi_d": None,
-        "s_cf": None,  # Semantic scaling in context-to-feature associations
         "s_fc": 0,  # Semantic scaling in feature-to-context associations (Defaults to 0)
+        "s_cf": None,  # Semantic scaling in context-to-feature associations
 
         # Recall parameters
         "kappa": None,
@@ -1359,8 +1372,8 @@ def make_default_params():
         beta_distract = 0,
         phi_s = 2,
         phi_d = 0.5,
-        s_cf = 0,
         s_fc = 0,
+        s_cf = 0,
         kappa = 0.5,
         eta = 0.5,
         omega = 5,
@@ -1509,7 +1522,7 @@ def run_cmr2_multi_sess(params, pres_mat, identifiers, sem_mat, source_mat=None,
     return rec_mat, time_mat
 
 
-def run_norm_recog_multi_sess(params, df_study, df_test, sem_mat, mode = "Final", disable_tqdm=False):
+def run_norm_recog_multi_sess(params, df_study, df_test, sem_mat, mode="Final", disable_tqdm=False):
     """
     Simulates multiple sessions of normal recognition (recognition after studying a list of items) using a single set of parameters. Only item recognition for now. [Newly added]
 
@@ -1628,7 +1641,7 @@ def run_norm_cr_multi_sess(params, df_study, df_test, sem_mat, disable_tqdm=Fals
         cue_mat = np.reshape(cue_mat, (list_num, -1))
 
         # run CMR for each session
-        cmr_model = CMR(params, pres_mat, sem_mat, cue_mat=cue_mat, task=task, mode=mode)
+        cmr_model = CMR(params, pres_mat, sem_mat, cue_mat=cue_mat, task=task, mode=mode, seed=sess)
         cmr_model.run_norm_cr_single_sess()
 
         # save results
@@ -1666,7 +1679,7 @@ def run_success_multi_sess(params, df_study, df_test, sem_mat, mode="Recog-CR", 
     sessions = np.unique(df_study.session)
     list_num = len(np.unique(df_study.list))
     df_thin = df_test[["session", "list", "test_itemno1", "test_itemno2"]]
-    resps, rts, csims = [], [], []
+    resps, rts, csims, threshs = [], [], [], []
     f_in, f_dif = [], []
     test1_num = sum(df_test.query("session == 0 and list == 0").test == 1)
 
@@ -1678,17 +1691,18 @@ def run_success_multi_sess(params, df_study, df_test, sem_mat, mode="Recog-CR", 
         cue_mat = np.reshape(cue_mat, (list_num, -1, 2))
 
         # run CMR for each session
-        cmr_model = CMR(params, pres_mat, sem_mat, cue_mat=cue_mat, task=task, mode=mode)
+        cmr_model = CMR(params, pres_mat, sem_mat, cue_mat=cue_mat, task=task, mode=mode, seed=sess)
         cmr_model.run_success_single_sess(test1_num=test1_num)
 
         # save results
         resps += cmr_model.rec_items
         rts += cmr_model.rec_times
         csims += cmr_model.recog_csims
+        threshs += cmr_model.recog_threshs
         f_in.append(cmr_model.f_in_acc)
         f_dif.append(cmr_model.f_in_dif)
 
-    df_thin = df_thin.assign(s_resp=resps, s_rt=rts, csim=csims)
+    df_thin = df_thin.assign(s_resp=resps, s_rt=rts, csim=csims, thresh=threshs)
     print("CMR Time: " + str(time.time() - now_test))
 
     return df_thin, f_in, f_dif
