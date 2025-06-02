@@ -526,8 +526,8 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 
     # Set PSO parameters
     alg = 'pso2'
-    swarmsize = 200
-    n_iter = 200
+    swarmsize = 500
+    n_iter = 50
     omega_min = .72984 if alg in ('pso2', 'awl') else .3 if alg == 'apso6' else .4
     omega_max = .72984 if alg in ('pso2', 'awl') else .9
     d_omega = .1  # Delta omega for apso6 algorithm
@@ -562,7 +562,7 @@ def run_pso(df_study, df_test, sem_mat, sources, sim_name=''):
 if __name__ == "__main__":
     
     # define simulation name
-    SIM_NAME = "S1"
+    SIM_NAME = "S2"
 
     # Load df_study, df_test, sem_file
     ANAL_DIR = "../../Analysis/"
@@ -626,8 +626,8 @@ if __name__ == "__main__":
         with open(ANAL_DIR + f"simu6b_cr_sym/simu6b_data/simu6b_design.pkl", "rb") as inp:
             df_study = pkl.load(inp)
             df_test = pkl.load(inp)
-        df_study = df_study.loc[df_study.session < 100].copy()
-        df_test = df_test.loc[df_test.session < 100].copy()
+        df_study = df_study.loc[df_study.session < 500].copy()
+        df_test = df_test.loc[df_test.session < 500].copy()
         sem_file = ANAL_DIR + f"wordpools/ltp_FR_similarity_matrix.npy"
     
     elif SIM_NAME == "7":

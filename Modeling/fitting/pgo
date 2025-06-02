@@ -48,8 +48,8 @@ fi
 
 
 # start scripts
-node_list=("node19" "node20" "node21" "node22" "node23")  # "node17" "node18" "node19" "node20" "node21"
-# node_list=("node33" "node34" "node35" "node36" "node37")
+# node_list=("node19" "node20" "node21" "node22" "node23")  # "node17" "node18" "node19" "node20" "node21"
+node_list=("node19" "node20" "node21" "node22" "node23", "node33" "node34" "node35" "node36" "node37")
 echo Starting $PROCS script\(s\):
 for node_idx in "${!node_list[@]}"; do
     node=${node_list[$node_idx]}

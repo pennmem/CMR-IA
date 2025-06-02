@@ -220,7 +220,7 @@ def obj_func_2(param_vec, df_study, df_test, sem_mat, sources):
 
     # Run model with the parameters given in param_vec
     df_simu = cmr.run_norm_recog_multi_sess(param_dict, df_study, df_test, sem_mat, disable_tqdm=True)
-    df_simu = df_simu.merge(df_test, on=["session", "itemno"])
+    df_simu = df_simu.merge(df_test, on=["session", "list", "itemno1", "itemno2"])
 
     # calculate loss
     # s_resp = df_simu["s_resp"].values
@@ -662,10 +662,10 @@ def obj_func_6b(param_vec, df_study, df_test, sem_mat, sources):
     param_dict = param_vec_to_dict(param_vec, sim_name="6b")
 
     # Run model with the parameters given in param_vec
-    # param_dict.update(learn_while_retrieving=True, nitems_in_accumulator=96, use_new_context=True)
-    param_dict.update(learn_while_retrieving=False, nitems_in_accumulator=96, use_new_context=True)
+    param_dict.update(learn_while_retrieving=True, nitems_in_accumulator=96, use_new_context=True)
+    # param_dict.update(learn_while_retrieving=False, nitems_in_accumulator=96, use_new_context=True)
     df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study, df_test, sem_mat, mode="CR-CR", disable_tqdm=True)
-    df_simu["test_pos"] = np.tile(np.arange(1, 25), 600)  # 100 * 6
+    df_simu["test_pos"] = df_test["test_pos"]
     df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno1", "test_itemno2", "test_pos"])
 
     # Get correctness
@@ -711,7 +711,8 @@ def obj_func_6b(param_vec, df_study, df_test, sem_mat, sources):
     reve_stats_mean = np.mean(reve_stats, axis=0)
     inde_ground_truth = np.array([0.319, 0.006, 0.012, 0.663, 0.94])
     reve_ground_truth = np.array([0.293, 0.049, 0.122, 0.537, 0.96])
-    err = (np.mean(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.mean(np.power(reve_stats_mean - reve_ground_truth, 2))) / 2
+    err = np.sum(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.sum(np.power(reve_stats_mean - reve_ground_truth, 2)) \
+        + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
 
     cmr_stats = {}
     cmr_stats["err"] = err
@@ -1050,7 +1051,7 @@ def obj_func_S1(param_vec, df_study, df_test, sem_mat, sources, return_df=False)
             [0.42, 0.72, 0.22, 0.81],
         ]
     )  # p_rc, hr, far, q
-    err = np.mean(np.power(stats - ground_truth, 2))
+    err = np.sum(np.power(stats - ground_truth, 2))
 
     # apply some constraints that pair FAR should not be 0
     if stats[1, 2] == 0:
@@ -1146,7 +1147,6 @@ def obj_func_S2(param_vec, df_study, df_test, sem_mat, sources):
     stats = []
     for subj in subjects:
         df_subj = df_simu.query(f"subject=={subj} and list % 3 != 0")  # discard first list
-        # df_subj = df_simu.query(f"subject=={subj}")
         stats_subj = anal_perform_S2(df_subj)
         stats.append(stats_subj)
 
@@ -1163,7 +1163,7 @@ def obj_func_S2(param_vec, df_study, df_test, sem_mat, sources):
             [0.07, 0.06, 0],
         ]
     )
-    err = np.mean(np.power(stats_mean - ground_truth, 2))
+    err = np.sum(np.power(stats_mean - ground_truth, 2))
 
     cmr_stats = {}
     cmr_stats["err"] = err

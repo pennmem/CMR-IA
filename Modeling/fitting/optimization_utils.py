@@ -74,8 +74,8 @@ def make_boundary(sim_name):
         omega=10,
         alpha=1,
         c_thresh=1,
-        c_thresh_itm=1,
-        c_thresh_assoc=1,
+        c_thresh_itm=2,
+        c_thresh_assoc=2,
         lamb=0.25,
         gamma_fc=1,
         gamma_cf=1,
@@ -94,43 +94,13 @@ def make_boundary(sim_name):
             "gamma_fc",
             "c_thresh_itm",
             "thresh_rate",
-            # "recog_slope",
         ]
-        # lb_dict.update(
-        #     # c_thresh_itm=0.2,
-        #     recog_slope=0,
-        # )
         ub_dict.update(
             beta_enc=0.4,
             beta_rec_post=0.4,
             s_fc=0.4,
             gamma_fc=0.4,
-            # recog_slope=10,
-            c_thresh_itm=2,
         )
-
-    # if sim_name == "1x":
-
-    #     what_to_fit = [
-    #         "beta_enc",
-    #         "beta_rec_post",
-    #         "s_fc",
-    #         "gamma_fc",
-    #         "c_thresh_itm",
-    #         "recog_slope",
-    #     ]
-    #     lb_dict.update(
-    #         # c_thresh_itm=0.2,
-    #         recog_slope=0,
-    #     )
-    #     ub_dict.update(
-    #         beta_enc=0.4,
-    #         beta_rec_post=0.4,
-    #         s_fc=0.4,
-    #         gamma_fc=0.4,
-    #         recog_slope=10,
-    #         c_thresh_itm=10,
-    #     )
 
     elif sim_name == "2":
         
@@ -180,13 +150,6 @@ def make_boundary(sim_name):
             "c_thresh_assoc",
             "thresh_rate",
         ]
-        ub_dict.update(
-            # beta_enc=0.5,
-            # beta_cue=0.5,
-            # beta_rec_post=0.5,
-            c_thresh_itm=2,
-            c_thresh_assoc=2,
-        )
 
     elif sim_name == "4":
 
@@ -466,25 +429,25 @@ def make_boundary(sim_name):
             "thresh_rate",
         ]
         lb_dict.update(
-            beta_enc=0,
-            beta_cue=0,
-            beta_rec_post=0.4,
-            beta_distract=0,
-            gamma_fc=0,
-            s_fc=0.2,
-            c_thresh_itm=0,
-            c_thresh_assoc=0,
+            # beta_enc=0,
+            # beta_cue=0,
+            # beta_rec_post=0.4,
+            # beta_distract=0,
+            # gamma_fc=0,
+            # s_fc=0.2,
+            # c_thresh_itm=0,
+            # c_thresh_assoc=0,
             thresh_sigma=0,
         )
         ub_dict.update(
-            beta_enc=0.8,
-            beta_cue=0.5,
-            beta_rec_post=1,
-            beta_distract=0.6,
-            gamma_fc=0.4,
-            s_fc=0.8,
-            c_thresh_itm=2,
-            c_thresh_assoc=2,
+            # beta_enc=0.8,
+            # beta_cue=0.5,
+            # beta_rec_post=1,
+            # beta_distract=0.6,
+            # gamma_fc=0.4,
+            # s_fc=0.8,
+            # c_thresh_itm=2,
+            # c_thresh_assoc=2,
             thresh_sigma=0.2,
         )
 
