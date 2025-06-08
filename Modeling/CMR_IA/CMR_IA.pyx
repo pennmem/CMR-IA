@@ -1217,27 +1217,11 @@ class CMR(object):
                     #####
                     # Present items
                     #####
-                    enc_state = 1  # 1 is good, 0 is bad, initially good state
                     for self.serial_position in range(self.pres_indexes.shape[1]):
                         pres_idx = self.pres_indexes[trial_idx, self.serial_position]
                         self.beta = self.params["beta_enc"]
                         self.beta_source = 0
-                        if self.params["use_var_enc"]:  # False, not used in paper
-                            change_state = self.changestate_rng.choice([False, True], p=[self.params["var_enc_p"], 1 - self.params["var_enc_p"]])
-                            if change_state:
-                                enc_state = 1 - enc_state
-                                if enc_state == 1:
-                                    self.L_FC.fill(self.params["gamma_fc"])
-                                    self.L_CF.fill(self.params["gamma_cf"])
-                                elif enc_state == 0:
-                                    self.L_FC.fill(self.params["gamma_fc"] * self.params["bad_enc_ratio"])
-                                    self.L_CF.fill(self.params["gamma_cf"] * self.params["bad_enc_ratio"])
-                        if self.params["beta_enc_inpair"] < 0:  # default is Gestalt
-                            self.present_item(pres_idx, source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                        else:  # alternatively, we can let the context drift within a pair
-                            self.present_item(pres_idx[0], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                            self.beta = self.params["beta_enc_inpair"]
-                            self.present_item(pres_idx[1], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
+                        self.present_item(pres_idx, source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
                         self.record_presented_items(pres_idx)
                 
                 if self.phase == "recognition":
@@ -1332,11 +1316,6 @@ def make_params(source_coding=False):
 
         # [bj] Items that should not be recalled
         "ban_recall": None,
-
-        # [bj] Encoding variability (not used in the paper)
-        "use_var_enc": False,
-        "var_enc_p": None,
-        "bad_enc_ratio": None,
 
         # [bj] Sigmoid slope for recognition
         "recog_slope": 1,
