@@ -434,7 +434,8 @@ def obj_func_3(param_vec, df_study, df_test, sem_mat, sources):
         A_hr_gt = pickle.load(f)
         A_cr_gt = pickle.load(f)
     A_far_gt = 1 - A_cr_gt
-    err = np.mean(np.abs(I_hr - I_hr_gt)) + np.mean(np.abs(A_hr - A_hr_gt)) + np.abs(I_far - I_far_gt) * 5 + np.mean(np.abs(A_far - A_far_gt))
+    # err = np.mean(np.abs(I_hr - I_hr_gt)) + np.mean(np.abs(A_hr - A_hr_gt)) + np.abs(I_far - I_far_gt) * 5 + np.mean(np.abs(A_far - A_far_gt))
+    err = np.sum((I_hr - I_hr_gt) ** 2) + np.sum((A_hr - A_hr_gt) ** 2) + (I_far - I_far_gt) ** 2 * 5 + np.sum((A_far - A_far_gt) ** 2)
 
     # apply some constraints
     if np.any(np.diff(I_hr) > 0):
@@ -756,7 +757,7 @@ def obj_func_7(param_vec, df_study, df_test, sem_mat, sources):
 
     # Run model with the parameters given in param_vec
     param_dict.update(use_new_context=True, nitems_in_accumulator=96)
-    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+    df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat, disable_tqdm=True)
     df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
     df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
     
@@ -879,22 +880,24 @@ def obj_func_7(param_vec, df_study, df_test, sem_mat, sources):
     # Get error
     with open("../../Analysis/simu7_cr_pliili/simu7_data/simu7_gt.pkl", "rb") as f:
         p_correct_mean_gt = pickle.load(f)
-        p_correct_std_gt = pickle.load(f)
+        p_correct_se_gt = pickle.load(f)
         p_PLI_mean_gt = pickle.load(f)
-        p_PLI_std_gt = pickle.load(f)
+        p_PLI_se_gt = pickle.load(f)
         p_ILI_mean_gt = pickle.load(f)
-        p_ILI_std_gt = pickle.load(f)
+        p_ILI_se_gt = pickle.load(f)
         lag_PLI_mean_gt = pickle.load(f)
-        lag_PLI_std_gt = pickle.load(f)
+        lag_PLI_se_gt = pickle.load(f)
         lag_ILI_mean_gt = pickle.load(f)
-        lag_ILI_std_gt = pickle.load(f)
-    wls_p_correct = (p_correct_mean - p_correct_mean_gt) ** 2 / (p_correct_std_gt**2)
-    wls_p_PLI = (p_PLI_mean - p_PLI_mean_gt) ** 2 / (p_PLI_std_gt**2)
-    wls_p_ILI = (p_ILI_mean - p_ILI_mean_gt) ** 2 / (p_ILI_std_gt**2)
-    wls_lag_PLI = np.nanmean((lag_PLI_mean - lag_PLI_mean_gt) ** 2 / (lag_PLI_std_gt**2))
-    wls_lag_ILI = np.nanmean((lag_ILI_mean - lag_ILI_mean_gt) ** 2 / (lag_ILI_std_gt**2))
+        lag_ILI_se_gt = pickle.load(f)
+    wls_p_correct = get_wmse(p_correct_mean_gt, p_correct_mean, p_correct_se_gt)
+    wls_p_PLI = get_wmse(p_PLI_mean_gt, p_PLI_mean, p_PLI_se_gt)
+    wls_p_ILI = get_wmse(p_ILI_mean_gt, p_ILI_mean, p_ILI_se_gt)
+    wls_lag_PLI = get_wmse(lag_PLI_mean_gt, lag_PLI_mean, lag_PLI_se_gt) / len(lag_PLI_mean_gt)
+    wls_lag_ILI = get_wmse(lag_ILI_mean_gt, lag_ILI_mean, lag_ILI_se_gt) / len(lag_ILI_mean_gt)
     err = wls_p_correct + wls_p_PLI + wls_p_ILI + wls_lag_PLI + wls_lag_ILI
-    # if np.any(np.diff(lag_PLI_mean) >= 0):
+    
+    # apply contraints
+    # if np.cov(np.arange(5), lag_PLI_mean)[0, 1] >= 0:
     #     err += 5
     # if np.any(np.diff(lag_ILI_mean[:5]) <= 0) or np.any(np.diff(lag_ILI_mean[5:]) >= 0):
     #     err += 5
@@ -1000,8 +1003,8 @@ def obj_func_8(param_vec, df_study, df_test, sem_mat, sources):
         neighbor_se_gt = pickle.load(f)
         ILI_mean_gt = pickle.load(f)
         ILI_se_gt = pickle.load(f)
-    wls_neighbor = np.nanmean((neighbor_mean - neighbor_mean_gt) ** 2 / neighbor_se_gt**2)
-    wls_ILI = np.nanmean((ILI_mean - ILI_mean_gt) ** 2 / ILI_se_gt**2)
+    wls_neighbor = get_wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
+    wls_ILI = get_wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
     err = wls_neighbor + wls_ILI
     if correct_rate < 0.6:
         err += 5
@@ -1051,7 +1054,15 @@ def obj_func_S1(param_vec, df_study, df_test, sem_mat, sources, return_df=False)
             [0.42, 0.72, 0.22, 0.81],
         ]
     )  # p_rc, hr, far, q
+    ground_truth_se = np.array(
+        [
+            [0.01, 0.02, 0.02, 0.05],
+            [0.03, 0.02, 0.01, 0.04],
+            [0.04, 0.03, 0.02, 0.02],
+        ]
+    )
     err = np.sum(np.power(stats - ground_truth, 2))
+    # err = get_wmse(ground_truth, stats, ground_truth_se)
 
     # apply some constraints that pair FAR should not be 0
     if stats[1, 2] == 0:
@@ -1163,7 +1174,20 @@ def obj_func_S2(param_vec, df_study, df_test, sem_mat, sources):
             [0.07, 0.06, 0],
         ]
     )
+    ground_truth_se = np.array(
+        [
+            [0.020, 0.030, 0.10],  # diff item
+            [0.016, 0.020, 0.12],  # item/pair
+            [0.018, 0.021, 0.10],  # pair/item
+            [0.017, 0.017, 0.03],  # same item
+            [0.022, 0.019, 0.02],  # intact pair
+            [0.014, 0.018, 0.12],  # repeated lure
+            [0.009, 0.009, -1],  # non-repeated lure
+        ]
+    )
     err = np.sum(np.power(stats_mean - ground_truth, 2))
+    # ground_truth_se[:, 2] /= 2
+    # err = get_wmse(ground_truth, stats_mean, ground_truth_se)
 
     cmr_stats = {}
     cmr_stats["err"] = err

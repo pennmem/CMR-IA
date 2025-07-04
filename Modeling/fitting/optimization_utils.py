@@ -112,7 +112,6 @@ def make_boundary(sim_name):
             "s_fc",
             "gamma_fc",
             "thresh_rate",
-            # "c_thresh_itm",
         ]
         lb_dict.update(
             beta_enc=0.2,
@@ -134,9 +133,6 @@ def make_boundary(sim_name):
             "c_thresh_assoc",
             "thresh_rate",
         ]
-        ub_dict.update(
-            c_thresh_assoc=2,
-        )
         
     elif sim_name == "3":
 
@@ -435,8 +431,6 @@ def make_boundary(sim_name):
             # beta_distract=0,
             # gamma_fc=0,
             # s_fc=0.2,
-            # c_thresh_itm=0,
-            # c_thresh_assoc=0,
             thresh_sigma=0,
         )
         ub_dict.update(
@@ -446,8 +440,6 @@ def make_boundary(sim_name):
             # beta_distract=0.6,
             # gamma_fc=0.4,
             # s_fc=0.8,
-            # c_thresh_itm=2,
-            # c_thresh_assoc=2,
             thresh_sigma=0.2,
         )
 
@@ -460,7 +452,7 @@ def make_boundary(sim_name):
 
 def get_wmse(y_true, y_pred, y_std):
     """
-    Calculate weighted mean squared error.
+    Calculate weighted sum squared error.
     """
 
     wls = np.sum((y_true - y_pred) ** 2 / y_std ** 2)
