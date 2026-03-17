@@ -18,3 +18,5 @@ Modeling/CMR_IA/dist
 Modeling/CMR_IA/CMR_IA.egg-info
 **/notes.md
 Modeling/X*
+**/backup/
+**/tests/
