@@ -1,10 +1,14 @@
-from distutils.core import setup
+from setuptools import Extension, setup
 from Cython.Build import cythonize
 import numpy
 
+# CMR_IA.pyx compiles to CMR_IA._core, which CMR_IA/__init__.py re-exports.
+ext = Extension(
+    "CMR_IA._core",
+    sources=["CMR_IA/_core.pyx"],
+    include_dirs=[numpy.get_include()],
+)
 
 setup(
-    name='CMR_IA',
-    ext_modules = cythonize("CMR_IA.pyx", annotate=True),
-    include_dirs=[numpy.get_include()]
+    ext_modules=cythonize([ext], annotate=True),
 )

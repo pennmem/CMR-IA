@@ -18,8 +18,8 @@ In each folder:
 - `simuX_{name}.ipynb`: the notebook for the corresponding real experiment.
 - `simuX_design.ipynb`: the notebook for generating the design of the simulation (df_study and df_test).
 - `simuX_smat.ipynb`: the notebook for generating the simulation-specific semantic association matrix (if applicable).
-- `simuX_data/`: contains the data files for the simulation (e.g., study df, test df, simulation results df), sometimes include the data from the corresponding real experiment, and sometimes include the simulation-specific semantic association matrix.
-- `simuX_fig/`: the generated figures, as in the paper.
+- `data/`: contains the data files for the simulation (e.g., study df, test df, simulation results df), sometimes include the data from the corresponding real experiment, and sometimes include the simulation-specific semantic association matrix.
+- `figures/`: the generated figures, as in the paper.
 
 For example, in `simu1_recog_recsim/`:
 - `simu1_main.ipynb`: the notebook for running Simulation 1.
@@ -27,5 +27,5 @@ For example, in `simu1_recog_recsim/`:
 - `simu1_smat.ipynb`: the notebook for generating the semantic association matrix of Simulation 1.
 - `simu1_David.ipynb`: the notebook for analyzing Experiment 1 (after running simu1_David_preprocess.ipynb).
 - `simu1_R/`: the R scripts for statistical inference in Experiment 1.
-- `simu1_data/`: contains the data files for and from the simulation, and the data from Experiment 1 (cr_preproc_data_mturk.csv).
-- `simu1_fig/`: the generated figures.
+- `data/`: contains the data files for and from the simulation, and the data from Experiment 1 (cr_preproc_data_mturk.csv).
+- `figures/`: the generated figures.

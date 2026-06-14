@@ -1,0 +1,12 @@
+{
+  "beta_enc": 0.863789,
+  "beta_cue": 0.268667,
+  "beta_rec_post": 0.952167,
+  "beta_distract": 0.365016,
+  "gamma_fc": 0.101393,
+  "s_fc": 0.106223,
+  "c_thresh_itm": 1.090328,
+  "c_thresh_assoc": 1.107648,
+  "thresh_sigma": 0.014494,
+  "c_d": 0.285156
+}

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64", "Cython>=3.0", "numpy>=1.26,<2.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CMR_IA"
+version = "0.1.0"
+requires-python = ">=3.9,<3.10"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["CMR_IA*"]

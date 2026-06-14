@@ -8,3 +8,6 @@ seaborn==0.13.2
 pingouin==0.5.4
 statsmodels==0.14.0
 tqdm==4.66.3
+pyarrow==21.0.0
+gensim==4.4.0
+jupytext==1.19.3
