@@ -21,7 +21,7 @@ import seaborn as sns
 import CMR_IA as cmr
 from CMR_IA.fitting import make_boundary, anal_perform_6b as anal_perform
 
-SAVERES = True
+SAVERES = False
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -138,6 +138,3 @@ inde_ground_truth = np.array([0.319, 0.006, 0.012, 0.663, 0.94])
 reve_ground_truth = np.array([0.293, 0.049, 0.122, 0.537, 0.96])
 err = np.sum(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.sum(np.power(reve_stats_mean - reve_ground_truth, 2)) + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
 err
-
-# %% [markdown]
-# 0.006279427648834966

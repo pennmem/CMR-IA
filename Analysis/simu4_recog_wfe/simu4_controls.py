@@ -82,7 +82,7 @@ for which in ["base", "attn", "shift"]:
     print(f"\n========== Start control experiment: {which} ==========")
 
     # Define parameters and load PSO results
-    params = cmr.load_params(f"4{which}", fixed_params={"use_new_context": True, "use_flexible_thresh": True})
+    params = cmr.load_params(f"4{which}")
 
     # Run model or load saved results
     if SAVERES:

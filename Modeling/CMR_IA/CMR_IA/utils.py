@@ -64,8 +64,8 @@ def make_params(source_coding=False):
 
     # If not using source coding, set up 2 associative scaling parameters (gamma)
     if not source_coding:
-        param_dict["gamma_fc"] = None  # Gamma FC
-        param_dict["gamma_cf"] = None  # Gamma CF
+        param_dict["gamma_fc"] = 0.  # Gamma FC (Defaults to 0)
+        param_dict["gamma_cf"] = 0.  # Gamma CF (Defaults to 0)
 
     # If using source coding, add an extra beta parameter and set up 8 associative scaling parameters
     else:

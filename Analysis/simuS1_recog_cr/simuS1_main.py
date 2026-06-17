@@ -28,8 +28,8 @@ np.set_printoptions(suppress=True)
 
 cmr.analysis.setup_notebook()
 
-SAVERES = False
 SAVEFIG = False
+SAVERES = False
 
 # %% [markdown]
 # ## Run CMR-IA

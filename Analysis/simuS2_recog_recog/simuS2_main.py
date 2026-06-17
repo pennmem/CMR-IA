@@ -24,8 +24,8 @@ from CMR_IA.fitting import make_boundary, get_wmse, anal_perform_S2
 
 cmr.analysis.setup_notebook()
 
-SAVERES = False
 SAVEFIG = False
+SAVERES = False
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix

@@ -724,27 +724,17 @@ class CMR(object):
 
         # Present cue and update the context
         is_paired_cue = np.logical_not(np.isscalar(cue_idx))
-        if self.mode == "RecogNormal":
+        if self.mode == "RecogContinuous" and self.design == "EXP1":  # special for EXP1, as we just encode the same item
+            if is_paired_cue:
+                raise NotImplementedError
+            else:
+                self.present_item(cue_idx, source=None, update_context=False, update_weights=False)
+        else:
             if is_paired_cue:
                 self.present_item(cue_idx[0], source=None, update_context=True, update_weights=False)
                 self.present_item(cue_idx[1], source=None, update_context=True, update_weights=False)
             else:
                 self.present_item(cue_idx, source=None, update_context=True, update_weights=False)
-        elif self.mode == "RecogContinuous":
-            if self.design == "EXP1":
-                if is_paired_cue:
-                    self.present_item(cue_idx[0], source=None, update_context=False, update_weights=False)
-                    self.present_item(cue_idx[1], source=None, update_context=False, update_weights=False)
-                else:
-                    self.present_item(cue_idx, source=None, update_context=False, update_weights=False)
-            elif self.design == "Hockley":
-                if is_paired_cue:
-                    self.present_item(cue_idx[0], source=None, update_context=True, update_weights=False)
-                    self.present_item(cue_idx[1], source=None, update_context=True, update_weights=False)
-                else:
-                    self.present_item(cue_idx, source=None, update_context=True, update_weights=False)
-            else:
-                raise NotImplementedError
 
         # Calculate context similarity
         csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal]).item()
@@ -1061,6 +1051,7 @@ class CMR(object):
                 #####
                 if self.phase == "pretrial":
                     self.beta = 1 if trial_idx == 0 else self.params["beta_rec_post"]
+                    self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
                     self.init_csims_flag = False
@@ -1072,6 +1063,7 @@ class CMR(object):
                 #####
                 if self.phase == "encoding":
                     self.beta = self.params["beta_enc"]
+                    self.beta_source = 0
                     for self.serial_position in range(self.pres_indexes.shape[1]):
                         pres_idx = self.pres_indexes[trial_idx, self.serial_position]  # if word-pair, give a pair
                         if np.logical_not(np.isscalar(pres_idx)) and pres_idx[1] == -1:
@@ -1084,6 +1076,7 @@ class CMR(object):
                 #####
                 if self.phase == "prerecall":
                     self.beta = self.params["beta_distract"]
+                    self.beta_source = self.params["beta_distract"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
                     do_pair = self.design == "Osth"  # do pair only for Osth's experiment
@@ -1095,6 +1088,7 @@ class CMR(object):
                 #####
                 if self.phase == "recognition":
                     self.beta = self.params["beta_cue"]
+                    self.beta_source = 0
                     for test_position in range(self.cues_indexes.shape[1]):
                         cue_idx = self.cues_indexes[trial_idx, test_position]
                         if np.logical_not(np.isscalar(cue_idx)) and cue_idx[1] == -1:
@@ -1121,11 +1115,11 @@ class CMR(object):
                 return
             if self.design == "EXP1":  # for our Exp1, start at trial 21
                 if trial_idx == 20:
-                    self.init_recent_csims(do_item=True, do_pair=False)
+                    self._init_recent_csims(do_item=True, do_pair=False)
                     self.init_csims_flag = True
             elif self.design == "Hockley":  # for Hockley's experiment, start at the first valid test probe
                 if np.all(cue_idx > 0):
-                    self.init_recent_csims(do_item=True, do_pair=True)
+                    self._init_recent_csims(do_item=True, do_pair=True)
                     self.init_csims_flag = True
             else:
                 raise NotImplementedError
@@ -1142,6 +1136,7 @@ class CMR(object):
                 #####
                 if self.phase == "pretrial":
                     self.beta = 1 if trial_idx == 0 else self.params["beta_rec_post"]
+                    self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
 
@@ -1150,6 +1145,7 @@ class CMR(object):
                 #####
                 if self.phase == "encoding":
                     self.beta = self.params["beta_enc"]
+                    self.beta_source = 0
                     self.serial_position = 0
                     pres_idx = self.pres_indexes[trial_idx, self.serial_position]
                     if np.logical_not(np.isscalar(pres_idx)) and pres_idx[1] == -1:
@@ -1162,6 +1158,7 @@ class CMR(object):
                 #####
                 if self.phase == "recognition":
                     self.beta = self.params["beta_cue"]
+                    self.beta_source = 0
                     cue_idx = self.cues_indexes[trial_idx]
                     if np.logical_not(np.isscalar(cue_idx)) and cue_idx[1] == -1:
                         cue_idx = cue_idx[0].astype(int)

@@ -48,7 +48,7 @@ sem_mat = np.load("data/simu1_smat.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("1")
+params = cmr.load_params("1", fixed_params={"beta_cue": 0.0})  # beta_cue does not matter here
 params
 
 # %%
