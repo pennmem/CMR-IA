@@ -1,0 +1,206 @@
+1159392689222	0	B	Logging Begins
+1159392696444	2	P	NOFILE	500
+1159392696952	1	RB	NOFILE
+1159392698951	1	RE	NOFILE
+1159392699003	1	P	NOFILE	1996
+1159392824601	2	P	spokennames_wav/JIM.wav	344
+1159392830634	2	P	spokennames_wav/KEN.wav	470
+1159392836653	1	P	spokennames_wav/TOM.wav	503
+1159392842679	1	P	spokennames_wav/JOE.wav	394
+1159392848711	2	P	spokennames_wav/PAUL.wav	459
+1159392854770	1	P	spokennames_wav/DAVE.wav	362
+1159392860806	1	P	spokennames_wav/BILL.wav	367
+1159392866838	2	P	spokennames_wav/RICH.wav	422
+1159392877328	2	RB	/Users/exp/nfa/data/NFA16/session_0//1.wav
+1159392925578	1	RE	/Users/exp/nfa/data/NFA16/session_0//1.wav
+1159392930753	1	P	spokennames_wav/PAUL.wav	459
+1159392936782	1	P	spokennames_wav/JOE.wav	394
+1159392942812	1	P	spokennames_wav/BILL.wav	367
+1159392948846	1	P	spokennames_wav/TOM.wav	503
+1159392954875	1	P	spokennames_wav/JIM.wav	344
+1159392960908	1	P	spokennames_wav/KEN.wav	470
+1159392966937	2	P	spokennames_wav/DAVE.wav	362
+1159392972969	1	P	spokennames_wav/RICH.wav	422
+1159392980762	1	RB	/Users/exp/nfa/data/NFA16/session_0//2.wav
+1159393029261	1	RE	/Users/exp/nfa/data/NFA16/session_0//2.wav
+1159393032950	1	P	spokennames_wav/KEN.wav	470
+1159393038979	1	P	spokennames_wav/DAVE.wav	362
+1159393045014	1	P	spokennames_wav/JOE.wav	394
+1159393051044	1	P	spokennames_wav/PAUL.wav	459
+1159393057075	2	P	spokennames_wav/RICH.wav	422
+1159393063108	2	P	spokennames_wav/TOM.wav	503
+1159393069137	1	P	spokennames_wav/BILL.wav	367
+1159393075169	1	P	spokennames_wav/JIM.wav	344
+1159393083077	1	RB	/Users/exp/nfa/data/NFA16/session_0//3.wav
+1159393131327	1	RE	/Users/exp/nfa/data/NFA16/session_0//3.wav
+1159393135017	1	P	spokennames_wav/PAUL.wav	459
+1159393141050	1	P	spokennames_wav/TOM.wav	503
+1159393147078	1	P	spokennames_wav/BILL.wav	367
+1159393153110	1	P	spokennames_wav/RICH.wav	422
+1159393159141	1	P	spokennames_wav/JOE.wav	394
+1159393165172	1	P	spokennames_wav/JIM.wav	344
+1159393171203	2	P	spokennames_wav/DAVE.wav	362
+1159393177227	1	P	spokennames_wav/KEN.wav	470
+1159393185160	1	RB	/Users/exp/nfa/data/NFA16/session_0//4.wav
+1159393233409	1	RE	/Users/exp/nfa/data/NFA16/session_0//4.wav
+1159393240214	1	P	spokennames_wav/JOE.wav	394
+1159393246245	1	P	spokennames_wav/BILL.wav	367
+1159393252278	1	P	spokennames_wav/KEN.wav	470
+1159393258310	1	P	spokennames_wav/TOM.wav	503
+1159393264339	1	P	spokennames_wav/DAVE.wav	362
+1159393270372	1	P	spokennames_wav/RICH.wav	422
+1159393276402	1	P	spokennames_wav/JIM.wav	344
+1159393282434	1	P	spokennames_wav/PAUL.wav	459
+1159393290493	1	RB	/Users/exp/nfa/data/NFA16/session_0//5.wav
+1159393338741	1	RE	/Users/exp/nfa/data/NFA16/session_0//5.wav
+1159393347428	1	P	spokennames_wav/JIM.wav	344
+1159393353461	1	P	spokennames_wav/PAUL.wav	459
+1159393359491	2	P	spokennames_wav/RICH.wav	422
+1159393365523	1	P	spokennames_wav/JOE.wav	394
+1159393371556	1	P	spokennames_wav/TOM.wav	503
+1159393377584	2	P	spokennames_wav/BILL.wav	367
+1159393383616	1	P	spokennames_wav/DAVE.wav	362
+1159393389649	1	P	spokennames_wav/KEN.wav	470
+1159393395543	1	RB	/Users/exp/nfa/data/NFA16/session_0//6.wav
+1159393443790	1	RE	/Users/exp/nfa/data/NFA16/session_0//6.wav
+1159393446248	2	P	spokennames_wav/TOM.wav	503
+1159393452278	1	P	spokennames_wav/RICH.wav	422
+1159393458309	1	P	spokennames_wav/JOE.wav	394
+1159393464339	1	P	spokennames_wav/BILL.wav	367
+1159393470370	1	P	spokennames_wav/JIM.wav	344
+1159393476402	1	P	spokennames_wav/DAVE.wav	362
+1159393482435	1	P	spokennames_wav/KEN.wav	470
+1159393488466	2	P	spokennames_wav/PAUL.wav	459
+1159393496157	1	RB	/Users/exp/nfa/data/NFA16/session_0//7.wav
+1159393544406	1	RE	/Users/exp/nfa/data/NFA16/session_0//7.wav
+1159393547213	1	P	spokennames_wav/JOE.wav	394
+1159393553246	1	P	spokennames_wav/TOM.wav	503
+1159393559276	1	P	spokennames_wav/PAUL.wav	459
+1159393565308	1	P	spokennames_wav/KEN.wav	470
+1159393571337	1	P	spokennames_wav/DAVE.wav	362
+1159393577368	1	P	spokennames_wav/JIM.wav	344
+1159393583401	1	P	spokennames_wav/RICH.wav	422
+1159393589431	1	P	spokennames_wav/BILL.wav	367
+1159393595691	1	RB	/Users/exp/nfa/data/NFA16/session_0//8.wav
+1159393643939	1	RE	/Users/exp/nfa/data/NFA16/session_0//8.wav
+1159393646596	1	P	spokennames_wav/JOE.wav	394
+1159393652629	1	P	spokennames_wav/PAUL.wav	459
+1159393658661	1	P	spokennames_wav/TOM.wav	503
+1159393664691	2	P	spokennames_wav/KEN.wav	470
+1159393670722	1	P	spokennames_wav/RICH.wav	422
+1159393676752	1	P	spokennames_wav/JIM.wav	344
+1159393682784	1	P	spokennames_wav/BILL.wav	367
+1159393688815	1	P	spokennames_wav/DAVE.wav	362
+1159393695474	1	RB	/Users/exp/nfa/data/NFA16/session_0//9.wav
+1159393743724	1	RE	/Users/exp/nfa/data/NFA16/session_0//9.wav
+1159393746379	1	P	spokennames_wav/BILL.wav	367
+1159393752412	1	P	spokennames_wav/RICH.wav	422
+1159393758442	1	P	spokennames_wav/DAVE.wav	362
+1159393764473	2	P	spokennames_wav/JOE.wav	394
+1159393770506	2	P	spokennames_wav/PAUL.wav	459
+1159393776535	1	P	spokennames_wav/JIM.wav	344
+1159393782569	2	P	spokennames_wav/KEN.wav	470
+1159393788602	1	P	spokennames_wav/TOM.wav	503
+1159393795108	1	RB	/Users/exp/nfa/data/NFA16/session_0//10.wav
+1159393843357	1	RE	/Users/exp/nfa/data/NFA16/session_0//10.wav
+1159393942948	1	P	spokennames_wav/JOHN.wav	454
+1159393948985	1	P	spokennames_wav/CHARLES.wav	741
+1159393955031	1	P	spokennames_wav/GEORGE.wav	606
+1159393961058	1	P	spokennames_wav/ROB.wav	389
+1159393967093	1	P	spokennames_wav/CHRIS.wav	530
+1159393973123	1	P	spokennames_wav/MARK.wav	486
+1159393979154	1	P	spokennames_wav/DAN.wav	454
+1159393985185	2	P	spokennames_wav/MIKE.wav	476
+1159393991542	1	RB	/Users/exp/nfa/data/NFA16/session_0//11.wav
+1159394039875	1	RE	/Users/exp/nfa/data/NFA16/session_0//11.wav
+1159394042534	1	P	spokennames_wav/CHRIS.wav	530
+1159394048564	1	P	spokennames_wav/MIKE.wav	476
+1159394054595	1	P	spokennames_wav/MARK.wav	486
+1159394060626	1	P	spokennames_wav/DAN.wav	454
+1159394066658	1	P	spokennames_wav/JOHN.wav	454
+1159394072695	1	P	spokennames_wav/CHARLES.wav	741
+1159394078740	1	P	spokennames_wav/GEORGE.wav	606
+1159394084767	1	P	spokennames_wav/ROB.wav	389
+1159394090776	1	RB	/Users/exp/nfa/data/NFA16/session_0//12.wav
+1159394139076	1	RE	/Users/exp/nfa/data/NFA16/session_0//12.wav
+1159394142665	1	P	spokennames_wav/ROB.wav	389
+1159394148698	1	P	spokennames_wav/JOHN.wav	454
+1159394154729	1	P	spokennames_wav/DAN.wav	454
+1159394160760	1	P	spokennames_wav/MARK.wav	486
+1159394166795	1	P	spokennames_wav/GEORGE.wav	606
+1159394172824	1	P	spokennames_wav/CHRIS.wav	530
+1159394178854	1	P	spokennames_wav/MIKE.wav	476
+1159394184891	1	P	spokennames_wav/CHARLES.wav	741
+1159394191127	1	RB	/Users/exp/nfa/data/NFA16/session_0//13.wav
+1159394239426	1	RE	/Users/exp/nfa/data/NFA16/session_0//13.wav
+1159394242566	1	P	spokennames_wav/DAN.wav	454
+1159394248596	1	P	spokennames_wav/ROB.wav	389
+1159394254629	1	P	spokennames_wav/MIKE.wav	476
+1159394260662	1	P	spokennames_wav/CHRIS.wav	530
+1159394266691	1	P	spokennames_wav/MARK.wav	486
+1159394272726	1	P	spokennames_wav/GEORGE.wav	606
+1159394278760	1	P	spokennames_wav/CHARLES.wav	741
+1159394284802	1	P	spokennames_wav/JOHN.wav	454
+1159394291226	1	RB	/Users/exp/nfa/data/NFA16/session_0//14.wav
+1159394339476	1	RE	/Users/exp/nfa/data/NFA16/session_0//14.wav
+1159394342132	1	P	spokennames_wav/ROB.wav	389
+1159394348172	1	P	spokennames_wav/CHARLES.wav	741
+1159394354213	1	P	spokennames_wav/MIKE.wav	476
+1159394360245	1	P	spokennames_wav/CHRIS.wav	530
+1159394366275	1	P	spokennames_wav/DAN.wav	454
+1159394372310	1	P	spokennames_wav/GEORGE.wav	606
+1159394378338	1	P	spokennames_wav/MARK.wav	486
+1159394384369	1	P	spokennames_wav/JOHN.wav	454
+1159394390160	1	RB	/Users/exp/nfa/data/NFA16/session_0//15.wav
+1159394438410	1	RE	/Users/exp/nfa/data/NFA16/session_0//15.wav
+1159394440566	1	P	spokennames_wav/ROB.wav	389
+1159394446602	1	P	spokennames_wav/GEORGE.wav	606
+1159394452630	1	P	spokennames_wav/JOHN.wav	454
+1159394458667	1	P	spokennames_wav/CHARLES.wav	741
+1159394464710	1	P	spokennames_wav/MIKE.wav	476
+1159394470742	1	P	spokennames_wav/CHRIS.wav	530
+1159394476772	1	P	spokennames_wav/DAN.wav	454
+1159394482804	1	P	spokennames_wav/MARK.wav	486
+1159394489501	1	RB	/Users/exp/nfa/data/NFA16/session_0//16.wav
+1159394537727	1	RE	/Users/exp/nfa/data/NFA16/session_0//16.wav
+1159394541237	1	P	spokennames_wav/GEORGE.wav	606
+1159394547265	1	P	spokennames_wav/MIKE.wav	476
+1159394553302	1	P	spokennames_wav/CHARLES.wav	741
+1159394559343	1	P	spokennames_wav/ROB.wav	389
+1159394565376	1	P	spokennames_wav/JOHN.wav	454
+1159394571407	1	P	spokennames_wav/MARK.wav	486
+1159394577438	2	P	spokennames_wav/DAN.wav	454
+1159394583472	1	P	spokennames_wav/CHRIS.wav	530
+1159394595176	1	RB	/Users/exp/nfa/data/NFA16/session_0//17.wav
+1159394643408	1	RE	/Users/exp/nfa/data/NFA16/session_0//17.wav
+1159394645615	1	P	spokennames_wav/JOHN.wav	454
+1159394651646	1	P	spokennames_wav/ROB.wav	389
+1159394657679	1	P	spokennames_wav/DAN.wav	454
+1159394663710	1	P	spokennames_wav/MIKE.wav	476
+1159394669742	1	P	spokennames_wav/MARK.wav	486
+1159394675778	1	P	spokennames_wav/CHARLES.wav	741
+1159394681823	1	P	spokennames_wav/GEORGE.wav	606
+1159394687854	1	P	spokennames_wav/CHRIS.wav	530
+1159394694159	1	RB	/Users/exp/nfa/data/NFA16/session_0//18.wav
+1159394742409	1	RE	/Users/exp/nfa/data/NFA16/session_0//18.wav
+1159394745566	1	P	spokennames_wav/DAN.wav	454
+1159394751598	1	P	spokennames_wav/MARK.wav	486
+1159394757629	1	P	spokennames_wav/JOHN.wav	454
+1159394763662	1	P	spokennames_wav/CHRIS.wav	530
+1159394769690	2	P	spokennames_wav/ROB.wav	389
+1159394775728	1	P	spokennames_wav/CHARLES.wav	741
+1159394781771	1	P	spokennames_wav/MIKE.wav	476
+1159394787805	1	P	spokennames_wav/GEORGE.wav	606
+1159394794726	1	RB	/Users/exp/nfa/data/NFA16/session_0//19.wav
+1159394842958	1	RE	/Users/exp/nfa/data/NFA16/session_0//19.wav
+1159394845719	1	P	spokennames_wav/GEORGE.wav	606
+1159394851746	1	P	spokennames_wav/ROB.wav	389
+1159394857779	1	P	spokennames_wav/MIKE.wav	476
+1159394863812	1	P	spokennames_wav/CHRIS.wav	530
+1159394869841	2	P	spokennames_wav/JOHN.wav	454
+1159394875878	1	P	spokennames_wav/CHARLES.wav	741
+1159394881920	2	P	spokennames_wav/DAN.wav	454
+1159394887953	1	P	spokennames_wav/MARK.wav	486
+1159394893843	1	RB	/Users/exp/nfa/data/NFA16/session_0//20.wav
+1159394942093	1	RE	/Users/exp/nfa/data/NFA16/session_0//20.wav
+1159394981275	0	E	Logging Ends

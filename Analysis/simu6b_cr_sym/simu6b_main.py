@@ -15,6 +15,7 @@
 
 # %% metadata={}
 import numpy as np
+import json
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -134,7 +135,9 @@ np.mean(reve_stats, axis=0).round(3)
 # Compute error against ground truth
 inde_stats_mean = np.mean(inde_stats, axis=0)
 reve_stats_mean = np.mean(reve_stats, axis=0)
-inde_ground_truth = np.array([0.319, 0.006, 0.012, 0.663, 0.94])
-reve_ground_truth = np.array([0.293, 0.049, 0.122, 0.537, 0.96])
+with open("data/simu6b_gt.json") as f:
+    gt = json.load(f)
+inde_ground_truth = np.array(gt["inde"])
+reve_ground_truth = np.array(gt["reve"])
 err = np.sum(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.sum(np.power(reve_stats_mean - reve_ground_truth, 2)) + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
 err

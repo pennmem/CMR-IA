@@ -1,0 +1,43 @@
+1165939684512	0	B	Logging Begins
+1165939684512	0	INSTRUCTIONSTART	JointRoller	/Library/Frameworks/Python.framework/Versions/2.4/lib/python2.4/site-packages/pyepl/resources/vera.ttf	51	(0, 0, 0)	'This study will analyze your memory for face items. A star (*) will be\nshown to warn you that the trial is about to begin.  After the study\nitem you see a probe, and you are asked to indicate whether the probe\nis identical to the study item. \n\nYou will respond on the keyboard, with a confidence judgment between 1\nand 6.  A judgment of 6 indicates that you are near certain that the\nprobe is identical to the study item, a judgment of 5 indicates moderate \nconfidence, and a judgment of 4 indicates that you think that the probe\nis identical, but are quite unsure.  A judgment of 1 indicates that you\nare near certain that the probe is NOT identical to the study item, a \njudgment of 2 indicates moderate confidence, and a judgment of 3 indicates\nthat you think that the probe is NOT identical, but are quite unsure.\n\nSo, judgments of 4, 5, and 6 all indicate "YES"; 1, 2, and 3 all indicate\n"NO".\n\nYou should rest your fingers on the bottom row of the keyboard.  "Z", "X", \nand "C" will correspond to confidence judgments of 1, 2, and 3, \nrespectively.  "," "." and "/" will correspond to judgments of 4, 5, and \n6, respectively.\n\nRESPOND AS QUICKLY AS YOU CAN WITHOUT COMPROMISING YOUR ACCURACY.\n\nYou will do two blocks, each consisting of 32 trials.\n\nLet\'s proceed!\n\n'
+1165939684569	1	INSTRUCTIONSCROLL	0
+1165939707907	1	INSTRUCTIONSCROLL	4
+1165939707925	1	INSTRUCTIONSCROLL	6
+1165939707942	1	INSTRUCTIONSCROLL	10
+1165939707959	1	INSTRUCTIONSCROLL	13
+1165939707975	1	INSTRUCTIONSCROLL	16
+1165939707992	1	INSTRUCTIONSCROLL	20
+1165939708009	1	INSTRUCTIONSCROLL	23
+1165939708025	1	INSTRUCTIONSCROLL	26
+1165939708042	1	INSTRUCTIONSCROLL	29
+1165939708059	1	INSTRUCTIONSCROLL	33
+1165939708075	1	INSTRUCTIONSCROLL	36
+1165939708092	1	INSTRUCTIONSCROLL	40
+1165939708108	1	INSTRUCTIONSCROLL	43
+1165939708125	1	INSTRUCTIONSCROLL	46
+1165939708142	1	INSTRUCTIONSCROLL	49
+1165939708158	1	INSTRUCTIONSCROLL	53
+1165939708175	1	INSTRUCTIONSCROLL	56
+1165939708192	1	INSTRUCTIONSCROLL	59
+1165939708208	1	INSTRUCTIONSCROLL	63
+1165939708225	1	INSTRUCTIONSCROLL	66
+1165939708242	1	INSTRUCTIONSCROLL	69
+1165939708258	1	INSTRUCTIONSCROLL	73
+1165939708275	1	INSTRUCTIONSCROLL	76
+1165939708292	1	INSTRUCTIONSCROLL	79
+1165939708308	1	INSTRUCTIONSCROLL	83
+1165939708325	1	INSTRUCTIONSCROLL	86
+1165939708342	1	INSTRUCTIONSCROLL	90
+1165939708358	1	INSTRUCTIONSCROLL	93
+1165939708375	1	INSTRUCTIONSCROLL	96
+1165939708392	1	INSTRUCTIONSCROLL	100
+1165939708408	1	INSTRUCTIONSCROLL	103
+1165939708425	1	INSTRUCTIONSCROLL	106
+1165939708442	1	INSTRUCTIONSCROLL	109
+1165939708458	1	INSTRUCTIONSCROLL	113
+1165939708475	1	INSTRUCTIONSCROLL	116
+1165939708492	1	INSTRUCTIONSCROLL	120
+1165939709902	1	INSTRUCTIONSCROLL	888
+1165939711324	1	INSTRUCTIONSCROLL	1467
+1165939735266	1	INSTRUCTIONSTOP	Button set (OR)
+1165939735267	0	E	Logging Ends

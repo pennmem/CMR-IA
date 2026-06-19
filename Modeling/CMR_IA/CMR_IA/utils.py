@@ -52,7 +52,7 @@ def make_params(source_coding=False):
         "alpha": None,
         "lamb": None,
         "c_thresh": None,
-        "ban_recall": None,  # List of items that should not be recalled [CMR-IA]
+        "ban_recall": None,  # List of item ID numbers (as in pres_mat) that should not be recalled [CMR-IA]
         
         # Timing & recall settings
         "rec_time_limit": 60000.,  # Duration of recall period (in ms) (Defaults to 60000)

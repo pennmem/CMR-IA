@@ -969,8 +969,10 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         # Score the model's behavioral stats as compared with the true data
         inde_stats_mean = np.mean(inde_stats, axis=0)
         reve_stats_mean = np.mean(reve_stats, axis=0)
-        inde_ground_truth = np.array([0.319, 0.006, 0.012, 0.663, 0.94])
-        reve_ground_truth = np.array([0.293, 0.049, 0.122, 0.537, 0.96])
+        with open("../../Analysis/simu6b_cr_sym/data/simu6b_gt.json") as f:
+            _gt = json.load(f)
+        inde_ground_truth = np.array(_gt["inde"])
+        reve_ground_truth = np.array(_gt["reve"])
         err = np.sum(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.sum(np.power(reve_stats_mean - reve_ground_truth, 2)) \
             + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
         cmr_stats = {"err": err, "params": param_vec, "stats": [inde_stats_mean, reve_stats_mean]}
@@ -1118,7 +1120,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
     elif simu_name == "8":
 
         # Run model
-        param_dict.update(nitems_in_accumulator=16, ban_recall=np.arange(0, 8))
+        param_dict.update(nitems_in_accumulator=16, ban_recall=np.arange(1, 17))
         df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
         df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
         df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
@@ -1241,13 +1243,9 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Score the model's behavioral stats as compared with the true data
         stats = np.array(stats)
-        ground_truth = np.array(
-            [
-                [0.19, 0.67, 0.15, 0.57],
-                [0.30, 0.80, 0.12, 0.71],
-                [0.42, 0.72, 0.22, 0.81],
-            ]
-        )
+        with open("../../Analysis/simuS1_recog_cr/data/simuS1_gt.json") as f:
+            _gt = json.load(f)
+        ground_truth = np.array([_gt["g1_mean"], _gt["g2_mean"], _gt["g3_mean"]])
         err = np.sum(np.power(stats - ground_truth, 2))
         
         # Apply some constraints that pair FAR should not be 0
@@ -1305,17 +1303,10 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Score the model's behavioral stats as compared with the true data
         stats_mean = np.nanmean(stats, axis=0)
-        ground_truth = np.array(
-            [
-                [0.82, 0.68, 0.26],
-                [0.82, 0.85, 0.64],
-                [0.91, 0.85, 0.59],
-                [0.81, 0.82, 0.86],
-                [0.90, 0.92, 0.94],
-                [0.07, 0.15, 0.54],
-                [0.07, 0.06, 0],
-            ]
-        )
+        with open("../../Analysis/simuS2_recog_recog/data/simuS2_gt.json") as f:
+            _gt = json.load(f)
+        _conds = ["diff_item", "item_pair", "pair_item", "same_item", "intact_pair", "rep_lure", "nrep_lure"]
+        ground_truth = np.array([_gt[f"{c}_mean"] for c in _conds])
         err = np.sum(np.power(stats_mean - ground_truth, 2))
         cmr_stats = {"err": err, "params": param_vec, "stats": stats_mean}
 

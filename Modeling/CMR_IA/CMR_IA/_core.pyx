@@ -305,9 +305,12 @@ class CMR(object):
         self.ret_thresh = np.ones(self.nitems_unique, dtype=np.float32)
 
         # Items that should not be recalled (necessary for simu8) [CMR-IA]
-        if self.params["ban_recall"] is not None: 
-            no_recall_items = self.params["ban_recall"]
-            self.ret_thresh[no_recall_items] = np.inf
+        if self.params["ban_recall"] is not None:
+            ban_itemnos = np.atleast_1d(self.params["ban_recall"])
+            self.ban_recall_idx = np.nonzero(np.isin(self.all_nos_unique, ban_itemnos))[0]
+            self.ret_thresh[self.ban_recall_idx] = np.inf
+        else:
+            self.ban_recall_idx = None
 
         # Number of items in accumulator
         self.nitems_in_race = self.params["nitems_in_accumulator"]
@@ -359,7 +362,11 @@ class CMR(object):
         
         # Set up elevated-attention scaling vector for all itemno
         self.att_vec = self.params["psi_s"] * self.sem_mean + self.params["psi_c"]
-        self.att_vec[self.att_vec > 1 / self.params["gamma_fc"]] = 1 / self.params["gamma_fc"]
+        if self.nsources == 0:
+            att_ceil = 1 / self.params["gamma_fc"]
+        else:
+            att_ceil = 1 / self.params["L_FC_tftc"]
+        self.att_vec[self.att_vec > att_ceil] = att_ceil
         self.att_vec[self.att_vec < 0] = 0
 
         # Set up c_thresh vector for all itemno, allowing criterion shifting for different items
@@ -423,13 +430,12 @@ class CMR(object):
         #
         ##########
 
-        assert np.any(item_idx >= 0), "Item index must be greater than or equal to 0."
+        assert np.all(item_idx >= 0), "Item index must be greater than or equal to 0."
         paired_pres = np.logical_not(np.isscalar(item_idx))
 
         # Activate the presented item itself
         self.f.fill(0)
-        if item_idx is not None:
-            self.f[item_idx] = 1
+        self.f[item_idx] = 1
 
         # Activate the source feature(s) of the presented item
         if self.nsources > 0 and source is not None:
@@ -798,8 +804,8 @@ class CMR(object):
 
         # Identify set of items with the highest activation
         top_items = np.argsort(f_in)[self.nitems_unique - self.nitems_in_race:]  # returns the original index of the sorted order
-        if self.params["ban_recall"] is not None:
-            top_items = [x for x in top_items if x not in self.params["ban_recall"]]
+        if self.ban_recall_idx is not None:
+            top_items = [x for x in top_items if x not in self.ban_recall_idx]
         top_activation = f_in[top_items]
         top_activation[top_activation < 0] = 0
 
@@ -988,7 +994,7 @@ class CMR(object):
         self.phase = "encoding"
         for self.serial_position in range(self.pres_indexes.shape[1]):
             # Skip over any zero-padding in the presentation matrix in order to allow variable list length
-            if not self.pres_nonzero_mask[self.trial_idx, self.serial_position].all:
+            if not self.pres_nonzero_mask[self.trial_idx, self.serial_position].all():
                 continue
             pres_idx = self.pres_indexes[self.trial_idx, self.serial_position]
             source = self.sources[self.trial_idx, self.serial_position] if self.nsources > 0 else None

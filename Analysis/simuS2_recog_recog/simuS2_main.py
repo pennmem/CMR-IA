@@ -15,6 +15,7 @@
 
 # %%
 import numpy as np
+import json
 import pandas as pd
 import CMR_IA as cmr
 import scipy as sp
@@ -162,29 +163,12 @@ stats_se.round(3)
 # ### Err Check
 
 # %%
-# Define ground truth and compute error
-ground_truth = np.array(
-    [
-        [0.82, 0.68, 0.26],  # diff item
-        [0.82, 0.85, 0.64],  # item/pair
-        [0.91, 0.85, 0.59],  # pair/item
-        [0.81, 0.82, 0.86],  # same item
-        [0.90, 0.92, 0.94],  # intact pair
-        [0.07, 0.15, 0.54],  # repeated lure
-        [0.07, 0.06, 0],  # non-repeated lure
-    ]
-)
-ground_truth_se = np.array(
-    [
-        [0.020, 0.030, 0.10],  # diff item
-        [0.016, 0.020, 0.12],  # item/pair
-        [0.018, 0.021, 0.10],  # pair/item
-        [0.017, 0.017, 0.03],  # same item
-        [0.022, 0.019, 0.02],  # intact pair
-        [0.014, 0.018, 0.12],  # repeated lure
-        [0.009, 0.009, -1],  # non-repeated lure
-    ]
-)
+# Load ground truth and compute error
+with open("data/simuS2_gt.json") as f:
+    gt = json.load(f)
+conds = ["diff_item", "item_pair", "pair_item", "same_item", "intact_pair", "rep_lure", "nrep_lure"]
+ground_truth = np.array([gt[f"{c}_mean"] for c in conds])
+ground_truth_se = np.array([gt[f"{c}_se"] for c in conds])
 err = np.sum(np.power(stats_mean - ground_truth, 2))
 err
 

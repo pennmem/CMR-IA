@@ -15,6 +15,7 @@
 
 # %%
 import numpy as np
+import json
 import pickle
 import pandas as pd
 import CMR_IA as cmr
@@ -303,21 +304,11 @@ stats_se
 # ## Err Check
 
 # %%
-# Define ground truth and compute error
-ground_truth = np.array(
-    [
-        [0.19, 0.67, 0.15, 0.57],
-        [0.30, 0.80, 0.12, 0.71],
-        [0.42, 0.72, 0.22, 0.81],
-    ]
-)  # p_rc, hr, far, q
-ground_truth_se = np.array(
-    [
-        [0.01, 0.02, 0.02, 0.05],
-        [0.03, 0.02, 0.01, 0.04],
-        [0.04, 0.03, 0.02, 0.02],
-    ]
-)
+# Load ground truth and compute error
+with open("data/simuS1_gt.json") as f:
+    gt = json.load(f)
+ground_truth = np.array([gt["g1_mean"], gt["g2_mean"], gt["g3_mean"]])  # p_rc, hr, far, q
+ground_truth_se = np.array([gt["g1_se"], gt["g2_se"], gt["g3_se"]])
 
 # %%
 # Compute MSE error

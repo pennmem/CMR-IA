@@ -36,8 +36,8 @@ SAVEDATA = False
 
 # %%
 # Set data paths and constants
-study_path = "data/simu7_study/"
-test_path = "data/simu7_test/"
+study_path = "data/original_study/"
+test_path = "data/original_test/"
 files = os.listdir(study_path)  # same name in test path
 nitems = 24
 npairs = 12

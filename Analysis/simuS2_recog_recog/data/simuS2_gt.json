@@ -1,0 +1,16 @@
+{
+    "diff_item_mean": [0.82, 0.68, 0.26],
+    "diff_item_se": [0.020, 0.030, 0.10],
+    "item_pair_mean": [0.82, 0.85, 0.64],
+    "item_pair_se": [0.016, 0.020, 0.12],
+    "pair_item_mean": [0.91, 0.85, 0.59],
+    "pair_item_se": [0.018, 0.021, 0.10],
+    "same_item_mean": [0.81, 0.82, 0.86],
+    "same_item_se": [0.017, 0.017, 0.03],
+    "intact_pair_mean": [0.90, 0.92, 0.94],
+    "intact_pair_se": [0.022, 0.019, 0.02],
+    "rep_lure_mean": [0.07, 0.15, 0.54],
+    "rep_lure_se": [0.014, 0.018, 0.12],
+    "nrep_lure_mean": [0.07, 0.06, 0],
+    "nrep_lure_se": [0.009, 0.009, -1]
+}
