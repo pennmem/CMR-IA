@@ -103,7 +103,7 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
     maxiter : int
         Maximum number of iterations (Default: 100)
     algorithm : string
-        PSO variant: 'pso', 'pso2', 'sapso', 'dpso', 'cpso', 'npso', 'apso6', 'awl'
+        PSO variant: 'pso', 'pso2', 'sapso', 'dpso', 'cpso', 'apso6'
     optfile : string or None
         Path to file with a previous run's best parameters to warm-start from.
     outdir : string
@@ -121,19 +121,30 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
     assert len(lb) == len(ub), 'Lower- and upper-bounds must be the same length'
     assert hasattr(func, '__call__'), 'Invalid function handle'
 
+    ##########
+    #
+    # Initialization
+    #
+    ##########
+
     lb = np.array(lb)
     ub = np.array(ub)
     unused_dim = ub == lb
     algorithm = algorithm.lower()
-    S = swarmsize
-    D = len(lb)
+    S = swarmsize  # Number of particles
+    D = len(lb)  # Number of dimensions
 
+    # Initialize global best and worst fitness values such that any new value will replace them
     fgb = np.inf
     fgw = -np.inf
+
+    # Initialize particle best and worst fitness values such that any new value will replace them
     fpb = np.full(S, np.inf)
     fpw = np.full(S, -np.inf)
-    pb = np.full((S, D), np.nan)
-    pw = np.full((S, D), np.nan)
+
+    # Initialize best and worst particle positions to NaN
+    pb = np.full((S, D), np.nan)  # Best known position of each particle
+    pw = np.full((S, D), np.nan)  # Worst known position of each particle
 
     if isinstance(optfile, str) and os.path.exists(optfile):
         old_best = np.loadtxt(optfile)
@@ -142,67 +153,103 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
         print('Loaded best known parameter location from file:', gb)
         print('Best known parameter RMSD:', fgb)
 
+    # Define maximum positive and negative velocities for each dimension
     vhigh = (ub - lb) * R
     vlow = -1 * vhigh
 
+    # os.O_CREAT --> create file if it does not exist
+    # os.O_EXCL --> error if create and file exists
+    # os.O_WRONLY --> open for writing only
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
 
+    ##########
+    #
+    # PSO
+    #
+    ##########
+
+    # Run PSO for maxiter iterations
     for it in range(1, maxiter + 1):
         print('Starting PSO iteration %s...' % it)
 
+        ##########
+        #
         # Update particle positions & velocities
+        #
+        ##########
+
+        # If it is the first iteration, load initial particle positions and initialize velocities to zero
         if it == 1:
             print('Initializing particle locations and velocities...')
             x = np.loadtxt(noise_dir + 'rx')
             v = np.zeros((S, D))
 
+        # If it is any iteration beyond the first, update particle positions and velocities
         else:
             print('Updating particle locations and velocities...')
 
+            # Read in the noise files for this iteration
             r1 = np.loadtxt(noise_dir + 'r1_iter' + str(it))
             r2 = np.loadtxt(noise_dir + 'r2_iter' + str(it))
             r3 = np.loadtxt(noise_dir + 'r3_iter' + str(it))
             r4 = np.loadtxt(noise_dir + 'r4_iter' + str(it))
 
+            # Read in the position, best/worst location, & velocity files from previous iteration.
+            # If the number of values in the file does not match the number of particles, it means
+            # another job is in the process of writing that file. Wait for it to finish and then
+            # try again after a couple seconds.
             while True:
                 try:
                     x = np.loadtxt(outdir + str(it - 1) + 'xfile.txt')
                     v = np.loadtxt(outdir + str(it - 1) + 'vfile.txt')
                     pb = np.loadtxt(outdir + str(it - 1) + 'pfile.txt')
                     pw = np.loadtxt(outdir + str(it - 1) + 'pwfile.txt')
-                except ValueError:
+                except ValueError:  # May throw a ValueError if it tries to read one of these files before it is fully written
                     continue
                 if (len(x) == S) and (len(v) == S) and (len(pb) == S) and (len(pw) == S):
                     break
                 else:
                     time.sleep(2)
 
+            fx = np.loadtxt(outdir + 'err_iter' + str(it - 1))
+
+            # Update particle positions based on positions, velocities, and scores from last iteration
+
+            # Basic PSO (Shi & Eberhart, 1998)
             if algorithm == 'pso':
+                # Linearly decrease inertia over iterations and update velocities
                 omega = omega_max - (omega_max - omega_min) * (it - 1) / (maxiter - 1)
                 t1 = c1 * r1 * (pb - x)
                 for i in range(S):
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega * v[i, :] + t1[i, :] + t2
 
+            # Particle swarm with constriction (Eberhart & Shi, 2000; Clerc & Kennedy, 2002)
             elif algorithm == 'pso2':
                 t1 = c1 * r1 * (pb - x)
                 for i in range(S):
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega_max * (v[i, :] + t1[i, :] + t2)
 
+            # Self-Adaptive PSO (Wu & Zhou, 2007)
             elif algorithm == 'sapso':
                 t1 = c1 * r1 * (pb - x)
                 for i in range(S):
-                    rd = (fx[i] - gb) / fx[i]
+                    # Calculate relational distance of current particle to best location
+                    rd = (fx[i] - fgb) / fx[i]
+                    # Set inertia and social acceleration based on relational distance
                     omega = (omega_max - omega_min) * (1 - np.cos(.5 * np.pi * rd)) + omega_min
                     c2 = (c2_max - c2_min) * (1 - np.cos(.5 * np.pi * rd)) + c2_min
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega * v[i, :] + t1[i, :] + t2
 
+            # Dispersed PSO (Cai, Cui, Zeng, & Tan, 2008)
             elif algorithm == 'dpso':
+                # Linearly decrease inertia over iterations
                 omega = omega_max - (omega_max - omega_min) * (it - 1) / (maxiter - 1)
                 t1 = c1 * r1 * (pb - x)
                 for i in range(S):
+                    # Set social acceleration based on current particle's performance relative to others
                     if it == 2:
                         c2 = c2_min
                     else:
@@ -210,11 +257,14 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                         c2 = c2_min + (c2_max - c2_min) * grade
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega * v[i, :] + t1[i, :] + t2
+                    # On average, mutate one dimension of one particle per iteration
                     for dim in range(D):
                         if r3[i, dim] < 1. / (S * D):
                             v[i, dim] = vlow[dim] + r4[i, dim] * (vhigh[dim] - vlow[dim])
 
+            # Chaotic PSO (Chaunwen & Bompard, 2005)
             elif algorithm == 'cpso':
+                # Shift inertia on every trial
                 if it == 2:
                     omega = r3
                 else:
@@ -224,57 +274,53 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega[i, :] * v[i, :] + t1[i, :] + t2
 
-            elif algorithm == 'npso':
-                omega = omega_max - (omega_max - omega_min) * (it - 1) / (maxiter - 1)
-                t1 = c1 * r1 * (pb - x)
-                t3 = c3 * r3 * (x - pw)
-                for i in range(S):
-                    t2 = c2 * r2[i, :] * (gb - x[i, :])
-                    t4 = c4 * r4[i, :] * (x[i, :] - gw)
-                    v[i, :] = omega * v[i, :] + t1[i, :] + t2 + t3[i, :] + t4
-
+            # Adaptive PSO-VI (Xu, 2013)
             elif algorithm == 'apso6':
                 if it == 2:
                     omega = omega_max
+                # Get average absolute velocity normalized by parameter ranges (ignore flat dimensions)
                 avg_v = np.mean(np.mean(np.abs(v), axis=0)[~unused_dim] / (ub - lb)[~unused_dim])
+                # Calculate optimal velocity for current iteration
                 opt_v = .5 * (1 + np.cos(np.pi * (it - 1) / (.95 * maxiter))) / 2
+                # Adjust inertia to approach optimal velocity
                 omega = max(omega - d_omega, omega_min) if avg_v >= opt_v else min(omega + d_omega, omega_max)
                 t1 = c1 * r1 * (pb - x)
                 for i in range(S):
                     t2 = c2 * r2[i, :] * (gb - x[i, :])
                     v[i, :] = omega * v[i, :] + t1[i, :] + t2
 
-            elif algorithm == 'awl':
-                omega = omega_max - (omega_max - omega_min) * (it - 1) / (maxiter - 1)
-                t1 = c1 * r1 * (pb - x)
-                t3 = c3 * r3 * t1 / (1 + np.abs(x - pw))
-                for i in range(S):
-                    t2 = c2 * r2[i, :] * (gb - x[i, :])
-                    t4 = c4 * r4[i, :] * t2 / (1 + np.abs(x[i, :] - gw))
-                    v[i, :] = omega * (v[i, :] + t1[i, :] + t2 + t3[i, :] + t4)
-
             else:
                 raise ValueError('Unrecognized PSO algorithm "%s" -- see docstring '
                                  'for list of supported algorithms.' % algorithm)
 
+            # Keep velocity within the bounds of [vlow, vhigh]
             for i in range(S):
                 mask1 = v[i, :] < vlow
                 mask2 = v[i, :] > vhigh
                 v[i, mask1] = vlow[mask1]
                 v[i, mask2] = vhigh[mask2]
 
+            # Update all particles' positions
             x += v
 
+            # If hard search bounds are enforced, keep the particles within bounds
             if hard_bounds:
                 for i in range(S):
                     mask1 = x[i, :] < lb
                     mask2 = x[i, :] > ub
                     x[i, mask1] = lb[mask1]
                     x[i, mask2] = ub[mask2]
+                    # If a particle runs into the wall, set its velocity in that dimension to 0
                     v[i, mask1] = 0
                     v[i, mask2] = 0
 
+        ##########
+        #
         # Test model for each particle
+        #
+        ##########
+
+        # If the error file for this iteration already exists, load error values from that
         if os.path.exists(outdir + 'err_iter' + str(it)):
             while True:
                 fx = np.loadtxt(outdir + 'err_iter' + str(it))
@@ -284,10 +330,12 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     time.sleep(2)
 
         else:
+            # For each particle, test the model with parameters corresponding to that particle's location
             for i in range(S):
                 oob = np.any((x[i, :] < lb) | (x[i, :] > ub))
                 match_file = outdir + str(it) + 'tempfile' + str(i) + '.txt'
                 try:
+                    # Try to open the tempfile; if it already exists, skip to the next particle
                     fd = os.open(match_file, flags)
 
                     if not oob:
@@ -313,6 +361,7 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     else:
                         raise
 
+            # Wait until all parallel jobs have finished running the models for the current iteration
             while True:
                 for i in range(S):
                     path = outdir + '%stempfile%s.txt' % (it, i)
@@ -322,37 +371,55 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     break
                 time.sleep(2)
 
+            # Load the error values for this iteration from all tempfiles
             fx = np.zeros(S)
             for i in range(S):
                 fx[i] = np.loadtxt(outdir + '%stempfile%s.txt' % (it, i))
 
+        ##########
+        #
         # Search for new best/worst scores
+        #
+        ##########
+
+        # Check whether any new best and worst positions have been found
         print('Checking for new best/worst particle positions...')
         for i in range(S):
+
+            # Skip particles that were out of bounds, and therefore were not scored
             if np.isnan(fx[i]):
                 continue
 
+            # Check whether the particle's current position is better than its previous best location
             if fx[i] < fpb[i]:
                 print('New best location for particle %s!' % i)
                 pb[i, :] = x[i, :].copy()
                 fpb[i] = fx[i]
 
+                # Check whether the particle's current position is better than the previous global best
                 if fx[i] < fgb:
                     print('Particle %s found a new best global location!' % i)
                     gb = x[i, :].copy()
                     fgb = fx[i]
 
+            # Check whether the particle's current position is worse than its previous worst location
             if fx[i] > fpw[i]:
                 print('New worst location for particle %s!' % i)
                 pw[i, :] = x[i, :].copy()
                 fpw[i] = fx[i]
 
+                # Check whether the particle's current position is worse than the previous global worst
                 if fx[i] > fgw:
                     print('Particle %s found a new worst global location!' % i)
-                    gw = x[i, :].copy()
                     fgw = fx[i]
 
+        ##########
+        #
         # Save results of iteration
+        #
+        ##########
+
+        # Save the results from the current iteration before moving on to the next
         param_files = [outdir + str(it) + 'xfile.txt', outdir + str(it) + 'pfile.txt',
                        outdir + str(it) + 'pwfile.txt', outdir + str(it) + 'vfile.txt',
                        outdir + 'err_iter' + str(it)]
@@ -373,7 +440,7 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
     return gb, fgb
 
 
-def run_pso(simu_name, df_study, df_test, sem_mat, sources=None, outdir="outfiles/", noise_dir="noise_files/"):
+def run_pso(simu_name, df_study, df_test, sem_mat, swarm_size=200, n_iter=200, sources=None, outdir="outfiles/", noise_dir="noise_files/"):
     """
     Set up and run PSO for a given simulation.
 
@@ -385,15 +452,13 @@ def run_pso(simu_name, df_study, df_test, sem_mat, sources=None, outdir="outfile
     :param outdir: Directory for PSO output files.
     :param noise_dir: Directory for pre-generated noise files.
     """
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-    if not os.path.exists(noise_dir):
-        os.makedirs(noise_dir)
+    os.makedirs(outdir, exist_ok=True)
+    os.makedirs(noise_dir, exist_ok=True)
 
     # Set PSO parameters
     alg = 'pso2'
-    swarmsize = 500
-    n_iter = 200
+    swarmsize = swarm_size
+    n_iter = n_iter
     omega_min = .72984 if alg in ('pso2', 'awl') else .3 if alg == 'apso6' else .4
     omega_max = .72984 if alg in ('pso2', 'awl') else .9
     d_omega = .1

@@ -16,6 +16,9 @@ Analysis/**/X*.py
 Modeling/CMR_IA/build
 Modeling/CMR_IA/dist
 Modeling/CMR_IA/CMR_IA.egg-info
+Modeling/CMR_IA/CMR_IA/_core.c
+Modeling/CMR_IA/CMR_IA/_core.html
+Modeling/CMR_IA/CMR_IA/_core*.so
 **/notes.md
 Modeling/X*
 **/.backup/

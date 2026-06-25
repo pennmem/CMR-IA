@@ -22,7 +22,7 @@ import CMR_IA as cmr
 import scipy as sp
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.fitting import make_boundary, get_wmse, obj_func
 
 cmr.analysis.setup_notebook()
 
@@ -63,9 +63,9 @@ df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
 # ## Run CMR-IA
 
 # %%
-# Define parameters and load PSO results
-params = cmr.load_params("8", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
-params
+# # Define parameters and load PSO results
+# params = cmr.load_params("8", params_path="data/g1_260621_200-200.json", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
+# params
 
 # %%
 # Run model or load saved results
@@ -278,8 +278,8 @@ df_test_g2 = df_test.query("group == 2").copy()
 
 # %%
 # Define parameters and load PSO results
-params_path = "/Users/bei/BeiWorld/Research/2022CMRIA/CMR_IA/Analysis/simuS1_recog_cr/data/simuS1_params.json"
-params = cmr.load_params("S1", params_path=params_path, fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
+params = cmr.load_params("8", params_path="data/g2_260623_200-200.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
+params.update(beta_rec=0.5, kappa=0.5, lamb=0.2, eta=0.2, omega=10, alpha=1, c_thresh=1, rec_time_limit=1000.)  #
 params
 
 # %%

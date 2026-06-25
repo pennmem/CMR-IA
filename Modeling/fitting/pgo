@@ -1,28 +1,20 @@
 #!/bin/sh
-# starts N instances of a job
-# ex.: pgo jubba.py 8
-#      will start eight instances of python script jubba.py
+# starts a SLURM job array of N instances
+# ex.: pgo pso_cmr.py 8
+#      will start an array of eight jobs running pso_cmr.py
 
 function usage
 {
-  echo "Usage: pgo pyfile.py [num [-nb]"
-  echo "           num - Number to start"
+  echo "Usage: pgo pyfile.py [num [-nb]]"
+  echo "           num - Number of array tasks to start (default 1)"
   echo "           -nb - No backup of script"
   exit 1
 }
 
-# check number of args
-if [ $# -gt 3 ]; then
-    usage
-    exit 1
-fi
 if [ $# -lt 1 ]; then
     usage
-    exit 1
 fi
 
-
-# look for runmfile in current dir
 SH_PATH=`dirname $0`
 if [ "$SH_PATH" = "" ]; then
     SH_PATH=`dirname \`which $0\``
@@ -32,38 +24,23 @@ SH_SCRIPT=${SH_PATH}/runpyfile.sh
 BACK_DIR=runs
 PYFILE=$1
 PNAME=`expr substr \`basename $PYFILE\` 1 15`
-PROCS=$2
-if [ $# -lt 2 ]; then
-    PROCS=1
-fi
+PROCS=1
 
+if [ $# -ge 2 ]; then PROCS=$2; fi
+if [ "$3" = "-nb" ]; then NO_BACKUP=1; else NO_BACKUP=0; fi
 
-# save history
-if [ "$3" != "-nb" ]; then
+if [ $NO_BACKUP -eq 0 ]; then
     echo Making backup:
     mkdir -p $BACK_DIR
     echo cp $PYFILE runs/${PYFILE}.`date +%y%b%d_%H%M`
     cp $PYFILE runs/${PYFILE}.`date +%y%b%d_%H%M`
 fi
 
+mkdir -p slurm_out
 
-# start scripts
-# node_list=("node19" "node20" "node21" "node22" "node23")  # "node17" "node18" "node19" "node20" "node21"
-node_list=("node19" "node20" "node21" "node22" "node23", "node33" "node34" "node35" "node36" "node37")
-echo Starting $PROCS script\(s\):
-for node_idx in "${!node_list[@]}"; do
-    node=${node_list[$node_idx]}
-    echo $node
-    for i in `seq 1 $PROCS`; do
-        echo $i
-        # add email notification on last submission
-        if [[ $node_idx -eq $((${#node_list[@]} - 1)) && $i -eq $PROCS ]]; then
-            echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out --mail-type=END,FAIL --mail-user=jerryjin@andrew.cmu.edu $SH_SCRIPT
-            sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out --mail-type=END,FAIL --mail-user=jerryjin@andrew.cmu.edu $SH_SCRIPT
-        else
-            echo sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
-            sbatch -p RAM -t 7-00:00 -c 1 --mem=5G -w $node -J $PNAME -o slurm_out/slurm-$node-%j.out $SH_SCRIPT
-        fi
-        sleep 2
-    done
-done
+echo "Starting array of $PROCS job(s):"
+echo sbatch --array=1-${PROCS} -J $PNAME $SH_SCRIPT $PYFILE
+SUBMIT_OUT=$(sbatch --array=1-${PROCS} -J $PNAME $SH_SCRIPT $PYFILE)
+echo "$SUBMIT_OUT"
+JOB_ID=$(echo "$SUBMIT_OUT" | awk '{print $NF}')
+sbatch --dependency=afterany:$JOB_ID ${SH_PATH}/notify_done.sh $JOB_ID

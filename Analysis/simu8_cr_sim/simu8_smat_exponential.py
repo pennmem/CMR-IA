@@ -1,20 +1,15 @@
 """
 Generate semantic similarity matrix for simu8 faces from MDS-coordinate Euclidean distance.
-Faces (items 1-16) use a logistic (sigmoid) generalization centered at the neighbour radius on
-the 4-D MDS coordinates (Pantelis et al., 2008); names (items 17-32) use identity only.
-A logistic kernel saturates within the confusion radius and falls off beyond it, so the summed
-semantic norm tracks the *number* of neighbours, unlike Shepard's exponential (in
-simu8_smat_exponential.py), whose squared norm is dominated by the single nearest face and
-therefore anti-correlates with neighbour count.
+Faces (items 1-16) use Shepard's exponential generalization s=exp(-c*d) on the 4-D MDS
+coordinates (Pantelis et al., 2008); names (items 17-32) use identity only.
 """
 
 import numpy as np
 from scipy.io import loadmat
 from numpy.linalg import norm
 
-# Logistic kernel: D0 = neighbour/confusion radius (matches the neighbour-count threshold), K = falloff sharpness
-D0 = 3.0
-K = 1.5
+# Decay parameter for Shepard's exponential similarity (larger c -> faster falloff)
+C = 1.0
 
 # Load face coordinates from experiment data, keyed by face id (0-15) to preserve ordering
 events = loadmat("data/original_experiments/Experiment1/Experiment1.mat")["events"][:, 0]
@@ -32,9 +27,8 @@ for i in range(16):
     for j in range(16):
         face_distance[i, j] = norm(face_corrd_16[i] - face_corrd_16[j])
 
-# Convert distance to similarity via logistic law (saturating, monotonic decreasing in distance), self-sim = 1
-face_sim = 1.0 / (1.0 + np.exp(K * (face_distance - D0)))
-np.fill_diagonal(face_sim, 1.0)
+# Convert distance to similarity via Shepard's exponential law (monotonic, diagonal=1)
+face_sim = np.exp(-C * face_distance)
 
 # Build 32x32 matrix: faces (1-16) have distance-based sim; names (17-32) identity only
 s_mat = np.zeros((32, 32))

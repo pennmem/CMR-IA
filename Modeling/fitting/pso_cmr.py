@@ -5,7 +5,7 @@ from CMR_IA.pso import run_pso
 
 if __name__ == "__main__":
 
-    SIMU_NAME = "S2"
+    SIMU_NAME = "8"
     ANAL_DIR = "../../Analysis"
 
     if SIMU_NAME == "1":
@@ -97,4 +97,4 @@ if __name__ == "__main__":
     sem_mat = np.load(sem_file)
 
     # Run PSO
-    run_pso(simu_name=SIMU_NAME, df_study=df_study, df_test=df_test, sem_mat=sem_mat)
+    run_pso(simu_name=SIMU_NAME, df_study=df_study, df_test=df_test, sem_mat=sem_mat, swarm_size=200, n_iter=100)

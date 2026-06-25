@@ -3,27 +3,29 @@ import pandas as pd
 import scipy.stats as ss
 
 
-def setup_notebook(fallback_font_path="/home1/beigejin/Times.ttc"):
+def setup_notebook(fallback_font_path=None):
     """Configure matplotlib, seaborn, and pandas for paper-quality output.
 
-    On systems without Times New Roman (e.g. HPC clusters), pass the path to
-    a .ttc font file via fallback_font_path.
+    On systems without Times New Roman (e.g. HPC clusters), a Times.ttc
+    bundled alongside this file is used automatically. Override by passing
+    an explicit path via fallback_font_path.
     """
+    import os
     import matplotlib.pyplot as plt
-    import seaborn as sns
+    from matplotlib import font_manager
 
     # plt font
-    try:
+    available_fonts = {f.name for f in font_manager.fontManager.ttflist}
+    if "Times New Roman" in available_fonts:
         plt.rcParams["font.family"] = "Times New Roman"
-    except Exception:
-        if fallback_font_path is not None:
-            from matplotlib import font_manager
+    else:
+        if fallback_font_path is None:
+            fallback_font_path = os.path.join(os.path.dirname(__file__), "Times.ttc")
+        if os.path.exists(fallback_font_path):
             font_manager.fontManager.addfont(fallback_font_path)
             plt.rc("font", family="serif", serif=["Times"])
             plt.rcParams["mathtext.fontset"] = "custom"
             plt.rcParams["mathtext.rm"] = "Times"
-        else:
-            pass
 
     # plt font size
     plt.rcParams["font.size"] = 16

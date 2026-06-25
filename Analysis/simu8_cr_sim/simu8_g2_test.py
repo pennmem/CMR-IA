@@ -8,7 +8,7 @@
 #       format_version: '1.3'
 #       jupytext_version: 1.19.3
 #   kernelspec:
-#     display_name: cmr
+#     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
@@ -50,23 +50,44 @@ df_test
 # Load semantic matrix
 sem_mat = np.load("data/simu8_smat.npy")
 
+# %%
+# A check
+S = np.load("data/simu8_smat.npy")
+dist = np.load("data/simu8_distance.npy")
+F = S[:16, :16].copy()
+np.fill_diagonal(F, 0)
+neigh = ((dist < 3.0) & (dist > 0)).sum(1)
+nsv2 = (F**2).sum(1)
+msim = F.sum(1) / 15
+print(
+    "face block off-diag sim: %.3f .. %.3f (mean %.3f)"
+    % (F[F > 0].min(), F.max(), F[F > 0].mean())
+)
+print(
+    "corr(neigh, ||svec||^2) = %+.3f   corr(neigh, meanSim) = %+.3f"
+    % (np.corrcoef(neigh, nsv2)[0, 1], np.corrcoef(neigh, msim)[0, 1])
+)
+print(
+    "S at d=[1.5,2.5,3.5,4.5]:",
+    [round(1 / (1 + np.exp(1.5 * (d - 3))), 3) for d in (1.5, 2.5, 3.5, 4.5)],
+)
+
 # %% [markdown]
 # # Group 2
 
 # %%
 df_study_g2 = df_study.query("group == 2").copy()
 df_test_g2 = df_test.query("group == 2").copy()
-df_study_g2 = df_study_g2.query("session < 2000").copy()
-df_test_g2 = df_test_g2.query("session < 2000").copy()
+# df_study_g2 = df_study_g2.query("session < 2000").copy()
+# df_test_g2 = df_test_g2.query("session < 2000").copy()
 
 # %% [markdown]
 # ## Run CMR-IA
 
 # %%
 # Define parameters and load PSO results
-params_path = "/Users/bei/BeiWorld/Research/2022CMRIA/CMR_IA/Analysis/simuS1_recog_cr/data/simuS1_params.json"
-params = cmr.load_params("S1", params_path=params_path, fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
-params.update(beta_cue=0.5, s_fc=0.5)
+params = cmr.load_params("8", params_path="data/g2_260625_200-100.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
+params.update(beta_rec=0.9, kappa=0.5, lamb=0.2, eta=0.2, omega=10, alpha=1, c_thresh=1, rec_time_limit=1000.)  #
 params
 
 # %%
@@ -141,6 +162,8 @@ kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12, linestyle="none", color=
 ax1.plot(0, 0, transform=ax1.transAxes, **kwargs)
 ax2.plot(0, 1, transform=ax2.transAxes, **kwargs)
 
+ax1.set_ylim(0.73, 0.90)
+ax2.set_ylim(0.20, 0.37)
 ax2.set_xticks(xpos)
 ax2.set_xticklabels(["Low", "Medium", "High"])
 ax2.set_xlim(-0.5, 2.5)
@@ -154,6 +177,79 @@ if SAVEFIG:
     ax2.set_xlabel(None)
     plt.savefig("figures/simu8_g2_hrfar-neighbor.pdf")
 plt.show()
+
+# %% [markdown]
+# ### Probe Distance Effect
+
+# %%
+# Distance from each lure probe to the studied face of its (mismatched) name; targets sit at distance 0
+def get_probe_distance(x):
+    if x["correct_ans"] == 1:
+        return 0.0
+    resp_face = sess_name_face[x["session"]][x["test_itemno2"]]
+    return face_distance[x["test_itemno1"] - 1, resp_face - 1]
+
+
+lure_edges = [0.5, 1.5, 2.5, 3.5, 4.5]
+lure_labels = ["1.5", "2.5", "3.5", "4.5"]
+df_recog["probe_distance"] = df_recog.apply(get_probe_distance, axis=1)
+df_recog["distance_bin"] = np.where(df_recog["correct_ans"] == 1, "Targets", pd.cut(df_recog["probe_distance"], lure_edges, labels=lure_labels).astype(object))
+dbin_order = ["Targets"] + lure_labels
+df_recog
+
+# %%
+# Yes rate by probe distance bin
+df_yes_distance = df_recog.groupby("distance_bin").yes.mean().reindex(dbin_order).reset_index(name="yes_rate")
+df_yes_distance
+
+# %%
+# Plot yes rate by probe distance
+xpos = [0, 1.5, 2.5, 3.5, 4.5]
+fig, ax = plt.subplots(figsize=(6, 4.5))
+fig.subplots_adjust(left=0.1, right=0.98, bottom=0.1, top=0.98)
+
+ax.spines[["right", "top"]].set_visible(False)
+ax.tick_params(axis="y", direction="in")
+ax.tick_params(axis="x", direction="in")
+sns.lineplot(data=df_yes_distance, x=xpos, y="yes_rate", ax=ax, marker="o", color="C0", markersize=10, linewidth=0)
+sns.lineplot(data=df_yes_distance.query("distance_bin != 'Targets'"), x=xpos[1:], y="yes_rate", ax=ax, marker=None, color="C0", markersize=10, linewidth=2, linestyle="-")
+plt.xlim([-0.5, 5])
+plt.ylim([0, 1])
+plt.xticks(ticks=xpos, labels=df_yes_distance["distance_bin"])
+plt.xlabel("Distance Bins")
+plt.ylabel("Yes Rate")
+
+if SAVEFIG:
+    ax.set(xlabel=None, ylabel=None)
+    plt.tick_params(labelleft=False)
+    plt.savefig("figures/simu8_g2_yes-distance.pdf")
+plt.show()
+
+# %%
+# Load ground truth
+with open("data/simu8_gt.json") as f:
+    gt = json.load(f)
+hr_mean_gt = np.array(gt["exp3_neighbor_hr_mean"])
+hr_se_gt = np.array(gt["exp3_neighbor_hr_se"])
+far_mean_gt = np.array(gt["exp3_neighbor_far_mean"])
+far_se_gt = np.array(gt["exp3_neighbor_far_se"])
+yesdist_mean_gt = np.array(gt["exp3_yesdist_mean"])
+yesdist_se_gt = np.array(gt["exp3_yesdist_se"])
+crdist_mean_gt = np.array(gt["exp3_crdist_mean"])
+crdist_se_gt = np.array(gt["exp3_crdist_se"])
+
+# %%
+# Compute weighted mean squared error
+hr_mean = df_hr["HR"].to_numpy()
+far_mean = df_far["FAR"].to_numpy()
+yesdist_mean = df_yes_distance["yes_rate"].to_numpy()
+wls_hr = get_wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
+wls_far = get_wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
+wls_yesdist = get_wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
+wls_hr, wls_far, wls_yesdist
+
+# %%
+np.any(np.diff(hr_mean) > 0), np.any(np.diff(far_mean) < 0)
 
 # %% [markdown]
 # ## Mechanism Check: Neighbourhood Effect on Recognition

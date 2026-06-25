@@ -1,25 +1,20 @@
 #!/bin/bash
-#PBS -j oe
-#IGNORE PBS -l walltime=72:00:00
-#IGNORE PBS -l mem=1500mb
-#PBS -l nodes=1
-#
+#SBATCH -p cpu
+#SBATCH -t 7-00:00
+#SBATCH -c 1
+#SBATCH -N 1
+#SBATCH --mem=5G
+#SBATCH -o slurm_out/slurm-%A_%a.out
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=jerryjin@andrew.cmu.edu
+##SBATCH -w mind-0-15
+#SBATCH --exclude mind-1-15,mind-1-29,mind-0-26,mind-0-28
 
-# set umask to world readable
 umask 022
 
-# PY_COMMAND="/usr/local/python/bin/python"
-# PY_COMMAND="/usr/global/python/bin/python"
-# PY_COMMAND="~/anaconda3/bin/python"
-PYFILE="/home1/beigejin/CMR-IA/Modeling/fitting/pso_cmr.py"
-PY_COMMAND="/home1/beigejin/.conda/envs/CMR_IA/bin/python"
+PYFILE="${1:-/home/jerryjin/CMR-IA/Modeling/fitting/pso_cmr.py}"
+PY_COMMAND="/home/jerryjin/miniconda3/envs/cmr/bin/python"
 
-# go to the working directory
-# echo "cd $SGE_O_WORKDIR"
-# cd $SGE_O_WORKDIR
-
-# start the python job
 COMMAND="$PY_COMMAND $PYFILE"
 echo $COMMAND
 $COMMAND
-
