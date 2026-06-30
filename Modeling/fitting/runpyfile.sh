@@ -1,14 +1,12 @@
 #!/bin/bash
-#SBATCH -p cpu
-#SBATCH -t 7-00:00
+#SBATCH -p array
+#SBATCH -t 2-00:00
 #SBATCH -c 1
 #SBATCH -N 1
 #SBATCH --mem=5G
 #SBATCH -o slurm_out/slurm-%A_%a.out
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=jerryjin@andrew.cmu.edu
-##SBATCH -w mind-0-15
-#SBATCH --exclude mind-1-15,mind-1-29,mind-0-26,mind-0-28
+##SBATCH --mail-type=END,FAIL
+##SBATCH --mail-user=jerryjin@andrew.cmu.edu
 
 umask 022
 

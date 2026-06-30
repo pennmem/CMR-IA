@@ -11,3 +11,4 @@ tqdm==4.66.3
 pyarrow==21.0.0
 gensim==4.4.0
 jupytext==1.19.3
+ipykernel==6.31.0

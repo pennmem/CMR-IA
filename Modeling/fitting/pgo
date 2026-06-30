@@ -44,3 +44,4 @@ SUBMIT_OUT=$(sbatch --array=1-${PROCS} -J $PNAME $SH_SCRIPT $PYFILE)
 echo "$SUBMIT_OUT"
 JOB_ID=$(echo "$SUBMIT_OUT" | awk '{print $NF}')
 sbatch --dependency=afterany:$JOB_ID ${SH_PATH}/notify_done.sh $JOB_ID
+sbatch -J ${PNAME}_wd ${SH_PATH}/watchdog.sh $JOB_ID outfiles 15

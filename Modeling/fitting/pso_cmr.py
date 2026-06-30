@@ -5,8 +5,9 @@ from CMR_IA.pso import run_pso
 
 if __name__ == "__main__":
 
-    SIMU_NAME = "8"
+    SIMU_NAME = "5"
     ANAL_DIR = "../../Analysis"
+    SEED_FILE = f"{ANAL_DIR}/simu5_cr_rec/data/simu5_params.json"
 
     if SIMU_NAME == "1":
 
@@ -30,7 +31,6 @@ if __name__ == "__main__":
 
         df_study = None
         df_test = pd.read_parquet(f"{ANAL_DIR}/simu3_recog_forget/data/simu3_test.parquet")
-        df_test = df_test.loc[df_test.session < 300].copy()
         sem_file = f"{ANAL_DIR}/wordpools/ltp_FR_similarity_matrix.npy"
 
     elif SIMU_NAME in ["4", "4base", "4shift", "4attn"]:
@@ -43,32 +43,24 @@ if __name__ == "__main__":
 
         df_study = pd.read_parquet(f"{ANAL_DIR}/simu5_cr_rec/data/simu5_study.parquet")
         df_test = pd.read_parquet(f"{ANAL_DIR}/simu5_cr_rec/data/simu5_test.parquet")
-        df_study = df_study.loc[df_study.session < 100].copy()
-        df_test = df_test.loc[df_test.session < 100].copy()
         sem_file = f"{ANAL_DIR}/wordpools/ltp_FR_similarity_matrix.npy"
 
     elif SIMU_NAME == "6a":
 
         df_study = pd.read_parquet(f"{ANAL_DIR}/simu6a_cr_recsym/data/simu6a_study.parquet")
         df_test = pd.read_parquet(f"{ANAL_DIR}/simu6a_cr_recsym/data/simu6a_test.parquet")
-        df_study = df_study.loc[df_study.session < 100].copy()
-        df_test = df_test.loc[df_test.session < 100].copy()
         sem_file = f"{ANAL_DIR}/wordpools/ltp_FR_similarity_matrix.npy"
 
     elif SIMU_NAME == "6b":
 
         df_study = pd.read_parquet(f"{ANAL_DIR}/simu6b_cr_sym/data/simu6b_study.parquet")
         df_test = pd.read_parquet(f"{ANAL_DIR}/simu6b_cr_sym/data/simu6b_test.parquet")
-        df_study = df_study.loc[df_study.session < 500].copy()
-        df_test = df_test.loc[df_test.session < 500].copy()
         sem_file = f"{ANAL_DIR}/wordpools/ltp_FR_similarity_matrix.npy"
 
     elif SIMU_NAME == "7":
 
         df_study = pd.read_parquet(f"{ANAL_DIR}/simu7_cr_pliili/data/simu7_study.parquet")
         df_test = pd.read_parquet(f"{ANAL_DIR}/simu7_cr_pliili/data/simu7_test.parquet")
-        df_study = df_study.loc[df_study.session < 500].copy()
-        df_test = df_test.loc[df_test.session < 500].copy()
         sem_file = f"{ANAL_DIR}/wordpools/ltp_FR_similarity_matrix.npy"
 
     elif SIMU_NAME == "8":
@@ -97,4 +89,4 @@ if __name__ == "__main__":
     sem_mat = np.load(sem_file)
 
     # Run PSO
-    run_pso(simu_name=SIMU_NAME, df_study=df_study, df_test=df_test, sem_mat=sem_mat, swarm_size=200, n_iter=100)
+    run_pso(simu_name=SIMU_NAME, df_study=df_study, df_test=df_test, sem_mat=sem_mat, swarm_size=100, n_iter=50, seed_file=SEED_FILE)

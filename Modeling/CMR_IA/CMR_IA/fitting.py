@@ -1,8 +1,11 @@
+import os
+import signal
 import numpy as np
 import pandas as pd
 import json
 import scipy as sp
-from CMR_IA.utils import make_params, param_vec_to_dict
+from contextlib import contextmanager
+from CMR_IA.utils import make_params, param_vec_to_dict, wmse, Yule_Q
 from CMR_IA import _core as cmr
 
 
@@ -463,15 +466,39 @@ def make_boundary(simu_name):
 # --- Helpers for objective function --- #
 
 
-def get_wmse(y_true, y_pred, y_std):
-    return np.sum((y_true - y_pred) ** 2 / y_std ** 2)
+_EVAL_TIMEOUT = float(os.environ.get("CMR_EVAL_TIMEOUT", 360))
+_TIMEOUT_PENALTY = 1e6
 
 
-def Yule_Q(A, B, C, D):
-    return (A * D - B * C) / (A * D + B * C)
-    
+class _EvalTimeout(Exception):
+    """Raised when a single model evaluation exceeds _EVAL_TIMEOUT seconds."""
 
-def anal_perform_6b(df_simu):
+
+@contextmanager
+def _time_limit(seconds):
+    """Abort the wrapped block with _EvalTimeout after `seconds` wall-clock seconds.
+
+    Relies on SIGALRM, which is delivered between Python bytecodes. This is safe
+    here because the multi-session model runners loop over sessions in Python, so
+    the alarm fires promptly between Cython per-session calls.
+    """
+    if not seconds or seconds <= 0:
+        yield
+        return
+
+    def _handler(signum, frame):
+        raise _EvalTimeout()
+
+    old_handler = signal.signal(signal.SIGALRM, _handler)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, old_handler)
+
+
+def _simu6b_subj_stats(df_simu):
 
     # Get pair
     df_pair = pd.pivot_table(df_simu, index="pair_idx", columns="test", values="correct")
@@ -491,7 +518,169 @@ def anal_perform_6b(df_simu):
     return t1_t2, t1_f2, f1_t2, f1_f2, q
 
 
-def anal_perform_S1(df_simu):
+def _simu8_name_face_lookup(df_study):
+    """Build a vectorized per-session (study name -> studied face) lookup."""
+    sess = df_study["session"].to_numpy(dtype=np.int64)
+    name = df_study["study_itemno2"].to_numpy(dtype=np.int64)
+    face = df_study["study_itemno1"].to_numpy(dtype=np.int64)
+    base = int(name.max()) + 1
+    keys = sess * base + name
+    order = np.argsort(keys, kind="stable")
+    keys_sorted, face_sorted = keys[order], face[order]
+
+    def lookup(sess_q, name_q):
+        q = sess_q.astype(np.int64) * base + name_q.astype(np.int64)
+        return face_sorted[np.searchsorted(keys_sorted, q)]
+
+    return lookup
+
+
+def _simu8_ili_bin(d):
+    """ILI distance -> bin index 0..6 (cats 1.0,1.5,2.0,2.5,3.0,3.5,>3.5); -1 excluded."""
+    d = np.asarray(d, dtype=float)
+    idx = np.floor(2.0 * d).astype(int) - 1  # d in [0.5,1.0) -> 0 ("1.0")
+    idx = np.where(d >= 3.5, 6, idx)  # ">3.5"
+    idx = np.where(idx < 0, -1, idx)  # d < 0.5 excluded
+    return idx
+
+
+def _simu8_cut_bin(x, edges):
+    """pd.cut-equivalent (right-closed): 0-based label index, -1 if outside range."""
+    x = np.asarray(x, dtype=float)
+    d = np.digitize(x, edges, right=True)  # 0..len(edges)
+    return np.where((d < 1) | (d >= len(edges)), -1, d - 1)
+
+
+def _simu8_grouped_mean(values, group_idx, n_bins):
+    """Mean of ``values`` per bin index in [0, n_bins); NaN where empty. Returns (mean, count)."""
+    valid = group_idx >= 0
+    cnt = np.bincount(group_idx[valid], minlength=n_bins)[:n_bins]
+    summ = np.bincount(group_idx[valid], weights=values[valid], minlength=n_bins)[:n_bins]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = summ / cnt
+    out[cnt == 0] = np.nan
+    return out, cnt
+
+
+def _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, gt):
+    """g1 cued recall: neighbourhood effect on correct rate + ILI by distance bin."""
+    sess = df_simu["session"].to_numpy(dtype=np.int64)
+    test_itemno = df_simu["test_itemno"].to_numpy(dtype=np.int64)
+    s_resp = df_simu["s_resp"].to_numpy(dtype=np.int64)
+    correct_ans = df_simu["correct_ans"].to_numpy(dtype=np.int64)
+    correct = s_resp == correct_ans
+    correct_rate = correct.mean()
+
+    # Group rows by session (each session has exactly 8 unique test faces)
+    order = np.argsort(sess, kind="stable")
+    inv = np.empty_like(order)
+    inv[order] = np.arange(len(order))
+    S = len(sess) // 8
+    F = test_itemno[order].reshape(S, 8) - 1  # face indices, (S, 8)
+
+    # Neighbour count: other session faces within thresh (exclude self)
+    A = face_distance < thresh  # includes diagonal (dist 0)
+    neighbour = (A[F[:, :, None], F[:, None, :]].sum(axis=2) - 1).ravel()[inv]
+    ng = np.where(neighbour == 7, 6, neighbour)
+    mask = ng > 0
+    cnt = np.bincount(ng[mask])
+    summ = np.bincount(ng[mask], weights=correct[mask].astype(float))
+    present = np.where(cnt > 0)[0]
+    present = present[present > 0]
+    neighbor_mean = summ[present] / cnt[present]
+
+    # ILI possible counts: off-diagonal session distances, binned
+    Dsub = face_distance[F[:, :, None], F[:, None, :]]
+    off = ~np.eye(8, dtype=bool)
+    poss_idx = _simu8_ili_bin(Dsub[:, off].ravel())
+    ILI_poss = np.bincount(poss_idx[poss_idx >= 0], minlength=7)[:7]
+
+    try:
+        # is_studied: s_resp among the session's correct answers
+        CA = correct_ans[order].reshape(S, 8)
+        SR = s_resp[order].reshape(S, 8)
+        is_studied = (SR[:, :, None] == CA[:, None, :]).any(axis=2).ravel()[inv]
+        is_ILI = is_studied & (~correct)
+
+        lookup = _simu8_name_face_lookup(df_study_g1)
+        resp_face = lookup(sess[is_ILI], s_resp[is_ILI])
+        resp_corr_d = face_distance[test_itemno[is_ILI] - 1, resp_face - 1]
+        ili_idx = _simu8_ili_bin(resp_corr_d)
+        ILI_cnt = np.bincount(ili_idx[ili_idx >= 0], minlength=7)[:7]
+        with np.errstate(invalid="ignore", divide="ignore"):
+            ILI_mean = ILI_cnt / ILI_poss
+    except Exception:
+        ILI_mean = np.full(7, 0)
+
+    neighbor_mean_gt = np.array(gt["exp1_neighbor_mean"])
+    neighbor_se_gt = np.array(gt["exp1_neighbor_se"])
+    ILI_mean_gt = np.array(gt["exp1_ILI_mean"])
+    ILI_se_gt = np.array(gt["exp1_ILI_se"])
+    wls_neighbor = wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
+    wls_ILI = wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
+    return neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI
+
+
+def _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, gt):
+    """g2: recognition density (HR/FAR) + probe-distance yes rate + final cued recall."""
+    lookup = _simu8_name_face_lookup(df_study_g2)
+
+    # Recognition: density effect on HR / FAR
+    r_sess = df_recog["session"].to_numpy(dtype=np.int64)
+    r_f1 = df_recog["test_itemno1"].to_numpy(dtype=np.int64)
+    r_f2 = df_recog["test_itemno2"].to_numpy(dtype=np.int64)
+    r_corr = df_recog["correct_ans"].to_numpy(dtype=np.int64)
+    r_yes = (df_recog["s_resp"].to_numpy(dtype=np.int64) == 1).astype(float)
+
+    neighbour_count = ((face_distance < thresh) & (face_distance > 0)).sum(axis=1)
+    dens = _simu8_cut_bin(neighbour_count[r_f1 - 1], [4, 6, 8, 10])  # 0 low,1 med,2 high
+    hr_all, hr_cnt = _simu8_grouped_mean(r_yes[r_corr == 1], dens[r_corr == 1], 3)
+    far_all, far_cnt = _simu8_grouped_mean(r_yes[r_corr == 0], dens[r_corr == 0], 3)
+    hr_mean = hr_all[hr_cnt > 0]  # observed=True drops empty densities
+    far_mean = far_all[far_cnt > 0]
+
+    # Recognition: probe distance effect on yes rate (Targets + 4 lure bins)
+    lure = r_corr != 1
+    probe_d = face_distance[r_f1[lure] - 1, lookup(r_sess[lure], r_f2[lure]) - 1]
+    yesdist_mean = np.full(5, np.nan)
+    yesdist_mean[0] = r_yes[r_corr == 1].mean() if (r_corr == 1).any() else np.nan
+    lure_mean, _ = _simu8_grouped_mean(r_yes[lure], _simu8_cut_bin(probe_d, [0.5, 1.5, 2.5, 3.5, 4.5]), 4)
+    yesdist_mean[1:] = lure_mean
+
+    # Final cued recall by recalled-name distance
+    c_sess = df_cr["session"].to_numpy(dtype=np.int64)
+    c_f1 = df_cr["test_itemno1"].to_numpy(dtype=np.int64)
+    c_resp = df_cr["s_resp"].to_numpy(dtype=np.int64)
+    correct = c_resp == df_cr["correct_ans"].to_numpy(dtype=np.int64)
+    recalled = c_resp > 0
+    rec_f1 = c_f1[recalled]
+    resp_face = rec_f1.copy()  # correct -> own face
+    inc = ~correct[recalled]
+    resp_face[inc] = lookup(c_sess[recalled][inc], c_resp[recalled][inc])
+    fin_edges = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5]  # labels 0, 1.5, 2.5, 3.5, 4.5
+    cr_idx = _simu8_cut_bin(face_distance[rec_f1 - 1, resp_face - 1], fin_edges)
+    recall_cnt = np.bincount(cr_idx[cr_idx >= 0], minlength=5)[:5]
+    poss_idx = _simu8_cut_bin(face_distance[c_f1 - 1, :].ravel(), fin_edges)
+    recall_poss = np.bincount(poss_idx[poss_idx >= 0], minlength=5)[:5]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        crdist_mean = recall_cnt / recall_poss
+
+    hr_mean_gt = np.array(gt["exp3_neighbor_hr_mean"])
+    hr_se_gt = np.array(gt["exp3_neighbor_hr_se"])
+    far_mean_gt = np.array(gt["exp3_neighbor_far_mean"])
+    far_se_gt = np.array(gt["exp3_neighbor_far_se"])
+    yesdist_mean_gt = np.array(gt["exp3_yesdist_mean"])
+    yesdist_se_gt = np.array(gt["exp3_yesdist_se"])
+    crdist_mean_gt = np.array(gt["exp3_crdist_mean"])
+    crdist_se_gt = np.array(gt["exp3_crdist_se"])
+    wls_hr = wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
+    wls_far = wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
+    wls_yesdist = wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
+    wls_crdist = wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
+    return (hr_mean, far_mean, yesdist_mean, crdist_mean, wls_hr, wls_far, wls_yesdist, wls_crdist)
+
+
+def _simuS1_subj_stats(df_simu):
 
     # Get correctness
     df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
@@ -526,7 +715,7 @@ def anal_perform_S1(df_simu):
     return p_rc, hr, far, q
 
 
-def anal_perform_S2(df_simu):
+def _simuS2_subj_stats(df_simu):
 
     # Get target items
     df_target = df_simu.query("condition != 'Discard'")
@@ -583,7 +772,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         assert df_study is None
         df = df_test
-        
+
         # Run model
         df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, design="EXP1", disable_tqdm=True)
         df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
@@ -675,9 +864,9 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         far_lowsim_std_gt = np.array(_gt["far_lowsim_std"])
         far_highsim_gt = np.array(_gt["far_highsim"])
         far_highsim_std_gt = np.array(_gt["far_highsim_std"])
-        err = get_wmse(hr_lowsim_gt, hr_lowsim, hr_lowsim_std_gt) + get_wmse(hr_highsim_gt, hr_highsim, hr_highsim_std_gt) + get_wmse(far_lowsim_gt, far_lowsim, far_lowsim_std_gt) + get_wmse(far_highsim_gt, far_highsim, far_highsim_std_gt)
+        err = wmse(hr_lowsim_gt, hr_lowsim, hr_lowsim_std_gt) + wmse(hr_highsim_gt, hr_highsim, hr_highsim_std_gt) + wmse(far_lowsim_gt, far_lowsim, far_lowsim_std_gt) + wmse(far_highsim_gt, far_highsim, far_highsim_std_gt)
         cmr_stats = {"err": err, "params": param_vec, "stats": []}
-        
+
 
     ## SIMU2 ##
     elif simu_name == "2":
@@ -824,16 +1013,16 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         far_std_gt = np.array(_gt["far_std"])
         hr = df_hrfar_plot.query("type == 'hr'").yes_rate.mean()
         far = df_farlag.groupby("lag").far.mean().to_numpy()
-        err = 5 * get_wmse(hr_gt, hr, hr_std_gt) + get_wmse(far_gt, far, far_std_gt)
+        err = 5 * wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
         cmr_stats = {"err": err, "params": param_vec, "stats": [hr, far]}
 
-    
+
     ## SIMU3 ##
     elif simu_name == "3":
 
         assert df_study is None
         df = df_test
-        
+
         # Run model
         df_simu = cmr.run_conti_recog_multi_sess(param_dict, df, sem_mat, design="Hockley", disable_tqdm=True)
         df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
@@ -888,7 +1077,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Session-wise, get yes rate for each condition
         df_sess_q = df_simu.groupby(["session", "quantile", "old"]).s_resp.mean().to_frame(name="yes_rate").reset_index()
-        
+
         # Collapse across session
         df_q = df_sess_q.groupby(["quantile", "old"]).yes_rate.mean().to_frame().reset_index()
 
@@ -901,10 +1090,10 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         far_std_gt = np.array(_gt["far_std"])
         hr = df_q.query("old == True")["yes_rate"].to_numpy()
         far = df_q.query("old == False")["yes_rate"].to_numpy()
-        err = get_wmse(hr_gt, hr, hr_std_gt) + get_wmse(far_gt, far, far_std_gt)
+        err = wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
         cmr_stats = {"err": err, "params": param_vec, "stats": [hr, far]}
 
-    
+
     ## SIMU5 ##
     elif simu_name == "5":
 
@@ -916,7 +1105,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Session-wise, calculate correct rate for each lag
         df_sess_lag = df_simu.groupby(["session", "lag"]).correct.mean().to_frame(name="correct_rate").reset_index()
-        
+
         # Collapse across sessions
         hr = df_sess_lag.groupby("lag").correct_rate.mean().to_numpy()
 
@@ -925,7 +1114,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             _gt = json.load(f)
         hr_gt = np.array(_gt["hr"])
         hr_std_gt = np.array(_gt["hr_std"])
-        err = get_wmse(hr_gt, hr, hr_std_gt)
+        err = wmse(hr_gt, hr, hr_std_gt)
         cmr_stats = {"err": err, "params": param_vec, "stats": hr}
 
 
@@ -943,7 +1132,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Session-wise, calculate correct rate for each condition
         df_sess_lag = df_simu.groupby(["session", "lag", "order"]).correct.mean().to_frame(name="correct_rate").reset_index()
-        
+
         # Collapse across sessions
         df_lag = df_sess_lag.groupby(["lag", "order"]).correct_rate.mean().to_frame(name="correct_rate").reset_index()
         fw = df_lag.query("order == 1").correct_rate.values
@@ -1000,9 +1189,9 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         reve_stats = []
         for subj in subjects:
             df_subj_inde = df_simu.query(f"session == {subj} and cong == 'Identical'").copy()
-            inde_stats.append(list(anal_perform_6b(df_subj_inde)))
+            inde_stats.append(list(_simu6b_subj_stats(df_subj_inde)))
             df_subj_reve = df_simu.query(f"session == {subj} and cong == 'Reversed'").copy()
-            reve_stats.append(list(anal_perform_6b(df_subj_reve)))
+            reve_stats.append(list(_simu6b_subj_stats(df_subj_reve)))
 
         # Score the model's behavioral stats as compared with the true data
         inde_stats_mean = np.mean(inde_stats, axis=0)
@@ -1015,7 +1204,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
         cmr_stats = {"err": err, "params": param_vec, "stats": [inde_stats_mean, reve_stats_mean]}
 
-    
+
     ## SIMU7 ##
     elif simu_name == "7":
 
@@ -1093,10 +1282,10 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
             # Session-wise, count PLI
             df_PLI_sess = df_PLI.groupby(["session"]).test_item.count().to_frame(name="PLI_cnt_sess").reset_index()
-            
+
             # Session-wise, count PLI by list_lag
             df_PLI_sess_lag = df_PLI.groupby(["session", "abs_list_lag"]).test_item.count().to_frame(name="PLI_cnt").reset_index()
-            
+
             # Calculate PLI probability
             df_PLI_sess_lag = pd.merge(df_PLI_sess_lag, df_PLI_sess, on="session")
             df_PLI_sess_lag["PLI_prob"] = df_PLI_sess_lag["PLI_cnt"] / df_PLI_sess_lag["PLI_cnt_sess"]
@@ -1145,11 +1334,11 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         lag_PLI_se_gt = np.array(_gt["lag_PLI_se"])
         lag_ILI_mean_gt = np.array(_gt["lag_ILI_mean"])
         lag_ILI_se_gt = np.array(_gt["lag_ILI_se"])
-        wls_p_correct = get_wmse(p_correct_mean_gt, p_correct_mean, p_correct_se_gt)
-        wls_p_PLI = get_wmse(p_PLI_mean_gt, p_PLI_mean, p_PLI_se_gt)
-        wls_p_ILI = get_wmse(p_ILI_mean_gt, p_ILI_mean, p_ILI_se_gt)
-        wls_lag_PLI = get_wmse(lag_PLI_mean_gt, lag_PLI_mean, lag_PLI_se_gt) / len(lag_PLI_mean_gt)
-        wls_lag_ILI = get_wmse(lag_ILI_mean_gt, lag_ILI_mean, lag_ILI_se_gt) / len(lag_ILI_mean_gt)
+        wls_p_correct = wmse(p_correct_mean_gt, p_correct_mean, p_correct_se_gt)
+        wls_p_PLI = wmse(p_PLI_mean_gt, p_PLI_mean, p_PLI_se_gt)
+        wls_p_ILI = wmse(p_ILI_mean_gt, p_ILI_mean, p_ILI_se_gt)
+        wls_lag_PLI = wmse(lag_PLI_mean_gt, lag_PLI_mean, lag_PLI_se_gt) / len(lag_PLI_mean_gt)
+        wls_lag_ILI = wmse(lag_ILI_mean_gt, lag_ILI_mean, lag_ILI_se_gt) / len(lag_ILI_mean_gt)
         err = wls_p_correct + wls_p_PLI + wls_p_ILI + wls_lag_PLI + wls_lag_ILI
         cmr_stats = {"err": err, "params": param_vec, "stats": [p_correct_mean, p_PLI_mean, p_ILI_mean, lag_PLI_mean, lag_ILI_mean]}
 
@@ -1157,143 +1346,6 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
     ## SIMU8 ##
     elif simu_name == "8":
 
-        # --- g1 cued recall  ---
-        # param_dict.update(nitems_in_accumulator=16, ban_recall=np.arange(1, 17))
-        # df_study_g1 = df_study.query("group == 1").copy()
-        # df_test_g1 = df_test.query("group == 1").copy()
-        # df_test_g1 = df_test_g1.rename(columns={"test_itemno1": "test_itemno", "test_item1": "test_item"})
-        # df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
-        # df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study_g1, df_test_g1, sem_mat, disable_tqdm=True)
-        # df_simu = df_simu.merge(df_test_g1, on=["session", "list", "test_itemno"])
-        # df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
-        # correct_rate = sum(df_simu.correct) / len(df_simu.correct)
-        # face_distance = np.load("../../Analysis/simu8_cr_sim/data/simu8_distance.npy")
-        # thresh = 3.0
-        # def get_distance(df_tmp):
-        #     faces = np.unique(df_tmp.test_itemno)
-        #     face_dist = {}
-        #     for face in faces:
-        #         this_dist = []
-        #         for other_face in faces:
-        #             if face != other_face:
-        #                 this_dist.append(face_distance[face - 1, other_face - 1])
-        #         this_dist = np.array(this_dist)
-        #         face_dist[face] = this_dist
-        #     y = df_tmp.apply(lambda x: face_dist[x["test_itemno"]], axis=1)
-        #     return y
-        # df_simu["distance"] = df_simu.groupby("session").apply(get_distance).to_frame(name="distance").reset_index()["distance"]
-        # df_simu["neighbour"] = df_simu.apply(lambda x: sum(x["distance"] < thresh), axis=1)
-        # distance_lsts = df_simu["distance"].to_list()
-        # df_simu.drop(columns=["distance"], inplace=True)
-        # df_simu["neighbour_group"] = df_simu.apply(lambda x: 6 if x["neighbour"] == 7 else x["neighbour"], axis=1)
-        # df_neighbour_group = df_simu.query("neighbour_group > 0").groupby("neighbour_group").correct.mean().reset_index()
-        # neighbor_mean = df_neighbour_group["correct"].to_numpy()
-        # try:
-        #     def get_ILI(df_tmp):
-        #         resp_names = df_tmp["s_resp"].values
-        #         study_names = df_tmp["correct_ans"].values
-        #         is_studied = np.isin(resp_names, study_names)
-        #         is_incorrect = df_tmp["correct"] == False
-        #         is_ILI = is_studied & is_incorrect
-        #         return is_ILI
-        #     df_simu["ILI"] = df_simu.groupby("session").apply(get_ILI).to_frame(name="ILI").reset_index()["ILI"].to_list()
-        #     df_ILI = df_simu.query("ILI == True").copy()
-        #     sess_name_face = {}
-        #     for sess in df_study_g1.session.unique():
-        #         sess_name_face[sess] = df_study_g1.query(f"session == {sess}")[["study_itemno1", "study_itemno2"]].set_index("study_itemno2").to_dict()["study_itemno1"]
-        #     df_ILI["resp_face"] = df_ILI.apply(lambda x: sess_name_face[x["session"]][x["s_resp"]], axis=1)
-        #     df_ILI["resp_corr_distance"] = df_ILI.apply(lambda x: face_distance[x["test_itemno"] - 1, x["resp_face"] - 1], axis=1)
-        #     df_ILI["distance_bin"] = df_ILI.apply(lambda x: str(0.5 * (x["resp_corr_distance"] // 0.5 + 1)) if x["resp_corr_distance"] < 3.5 else ">3.5", axis=1)
-        #     df_ILI["distance_bin"] = pd.Categorical(df_ILI["distance_bin"], categories=["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", ">3.5"], ordered=True)
-        #     distance_cnt = {}
-        #     for lst in distance_lsts:
-        #         for d in lst:
-        #             d_group = str(0.5 * (d // 0.5 + 1)) if d < 3.5 else ">3.5"
-        #             if d_group in distance_cnt:
-        #                 distance_cnt[d_group] += 1
-        #             else:
-        #                 distance_cnt[d_group] = 1
-        #     df_ILI_distance = df_ILI.groupby("distance_bin")["test_itemno"].count().to_frame(name="ILI_cnt").reset_index()
-        #     df_ILI_distance["ILI_poss"] = df_ILI_distance.apply(lambda x: distance_cnt[x["distance_bin"]], axis=1)
-        #     df_ILI_distance["ILI_prob"] = df_ILI_distance["ILI_cnt"] / df_ILI_distance["ILI_poss"]
-        #     ILI_mean = df_ILI_distance["ILI_prob"].to_numpy()
-        # except:
-        #     ILI_mean = np.full(7, 0)
-        # with open("../../Analysis/simu8_cr_sim/data/simu8_gt.json") as f:
-        #     _gt = json.load(f)
-        # neighbor_mean_gt = np.array(_gt["exp1_neighbor_mean"])
-        # neighbor_se_gt = np.array(_gt["exp1_neighbor_se"])
-        # ILI_mean_gt = np.array(_gt["exp1_ILI_mean"])
-        # ILI_se_gt = np.array(_gt["exp1_ILI_se"])
-        # wls_neighbor = get_wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
-        # wls_ILI = get_wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
-        # err = wls_neighbor + wls_ILI
-        # if correct_rate < 0.6:
-        #     err += 5
-        # cmr_stats = {"err": err, "params": param_vec, "stats": [neighbor_mean, ILI_mean]}
-
-        # --- g2 associative recognition (test 1 only) ---
-        # param_dict.update(nitems_in_accumulator=32, ban_recall=np.arange(1, 17), learn_while_retrieving=True)
-        # param_dict.update(beta_rec=0.5, kappa=0.5, lamb=0.2, eta=0.2, omega=10, alpha=1, c_thresh=1, rec_time_limit=1000.)
-        # df_study_g2 = df_study.query("group == 2").copy()
-        # df_test_g2 = df_test.query("group == 2").copy()
-        # df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3", disable_tqdm=True)
-        # df_simu["test"] = df_test_g2["test"].values
-        # df_simu = df_simu.merge(df_test_g2, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
-        # df_recog = df_simu.query("test == 1").copy()
-        #
-        # # Face density effect on HR/FAR
-        # face_distance = np.load("../../Analysis/simu8_cr_sim/data/simu8_distance.npy")
-        # thresh = 3.0
-        # neighbour_count = ((face_distance < thresh) & (face_distance > 0)).sum(axis=1)
-        # df_recog["neighbour"] = df_recog["test_itemno1"].apply(lambda f: neighbour_count[f - 1])
-        # df_recog["density"] = pd.cut(df_recog["neighbour"], [4, 6, 8, 10], labels=["low", "medium", "high"])
-        # df_recog["yes"] = (df_recog["s_resp"] == 1).astype(int)
-        # df_hr = df_recog.query("correct_ans == 1").groupby("density", observed=True).yes.mean().reset_index(name="HR")
-        # df_far = df_recog.query("correct_ans == 0").groupby("density", observed=True).yes.mean().reset_index(name="FAR")
-        # hr_mean = df_hr["HR"].to_numpy()
-        # far_mean = df_far["FAR"].to_numpy()
-        #
-        # # Probe distance effect on yes rate
-        # sess_name_face = {sess: grp.set_index("study_itemno2")["study_itemno1"].to_dict()
-        #                   for sess, grp in df_study_g2.groupby("session")}
-        # lure_edges = [0.5, 1.5, 2.5, 3.5, 4.5]
-        # lure_labels = ["1.5", "2.5", "3.5", "4.5"]
-        # def get_probe_distance(x):
-        #     if x["correct_ans"] == 1:
-        #         return 0.0
-        #     resp_face = sess_name_face[x["session"]][x["test_itemno2"]]
-        #     return face_distance[x["test_itemno1"] - 1, resp_face - 1]
-        # df_recog["probe_distance"] = df_recog.apply(get_probe_distance, axis=1)
-        # df_recog["distance_bin"] = np.where(
-        #     df_recog["correct_ans"] == 1, "Targets",
-        #     pd.cut(df_recog["probe_distance"], lure_edges, labels=lure_labels).astype(object)
-        # )
-        # dbin_order = ["Targets"] + lure_labels
-        # yesdist_mean = df_recog.groupby("distance_bin").yes.mean().reindex(dbin_order).to_numpy()
-        #
-        # # Get error
-        # with open("../../Analysis/simu8_cr_sim/data/simu8_gt.json") as f:
-        #     _gt = json.load(f)
-        # hr_mean_gt = np.array(_gt["exp3_neighbor_hr_mean"])
-        # hr_se_gt = np.array(_gt["exp3_neighbor_hr_se"])
-        # far_mean_gt = np.array(_gt["exp3_neighbor_far_mean"])
-        # far_se_gt = np.array(_gt["exp3_neighbor_far_se"])
-        # yesdist_mean_gt = np.array(_gt["exp3_yesdist_mean"])
-        # yesdist_se_gt = np.array(_gt["exp3_yesdist_se"])
-        # wls_hr = get_wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
-        # wls_far = get_wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
-        # wls_yesdist = get_wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
-        # err = wls_hr * 10 + wls_far * 10 + wls_yesdist
-        #
-        # if np.any(np.diff(hr_mean) > 0):
-        #     err += 10
-        # if np.any(np.diff(far_mean) < 0):
-        #     err += 10
-        #
-        # cmr_stats = {"err": err, "params": param_vec, "stats": [hr_mean, far_mean, yesdist_mean]}
-
-        # --- Full fit: g1 cued recall + g2 recognition & final cued recall ---
         # Shared face distance matrix and ground truth
         face_distance = np.load("../../Analysis/simu8_cr_sim/data/simu8_distance.npy")
         thresh = 3.0
@@ -1306,137 +1358,31 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         df_test_g1 = df_test.query("group == 1").copy()
         df_test_g1 = df_test_g1.rename(columns={"test_itemno1": "test_itemno", "test_item1": "test_item"})
         df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
-        df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study_g1, df_test_g1, sem_mat, disable_tqdm=True)
-        df_simu = df_simu.merge(df_test_g1, on=["session", "list", "test_itemno"])
-        df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
-        correct_rate = sum(df_simu.correct) / len(df_simu.correct)
-
-        # g1: neighbourhood effect on correct rate
-        def get_distance(df_tmp):
-            faces = np.unique(df_tmp.test_itemno)
-            face_dist = {}
-            for face in faces:
-                this_dist = []
-                for other_face in faces:
-                    if face != other_face:
-                        this_dist.append(face_distance[face - 1, other_face - 1])
-                this_dist = np.array(this_dist)
-                face_dist[face] = this_dist
-            y = df_tmp.apply(lambda x: face_dist[x["test_itemno"]], axis=1)
-            return y
-        df_simu["distance"] = df_simu.groupby("session").apply(get_distance).to_frame(name="distance").reset_index()["distance"]
-        df_simu["neighbour"] = df_simu.apply(lambda x: sum(x["distance"] < thresh), axis=1)
-        distance_lsts = df_simu["distance"].to_list()
-        df_simu.drop(columns=["distance"], inplace=True)
-        df_simu["neighbour_group"] = df_simu.apply(lambda x: 6 if x["neighbour"] == 7 else x["neighbour"], axis=1)
-        df_neighbour_group = df_simu.query("neighbour_group > 0").groupby("neighbour_group").correct.mean().reset_index()
-        neighbor_mean = df_neighbour_group["correct"].to_numpy()
-
-        # g1: ILI by distance bin
         try:
-            def get_ILI(df_tmp):
-                resp_names = df_tmp["s_resp"].values
-                study_names = df_tmp["correct_ans"].values
-                is_studied = np.isin(resp_names, study_names)
-                is_incorrect = not df_tmp["correct"]
-                is_ILI = is_studied & is_incorrect
-                return is_ILI
-            df_simu["ILI"] = df_simu.groupby("session").apply(get_ILI).to_frame(name="ILI").reset_index()["ILI"].to_list()
-            df_ILI = df_simu.query("ILI == True").copy()
-            sess_name_face_g1 = {}
-            for sess in df_study_g1.session.unique():
-                sess_name_face_g1[sess] = df_study_g1.query(f"session == {sess}")[["study_itemno1", "study_itemno2"]].set_index("study_itemno2").to_dict()["study_itemno1"]
-            df_ILI["resp_face"] = df_ILI.apply(lambda x: sess_name_face_g1[x["session"]][x["s_resp"]], axis=1)
-            df_ILI["resp_corr_distance"] = df_ILI.apply(lambda x: face_distance[x["test_itemno"] - 1, x["resp_face"] - 1], axis=1)
-            df_ILI["distance_bin"] = df_ILI.apply(lambda x: str(0.5 * (x["resp_corr_distance"] // 0.5 + 1)) if x["resp_corr_distance"] < 3.5 else ">3.5", axis=1)
-            df_ILI["distance_bin"] = pd.Categorical(df_ILI["distance_bin"], categories=["1.0", "1.5", "2.0", "2.5", "3.0", "3.5", ">3.5"], ordered=True)
-            distance_cnt = {}
-            for lst in distance_lsts:
-                for d in lst:
-                    d_group = str(0.5 * (d // 0.5 + 1)) if d < 3.5 else ">3.5"
-                    if d_group in distance_cnt:
-                        distance_cnt[d_group] += 1
-                    else:
-                        distance_cnt[d_group] = 1
-            df_ILI_distance = df_ILI.groupby("distance_bin")["test_itemno"].count().to_frame(name="ILI_cnt").reset_index()
-            df_ILI_distance["ILI_poss"] = df_ILI_distance.apply(lambda x: distance_cnt[x["distance_bin"]], axis=1)
-            df_ILI_distance["ILI_prob"] = df_ILI_distance["ILI_cnt"] / df_ILI_distance["ILI_poss"]
-            ILI_mean = df_ILI_distance["ILI_prob"].to_numpy()
-        except Exception:
-            ILI_mean = np.full(7, 0)
-
-        # g1: weighted errors
-        neighbor_mean_gt = np.array(_gt["exp1_neighbor_mean"])
-        neighbor_se_gt = np.array(_gt["exp1_neighbor_se"])
-        ILI_mean_gt = np.array(_gt["exp1_ILI_mean"])
-        ILI_se_gt = np.array(_gt["exp1_ILI_se"])
-        wls_neighbor = get_wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
-        wls_ILI = get_wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
+            with _time_limit(_EVAL_TIMEOUT):
+                df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study_g1, df_test_g1, sem_mat, disable_tqdm=True)
+        except _EvalTimeout:
+            return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec, "timeout": "g1"}
+        df_simu = df_simu.merge(df_test_g1, on=["session", "list", "test_itemno"])
+        neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI = _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, _gt)
 
         # g2: run recognition + final cued recall
-        param_dict.update(nitems_in_accumulator=32, ban_recall=np.arange(1, 17), learn_while_retrieving=True, rec_time_limit=1000.)
+        param_dict.update(nitems_in_accumulator=32, ban_recall=np.arange(1, 17), learn_while_retrieving=True)
         df_study_g2 = df_study.query("group == 2").copy()
         df_test_g2 = df_test.query("group == 2").copy()
-        df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3", disable_tqdm=True)
+        try:
+            with _time_limit(_EVAL_TIMEOUT):
+                df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3", disable_tqdm=True)
+        except _EvalTimeout:
+            return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec, "timeout": "g2"}
         df_simu["test"] = df_test_g2["test"].values
         df_simu = df_simu.merge(df_test_g2, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
         df_recog = df_simu.query("test == 1").copy()
         df_cr = df_simu.query("test == 2").copy()
-        sess_name_face_g2 = {sess: grp.set_index("study_itemno2")["study_itemno1"].to_dict() for sess, grp in df_study_g2.groupby("session")}
-
-        # g2: face density effect on HR/FAR
-        neighbour_count = ((face_distance < thresh) & (face_distance > 0)).sum(axis=1)
-        df_recog["neighbour"] = df_recog["test_itemno1"].apply(lambda f: neighbour_count[f - 1])
-        df_recog["density"] = pd.cut(df_recog["neighbour"], [4, 6, 8, 10], labels=["low", "medium", "high"])
-        df_recog["yes"] = (df_recog["s_resp"] == 1).astype(int)
-        df_hr = df_recog.query("correct_ans == 1").groupby("density", observed=True).yes.mean().reset_index(name="HR")
-        df_far = df_recog.query("correct_ans == 0").groupby("density", observed=True).yes.mean().reset_index(name="FAR")
-        hr_mean = df_hr["HR"].to_numpy()
-        far_mean = df_far["FAR"].to_numpy()
-
-        # g2: probe distance effect on yes rate
-        lure_edges = [0.5, 1.5, 2.5, 3.5, 4.5]
-        lure_labels = ["1.5", "2.5", "3.5", "4.5"]
-        def get_probe_distance(x):
-            if x["correct_ans"] == 1:
-                return 0.0
-            resp_face = sess_name_face_g2[x["session"]][x["test_itemno2"]]
-            return face_distance[x["test_itemno1"] - 1, resp_face - 1]
-        df_recog["probe_distance"] = df_recog.apply(get_probe_distance, axis=1)
-        df_recog["distance_bin"] = np.where(df_recog["correct_ans"] == 1, "Targets", pd.cut(df_recog["probe_distance"], lure_edges, labels=lure_labels).astype(object))
-        dbin_order = ["Targets"] + lure_labels
-        yesdist_mean = df_recog.groupby("distance_bin").yes.mean().reindex(dbin_order).to_numpy()
-
-        # g2: final cued recall by recalled-name distance
-        fin_edges = [-0.5, 0.5, 1.5, 2.5, 3.5, 4.5]
-        fin_labels = ["0", "1.5", "2.5", "3.5", "4.5"]
-        df_cr["correct"] = df_cr["s_resp"] == df_cr["correct_ans"]
-        df_recalled = df_cr.query("s_resp > 0").copy()
-        df_recalled["resp_face"] = df_recalled.apply(lambda x: x["test_itemno1"] if x["correct"] else sess_name_face_g2[x["session"]][x["s_resp"]], axis=1)
-        df_recalled["resp_distance"] = df_recalled.apply(lambda x: face_distance[x["test_itemno1"] - 1, x["resp_face"] - 1], axis=1)
-        df_recalled["distance_bin"] = pd.cut(df_recalled["resp_distance"], fin_edges, labels=fin_labels)
-        recall_poss = pd.cut(face_distance[df_cr["test_itemno1"].to_numpy() - 1, :].ravel(), fin_edges, labels=fin_labels).value_counts()
-        df_recall_distance = df_recalled.groupby("distance_bin", observed=False).size().to_frame(name="recall_cnt").reset_index()
-        df_recall_distance["recall_poss"] = df_recall_distance["distance_bin"].map(recall_poss)
-        df_recall_distance["recall_prob"] = df_recall_distance["recall_cnt"] / df_recall_distance["recall_poss"]
-        crdist_mean = df_recall_distance["recall_prob"].to_numpy()
-
-        # g2: weighted errors
-        hr_mean_gt = np.array(_gt["exp3_neighbor_hr_mean"])
-        hr_se_gt = np.array(_gt["exp3_neighbor_hr_se"])
-        far_mean_gt = np.array(_gt["exp3_neighbor_far_mean"])
-        far_se_gt = np.array(_gt["exp3_neighbor_far_se"])
-        yesdist_mean_gt = np.array(_gt["exp3_yesdist_mean"])
-        yesdist_se_gt = np.array(_gt["exp3_yesdist_se"])
-        crdist_mean_gt = np.array(_gt["exp3_crdist_mean"])
-        crdist_se_gt = np.array(_gt["exp3_crdist_se"])
-        wls_hr = get_wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
-        wls_far = get_wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
-        wls_yesdist = get_wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
-        wls_crdist = get_wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
+        hr_mean, far_mean, yesdist_mean, crdist_mean, wls_hr, wls_far, wls_yesdist, wls_crdist = _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, _gt)
 
         # Combine g1 + g2 into one error
-        err = wls_neighbor + wls_ILI + wls_hr + wls_far + wls_yesdist + wls_crdist
+        err = wls_neighbor + wls_ILI + wls_hr * 10 + wls_far * 10 + wls_yesdist + wls_crdist
         if correct_rate < 0.6:
             err += 5
         if np.any(np.diff(hr_mean) > 0):
@@ -1445,20 +1391,20 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             err += 10
         cmr_stats = {"err": err, "params": param_vec, "stats": [neighbor_mean, ILI_mean, hr_mean, far_mean, yesdist_mean, crdist_mean]}
 
-    
+
     ## SIMUS1 ##
     elif simu_name == "S1":
 
         # Separate 3 groups of simulation
         stats = []
         for i in [1, 2, 3]:
-            
+
             df_study_gp = df_study.query(f"group == {i}").copy()
             df_test_gp = df_test.query(f"group == {i}").copy()
             mode = "Recog-CR"
             design = "S1G3" if i == 3 else None
             nitems = 4 * 48
-            
+
             # Run model
             param_dict.update(nitems_in_accumulator=nitems, learn_while_retrieving=True, rec_time_limit=10000)
             df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_gp, df_test_gp, sem_mat, mode=mode, design=design, disable_tqdm=True)
@@ -1470,7 +1416,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             stats_gp = []
             for subj in subjects:
                 df_subj = df_simu.query(f"subject == {subj}").copy()
-                stats_gp.append(list(anal_perform_S1(df_subj)))
+                stats_gp.append(list(_simuS1_subj_stats(df_subj)))
             stats_mean = np.mean(stats_gp, axis=0)
             stats.append(list(stats_mean))
 
@@ -1480,7 +1426,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             _gt = json.load(f)
         ground_truth = np.array([_gt["g1_mean"], _gt["g2_mean"], _gt["g3_mean"]])
         err = np.sum(np.power(stats - ground_truth, 2))
-        
+
         # Apply some constraints that pair FAR should not be 0
         if stats[1, 2] == 0:
             err += 1
@@ -1488,8 +1434,8 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         if return_df:
             return err, cmr_stats, df_simu
-    
-    
+
+
     ## SIMUS2 ##
     elif simu_name == "S2":
 
@@ -1531,7 +1477,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         stats = []
         for subj in subjects:
             df_subj = df_simu.query(f"subject=={subj} and list % 3 != 0")
-            stats_subj = anal_perform_S2(df_subj)
+            stats_subj = _simuS2_subj_stats(df_subj)
             stats.append(stats_subj)
 
         # Score the model's behavioral stats as compared with the true data

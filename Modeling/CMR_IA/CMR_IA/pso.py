@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import json
 import errno
 import functools
 import numpy as np
@@ -8,7 +9,7 @@ import pickle as pkl
 from CMR_IA.fitting import make_boundary, obj_func
 
 
-def make_noise(S, max_iter, lb, ub, path):
+def make_noise(S, max_iter, lb, ub, path, seed=None, radius_frac=0.1):
     """
     Make the noise matrices ahead of time for the particle swarm so that all
     parallel instances perform the same operations on each parameter set.
@@ -18,6 +19,11 @@ def make_noise(S, max_iter, lb, ub, path):
     :param lb: Lower bounds of the parameter space.
     :param ub: Upper bounds of the parameter space.
     :param path: Directory path to write noise files into.
+    :param seed: Optional seed parameter vector to cluster initial particle
+        locations around (a warm start). If None, particles are initialized
+        uniformly over the full [lb, ub] box.
+    :param radius_frac: Half-width of the seeded init region, as a fraction of
+        each parameter's (ub - lb) range. Only used when seed is provided.
     """
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
 
@@ -27,10 +33,18 @@ def make_noise(S, max_iter, lb, ub, path):
     try:
         f = os.open(path + 'rx', flags)
         os.close(f)
-        rx = np.random.uniform(size=(S, D))
         lb_mat = np.atleast_2d(lb).repeat(S, axis=0)
         ub_mat = np.atleast_2d(ub).repeat(S, axis=0)
-        rx = lb_mat + rx * (ub_mat - lb_mat)
+        if seed is None:
+            # Uniform over the full search box
+            rx = np.random.uniform(size=(S, D))
+            rx = lb_mat + rx * (ub_mat - lb_mat)
+        else:
+            # Warm start: jitter every particle within radius of the seed
+            seed = np.asarray(seed, dtype=float)
+            radius = radius_frac * (np.asarray(ub, dtype=float) - np.asarray(lb, dtype=float))
+            jitter = np.random.uniform(-1, 1, size=(S, D)) * radius
+            rx = np.clip(seed + jitter, lb_mat, ub_mat)
         np.savetxt(path + 'rx', rx)
     except OSError as e:
         if e.errno == errno.EEXIST:
@@ -56,7 +70,7 @@ def make_noise(S, max_iter, lb, ub, path):
 def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
         omega_min=.8, omega_max=.8, d_omega=.1, c1=2, c2=2, c3=0.5, c4=0.5, R=1,
         c2_min=.5, c2_max=2.5, hard_bounds=False, maxiter=100, algorithm='pso',
-        optfile=None, outdir='outfiles/', noise_dir='noise_files/'):
+        optfile=None, outdir='outfiles/', noise_dir='noise_files/', reclaim_after=1200):
     """
     Runs particle swarm optimization (PSO).
 
@@ -110,6 +124,8 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
         Directory for output files (Default: 'outfiles/')
     noise_dir : string
         Directory for pre-generated noise files (Default: 'noise_files/')
+    reclaim_after : scalar
+        Seconds an empty tempfile may sit before reclaim. Override with the CMR_RECLAIM_AFTER env var. (Default: 1200)
 
     Returns
     =======
@@ -161,6 +177,9 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
     # os.O_EXCL --> error if create and file exists
     # os.O_WRONLY --> open for writing only
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
+
+    # Allow tuning the stale-claim reclaim threshold without editing code.
+    reclaim_after = float(os.environ.get('CMR_RECLAIM_AFTER', reclaim_after))
 
     ##########
     #
@@ -330,30 +349,32 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     time.sleep(2)
 
         else:
-            # For each particle, test the model with parameters corresponding to that particle's location
-            for i in range(S):
+            # Evaluate particle i and fill its (already-claimed) tempfile via the open file descriptor fd
+            def run_particle(i, fd):
                 oob = np.any((x[i, :] < lb) | (x[i, :] > ub))
-                match_file = outdir + str(it) + 'tempfile' + str(i) + '.txt'
-                try:
-                    # Try to open the tempfile; if it already exists, skip to the next particle
-                    fd = os.open(match_file, flags)
+                if not oob:
+                    print('Running model for particle %s...' % i)
+                    err, stats = func(x[i, :], df_study, df_test, sem_mat, sources)
+                    print('Model finished with a fitness score of %s!' % err)
+                else:
+                    print('Skipping out-of-bounds particle %s...' % i)
+                    err = np.nan
+                    stats = {}
 
-                    if not oob:
-                        print('Running model for particle %s...' % i)
-                        err, stats = func(x[i, :], df_study, df_test, sem_mat, sources)
-                        print('Model finished with a fitness score of %s!' % err)
-                    else:
-                        print('Skipping out-of-bounds particle %s...' % i)
-                        err = np.nan
-                        stats = {}
-
-                    with open(outdir + str(it) + 'data' + str(i) + '.pkl', 'wb') as f:
-                        pkl.dump(stats, f, 2)
+                with open(outdir + str(it) + 'data' + str(i) + '.pkl', 'wb') as f:
+                    pkl.dump(stats, f, 2)
 
                     file_input = str(err)
                     os.write(fd, file_input.encode())
                     os.close(fd)
 
+            # For each particle, test the model with parameters corresponding to that particle's location
+            for i in range(S):
+                match_file = outdir + str(it) + 'tempfile' + str(i) + '.txt'
+                try:
+                    # Try to claim the tempfile; if it already exists, skip to the next particle
+                    fd = os.open(match_file, flags)
+                    run_particle(i, fd)
                 except OSError as e:
                     if e.errno == errno.EEXIST:
                         print('Model for particle %s already complete! Skipping...' % i)
@@ -363,11 +384,25 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
 
             # Wait until all parallel jobs have finished running the models for the current iteration
             while True:
+                all_done = True
                 for i in range(S):
                     path = outdir + '%stempfile%s.txt' % (it, i)
-                    if not (os.path.exists(path) and os.path.getsize(path) > 0.0):
-                        break
-                else:
+                    if os.path.exists(path) and os.path.getsize(path) > 0.0:
+                        continue
+                    all_done = False
+                    # Reclaim if an empty tempfile has gone stale (e.g., because of a killed worker)
+                    if not (os.path.exists(path) and os.path.getsize(path) == 0.0 and time.time() - os.path.getmtime(path) > reclaim_after):
+                        continue
+                    try:
+                        os.remove(path)
+                        fd = os.open(path, flags)
+                    except OSError as e:
+                        if e.errno in (errno.EEXIST, errno.ENOENT):
+                            continue  # another survivor is already reclaiming it
+                        raise
+                    print('Reclaiming stale particle %s (claimant likely died)...' % i)
+                    run_particle(i, fd)
+                if all_done:
                     break
                 time.sleep(2)
 
@@ -440,7 +475,7 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
     return gb, fgb
 
 
-def run_pso(simu_name, df_study, df_test, sem_mat, swarm_size=200, n_iter=200, sources=None, outdir="outfiles/", noise_dir="noise_files/"):
+def run_pso(simu_name, df_study, df_test, sem_mat, swarm_size=200, n_iter=200, sources=None, outdir="outfiles/", noise_dir="noise_files/", seed_file=None, seed_radius_frac=0.1):
     """
     Set up and run PSO for a given simulation.
 
@@ -451,6 +486,10 @@ def run_pso(simu_name, df_study, df_test, sem_mat, swarm_size=200, n_iter=200, s
     :param sources: Source information.
     :param outdir: Directory for PSO output files.
     :param noise_dir: Directory for pre-generated noise files.
+    :param seed_file: Optional path to a JSON of parameter values to warm-start
+        from. Must contain every parameter being fitted for this simulation.
+    :param seed_radius_frac: Half-width of the seeded init region, as a fraction
+        of each parameter's range. Only used when seed_file is provided.
     """
     os.makedirs(outdir, exist_ok=True)
     os.makedirs(noise_dir, exist_ok=True)
@@ -472,10 +511,22 @@ def run_pso(simu_name, df_study, df_test, sem_mat, swarm_size=200, n_iter=200, s
     hard_bounds = False
 
     # Set parameter boundaries and bind simu_name into the objective function
-    lb, ub, _ = make_boundary(simu_name)
+    lb, ub, what_to_fit = make_boundary(simu_name)
     func = functools.partial(obj_func, simu_name=simu_name)
+
+    # Build a seed vector for a warm start, if a seed file was provided
+    seed = None
+    if seed_file is not None:
+        with open(seed_file) as f:
+            seed_dict = json.load(f)
+        missing = [p for p in what_to_fit if p not in seed_dict]
+        if missing:
+            raise ValueError("Seed file %s is missing fitted parameters: %s" % (seed_file, missing))
+        seed = [seed_dict[p] for p in what_to_fit]
+        print('Seeding initial particles around:', dict(zip(what_to_fit, seed)))
+
     print('Generating noise files...')
-    make_noise(swarmsize, n_iter, lb, ub, noise_dir)
+    make_noise(swarmsize, n_iter, lb, ub, noise_dir, seed=seed, radius_frac=seed_radius_frac)
 
     print('Initiating particle swarm optimization...')
     start_time = time.time()

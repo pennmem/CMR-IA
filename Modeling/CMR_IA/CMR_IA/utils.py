@@ -182,3 +182,11 @@ def param_vec_to_dict(param_vec, simu_name):
     for name, value in zip(what_to_fit, param_vec):
         param_dict[name] = value
     return param_dict
+
+
+def wmse(y_true, y_pred, y_std):
+    return np.sum((y_true - y_pred) ** 2 / y_std**2)
+
+
+def Yule_Q(A, B, C, D):
+    return (A * D - B * C) / (A * D + B * C)
