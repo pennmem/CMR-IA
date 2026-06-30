@@ -5,6 +5,7 @@ import pandas as pd
 import json
 from contextlib import contextmanager
 from CMR_IA.utils import make_params, param_vec_to_dict, wmse, Yule_Q
+from CMR_IA.analysis import compute_roc_core
 from CMR_IA import _core as cmr
 
 
@@ -678,18 +679,9 @@ def _simu2_stats(df_simu, gt):
     base_thresh = df_simu["thresh"].to_numpy()[keep]
     session = df_simu["session"].to_numpy()[keep]
 
-    # (session, level) cells, then collapse cells to per-level means
-    cells, cell_inv = np.unique(np.column_stack([session, level]), axis=0, return_inverse=True)
-    cell_level = cells[:, 1]
-    cell_cnt = np.bincount(cell_inv)
-    level_cnt = np.bincount(cell_level, minlength=4)
-
+    # Threshold sweep -> per-level ROC (cols 0 new_r, 1 new_a, 2 old_r, 3 old_a)
     thresh_arr = np.arange(0, 2, 0.001)
-    roc = np.empty((len(thresh_arr), 4))
-    for ti, t in enumerate(thresh_arr):
-        above = (csim > t * base_thresh).astype(float)
-        cell_mean = np.bincount(cell_inv, weights=above, minlength=len(cells)) / cell_cnt
-        roc[ti] = np.bincount(cell_level, weights=cell_mean, minlength=4) / level_cnt
+    roc = compute_roc_core(csim, base_thresh, session, level, thresh_arr, 4)
 
     far_a, hr_a = np.sort(roc[:, 1]), np.sort(roc[:, 3])
     far_r, hr_r = np.sort(roc[:, 0]), np.sort(roc[:, 2])

@@ -23,7 +23,7 @@ from matplotlib.lines import Line2D
 import CMR_IA as cmr
 import json
 
-from CMR_IA.fitting import _simu2_stats
+from CMR_IA.fitting import _simu2_stats, _roc_interp
 
 cmr.analysis.setup_notebook()
 
@@ -209,8 +209,9 @@ hr_a_gt = np.array(gt["hr_a"])
 far_r_gt = np.array(gt["far_r"])
 hr_r_gt = np.array(gt["hr_r"])
 
-hr_a_interp = cmr.analysis.interpolate_roc(df_roc["new_a"].to_numpy(), df_roc["old_a"].to_numpy(), far_a_gt)
-hr_r_interp = cmr.analysis.interpolate_roc(df_roc["new_r"].to_numpy(), df_roc["old_r"].to_numpy(), far_r_gt)
+# _roc_interp expects ascending far/hr, so sort the monotone ROC columns first
+hr_a_interp = _roc_interp(np.sort(df_roc["new_a"].to_numpy()), np.sort(df_roc["old_a"].to_numpy()), far_a_gt)
+hr_r_interp = _roc_interp(np.sort(df_roc["new_r"].to_numpy()), np.sort(df_roc["old_r"].to_numpy()), far_r_gt)
 err = np.sum((hr_a_interp - hr_a_gt) ** 2) + np.sum((hr_r_interp - hr_r_gt) ** 2)
 print(f"ROC error: {err}")
 print(f"Adjacent ordering preserved: {np.all((hr_a_interp > hr_r_interp)[1:])}")

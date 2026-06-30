@@ -34,27 +34,48 @@ def setup_notebook(fallback_font_path=None):
     pd.set_option("display.max_columns", None)
 
 
+def compute_roc_core(csim, base_thresh, session, level, thresh_arr, n_levels):
+    """Sweep a threshold multiplier over csim/base_thresh to build an ROC curve.
+
+    Canonical numpy implementation shared by the plotting wrapper below and by
+    the fitting objective function. ``level`` is an integer-code array in
+    [0, n_levels). For each threshold t, classifies trials as 'above threshold'
+    (csim > t * base_thresh), averages per (session, level), then collapses
+    across sessions. Returns a (len(thresh_arr), n_levels) array of fractions.
+    """
+    csim = np.asarray(csim, dtype=float)
+    base_thresh = np.asarray(base_thresh, dtype=float)
+    level = np.asarray(level, dtype=np.int64)
+
+    # (session, level) cells; collapse cells to per-level means
+    cells, cell_inv = np.unique(np.column_stack([np.asarray(session), level]), axis=0, return_inverse=True)
+    cell_level = cells[:, 1]
+    cell_cnt = np.bincount(cell_inv)
+    level_cnt = np.bincount(cell_level, minlength=n_levels)
+
+    roc = np.empty((len(thresh_arr), n_levels))
+    for ti, t in enumerate(thresh_arr):
+        above = (csim > t * base_thresh).astype(float)
+        cell_mean = np.bincount(cell_inv, weights=above, minlength=len(cells)) / cell_cnt
+        roc[ti] = np.bincount(cell_level, weights=cell_mean, minlength=n_levels) / level_cnt
+    return roc
+
+
 def compute_roc(df, thresh_arr=None, csim_col="csim", thresh_col="thresh", level_col="level", session_col="session"):
     """Sweep a threshold multiplier over csim/thresh to build an ROC curve.
 
-    Returns a DataFrame with one row per threshold value and one column per
-    level (e.g. new_a, new_r, old_a, old_r), containing the fraction of
-    trials classified as 'above threshold', averaged over sessions.
+    Thin DataFrame wrapper around compute_roc_core. Returns a DataFrame with one
+    row per threshold value and one column per level (e.g. new_a, new_r, old_a,
+    old_r, sorted), containing the fraction of trials classified as 'above
+    threshold', averaged over sessions.
     """
     if thresh_arr is None:
         thresh_arr = np.arange(0, 2, 0.001)
 
-    df_thin = df[[csim_col, thresh_col, level_col, session_col]].copy()
-    csim_vec = df_thin[csim_col].to_numpy()
-    base_thresh_vec = df_thin[thresh_col].to_numpy()
-
-    rows = []
-    for t in thresh_arr:
-        df_thin["above"] = csim_vec > t * base_thresh_vec
-        df_lv = df_thin.groupby([session_col, level_col])["above"].mean().groupby(level_col).mean()
-        rows.append(df_lv)
-
-    return pd.concat(rows, axis=1, ignore_index=True).T.reset_index(drop=True)
+    # Map level labels to integer codes in sorted order (matches pandas groupby)
+    levels, level_code = np.unique(df[level_col].to_numpy(), return_inverse=True)
+    roc = compute_roc_core(df[csim_col].to_numpy(), df[thresh_col].to_numpy(), df[session_col].to_numpy(), level_code, thresh_arr, len(levels))
+    return pd.DataFrame(roc, columns=levels)
 
 
 def compute_zroc(df_roc):
@@ -66,25 +87,3 @@ def compute_zroc(df_roc):
     for col in df_roc.columns:
         df_z[f"z_{col}"] = ss.norm.ppf(df_roc[col].to_numpy())
     return df_z
-
-
-def interpolate_roc(far_arr, hr_arr, far_gt):
-    """Linearly interpolate HR values at specified FAR ground-truth points.
-
-    Both far_arr and hr_arr are sorted ascending before interpolation,
-    which is correct for ROC curves where both axes are monotone.
-    """
-    far_sorted = np.sort(far_arr)
-    hr_sorted = np.sort(hr_arr)
-    hr_interp = []
-    for x in far_gt:
-        idx = np.searchsorted(far_sorted, x)
-        if idx == 0:
-            hr_interp.append(hr_sorted[0])
-        elif idx >= len(far_sorted):
-            hr_interp.append(hr_sorted[-1])
-            print(f"Warning: far_gt value {x:.4f} is out of range")
-        else:
-            t = (x - far_sorted[idx - 1]) / (far_sorted[idx] - far_sorted[idx - 1])
-            hr_interp.append(hr_sorted[idx - 1] + t * (hr_sorted[idx] - hr_sorted[idx - 1]))
-    return np.array(hr_interp)
