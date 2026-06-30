@@ -22,13 +22,13 @@ import CMR_IA as cmr
 import scipy as sp
 import json
 
-from CMR_IA.fitting import make_boundary
+from CMR_IA.fitting import _simu5_stats
 
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = True
-SAVERES = True
+RUNCMR = False
+SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
@@ -160,3 +160,8 @@ sem_gt = np.array(gt["hr_std"])
 hr = df_lag.correct_rate.to_numpy()
 wls = np.sum((hr - hr_gt) ** 2 / sem_gt**2)
 wls
+
+# %%
+# Verify fitting helper
+_, err = _simu5_stats(df_simu, gt)
+err

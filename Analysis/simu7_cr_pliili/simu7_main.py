@@ -23,6 +23,7 @@ import scipy as sp
 import json
 
 from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simu7_stats
 
 cmr.analysis.setup_notebook()
 
@@ -39,8 +40,6 @@ if SAVERES and not RUNCMR:
 # Load study and test data
 df_study = pd.read_parquet("data/simu7_study.parquet")
 df_test = pd.read_parquet("data/simu7_test.parquet")
-df_study = df_study.loc[df_study.session < 500]
-df_test = df_test.loc[df_test.session < 500]
 
 # %%
 # Inspect study data
@@ -346,3 +345,9 @@ err
 # %%
 # Print PLI and ILI lag WLS errors
 wls_lag_PLI, wls_lag_ILI
+
+# %%
+# Verify fitting helper
+df_simu_check = pd.read_parquet("data/simu7_result.parquet")
+_, _, _, _, _, err = _simu7_stats(df_simu_check, df_study, gt)
+err

@@ -22,7 +22,7 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 from CMR_IA.utils import wmse
-from CMR_IA.fitting import _simuS2_subj_stats
+from CMR_IA.fitting import _simuS2_subj_stats, _simuS2_stats
 
 cmr.analysis.setup_notebook()
 
@@ -178,14 +178,13 @@ err = np.sum(np.power(stats_mean - ground_truth, 2))
 err
 
 # %%
-# Scale Q SE and compute weighted MSE
-ground_truth_se_err = ground_truth_se.copy()
-ground_truth_se_err[:, 2] /= 2
-ground_truth_se_err
+# Verify fitting helper
+_, err = _simuS2_stats(df_simu, gt)
+err
 
 # %%
 # Compute weighted MSE error
-err = wmse(ground_truth, stats_mean, ground_truth_se_err)
+err = wmse(ground_truth, stats_mean, ground_truth_se)
 err
 
 # %% [markdown]

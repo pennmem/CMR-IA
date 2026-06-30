@@ -23,6 +23,7 @@ import CMR_IA as cmr
 import json
 
 from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simu4_stats
 
 cmr.analysis.setup_notebook()
 
@@ -229,4 +230,9 @@ hr_std_gt, far_std_gt
 hr = df_q.query("old == True")["yes_rate"].to_numpy()
 far = df_q.query("old == False")["yes_rate"].to_numpy()
 err = wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
+err
+
+# %%
+# Verify fitting helper
+_, _, err = _simu4_stats(df_simu, gt)
 err

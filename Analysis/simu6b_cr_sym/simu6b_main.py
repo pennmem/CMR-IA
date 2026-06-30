@@ -20,10 +20,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import CMR_IA as cmr
-from CMR_IA.fitting import make_boundary, _simu6b_subj_stats as anal_perform
+from CMR_IA.fitting import _simu6b_subj_stats, _simu6b_stats
 
-RUNCMR = True
-SAVERES = True
+RUNCMR = False
+SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
@@ -104,15 +104,15 @@ df_simu["cong"] = df_simu.apply(lambda x: pairidx2cong[x["pair_idx"]], axis=1)
 df_simu.head(24)
 
 # %%
-# Compute anal_perform stats per subject
+# Compute _simu6b_subj_stats stats per subject
 subjects = np.unique(df_simu.session)
 inde_stats = []
 reve_stats = []
 for subj in subjects:
     df_subj_inde = df_simu.query(f"session == {subj} and cong == 'Identical'").copy()
-    inde_stats.append(list(anal_perform(df_subj_inde)))
+    inde_stats.append(list(_simu6b_subj_stats(df_subj_inde)))
     df_subj_reve = df_simu.query(f"session == {subj} and cong == 'Reversed'").copy()
-    reve_stats.append(list(anal_perform(df_subj_reve)))
+    reve_stats.append(list(_simu6b_subj_stats(df_subj_reve)))
 
 # %%
 # Inspect identical stats array
@@ -142,4 +142,9 @@ with open("data/simu6b_gt.json") as f:
 inde_ground_truth = np.array(gt["inde"])
 reve_ground_truth = np.array(gt["reve"])
 err = np.sum(np.power(inde_stats_mean - inde_ground_truth, 2)) + np.sum(np.power(reve_stats_mean - reve_ground_truth, 2)) + np.power(inde_stats_mean[-1] - inde_ground_truth[-1], 2) + np.power(reve_stats_mean[-1] - reve_ground_truth[-1], 2)
+err
+
+# %%
+# Verify fitting helper
+_, _, err = _simu6b_stats(df_simu, gt)
 err

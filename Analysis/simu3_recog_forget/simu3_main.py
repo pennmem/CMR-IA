@@ -23,13 +23,13 @@ import scipy as sp
 from matplotlib.lines import Line2D
 import json
 
-from CMR_IA.fitting import make_boundary
+from CMR_IA.fitting import _simu3_stats
 
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = True
-SAVERES = True
+RUNCMR = False
+SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
@@ -244,3 +244,8 @@ err
 # %%
 # Check monotonicity constraints
 np.any(np.diff(I_hr) > 0), np.any(np.diff(A_hr) > 0), np.any(np.diff(A_far) > 0), np.any(I_hr < A_hr)
+
+# %%
+# Verify fitting helper
+_, _, _, _, err = _simu3_stats(df_simu, gt)
+err

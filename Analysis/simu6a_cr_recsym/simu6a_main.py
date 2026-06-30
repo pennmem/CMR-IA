@@ -24,13 +24,13 @@ import scipy as sp
 from matplotlib.lines import Line2D
 import json
 
-from CMR_IA.fitting import make_boundary
+from CMR_IA.fitting import _simu6a_stats
 
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = True
-SAVERES = True
+RUNCMR = False
+SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
@@ -179,3 +179,8 @@ err
 # %%
 # Print simulated forward and backward recall rates
 fw, bw
+
+# %%
+# Verify fitting helper
+_, _, err = _simu6a_stats(df_simu, gt)
+err

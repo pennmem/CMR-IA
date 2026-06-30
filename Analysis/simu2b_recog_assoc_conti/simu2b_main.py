@@ -24,6 +24,7 @@ from matplotlib.lines import Line2D
 import json
 
 from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simu2b_stats
 
 cmr.analysis.setup_notebook()
 
@@ -249,6 +250,11 @@ hr, far
 # %%
 # Calculate error
 err = 5 * wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
+err
+
+# %%
+# Verify fitting helper
+_, _, err = _simu2b_stats(df_simu, gt)
 err
 
 # %% [markdown]

@@ -24,7 +24,7 @@ import pingouin as pg
 import matplotlib.pyplot as plt
 
 from CMR_IA.utils import wmse
-from CMR_IA.fitting import _simuS1_subj_stats
+from CMR_IA.fitting import _simuS1_subj_stats, _simuS1_stats
 
 np.set_printoptions(suppress=True)
 
@@ -319,6 +319,11 @@ ground_truth_se = np.array([gt["g1_se"], gt["g2_se"], gt["g3_se"]])
 # Compute MSE error
 err = np.mean(np.power(stats - ground_truth, 2))
 err
+
+# %%
+# Verify fitting helper
+_, err = _simuS1_stats([df_simu_g1, df_simu_g2, df_simu_g3], gt)
+err / stats.size
 
 # %%
 # Compute weighted MSE error

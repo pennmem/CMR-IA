@@ -23,6 +23,8 @@ from matplotlib.lines import Line2D
 import CMR_IA as cmr
 import json
 
+from CMR_IA.fitting import _simu2_stats
+
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
@@ -212,6 +214,11 @@ hr_r_interp = cmr.analysis.interpolate_roc(df_roc["new_r"].to_numpy(), df_roc["o
 err = np.sum((hr_a_interp - hr_a_gt) ** 2) + np.sum((hr_r_interp - hr_r_gt) ** 2)
 print(f"ROC error: {err}")
 print(f"Adjacent ordering preserved: {np.all((hr_a_interp > hr_r_interp)[1:])}")
+
+# %%
+# Verify fitting helper
+_, _, err = _simu2_stats(df_simu, gt)
+err
 
 # %% [markdown]
 # ### Alternative plots

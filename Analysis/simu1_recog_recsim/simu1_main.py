@@ -25,6 +25,7 @@ from sklearn.cluster import KMeans
 import json
 
 from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simu1_stats
 
 cmr.analysis.setup_notebook()
 
@@ -464,6 +465,12 @@ hr_lowsim_gt, hr_highsim_gt, far_lowsim_gt, far_highsim_gt, far_lowsim_overall_g
 # %%
 # Calculate error
 err = wmse(hr_lowsim_gt, hr_lowsim, hr_lowsim_std_gt) + wmse(hr_highsim_gt, hr_highsim, hr_highsim_std_gt) + wmse(far_lowsim_gt, far_lowsim, far_lowsim_std_gt) + wmse(far_highsim_gt, far_highsim, far_highsim_std_gt)
+err
+
+# %%
+# Verify fitting helper
+df_simu_check = pd.read_parquet("data/simu1_result.parquet")
+_, _, _, _, err = _simu1_stats(df_simu_check, gt)
 err
 
 # %% [markdown]
