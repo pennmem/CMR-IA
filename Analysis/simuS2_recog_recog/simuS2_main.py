@@ -21,7 +21,8 @@ import CMR_IA as cmr
 import scipy as sp
 import matplotlib.pyplot as plt
 
-from CMR_IA.fitting import make_boundary, get_wmse, anal_perform_S2
+from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simuS2_subj_stats
 
 cmr.analysis.setup_notebook()
 
@@ -145,7 +146,7 @@ subjects = np.unique(df_simu.subject)
 stats = []
 for subj in subjects:
     df_subj = df_simu.query(f"subject=={subj} and list % 3 != 0")  # discard first list
-    stats_subj = anal_perform_S2(df_subj)
+    stats_subj = _simuS2_subj_stats(df_subj)
     stats.append(stats_subj)
 stats_mean = np.nanmean(stats, axis=0)
 stats_mean.round(2)
@@ -180,7 +181,7 @@ ground_truth_se_err
 
 # %%
 # Compute weighted MSE error
-err = get_wmse(ground_truth, stats_mean, ground_truth_se_err)
+err = wmse(ground_truth, stats_mean, ground_truth_se_err)
 err
 
 # %% [markdown]

@@ -22,12 +22,13 @@ import CMR_IA as cmr
 import scipy as sp
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse, obj_func
+from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simu8_g1_stats, _simu8_g2_stats
 
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-SAVERES = False
+SAVERES = True
 SAVERES2 = True
 
 # %% [markdown]
@@ -63,9 +64,9 @@ df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
 # ## Run CMR-IA
 
 # %%
-# # Define parameters and load PSO results
-# params = cmr.load_params("8", params_path="data/g1_260621_200-200.json", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
-# params
+# Define parameters and load PSO results
+params = cmr.load_params("8", params_path="data/8_260630_200-200.json", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
+params
 
 # %%
 # Run model or load saved results
@@ -257,14 +258,19 @@ ILI_se_gt = np.array(gt["exp1_ILI_se"])
 # Compute weighted mean squared error
 neighbor_mean = df_neighbour_group["correct"].to_numpy()
 ILI_mean = df_ILI_distance["ILI_prob"].to_numpy()
-wls_neighbor = get_wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
-wls_ILI = get_wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
+wls_neighbor = wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
+wls_ILI = wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
 wls_neighbor, wls_ILI
 
 # %%
 # Compute total error
 err = wls_neighbor + wls_ILI
 err
+
+# %%
+# Verify fitting helper
+_, _, _, v_wls_neighbor, v_wls_ILI = _simu8_g1_stats(df_simu_g1, df_study_g1, face_distance, thresh, gt)
+v_wls_neighbor, v_wls_ILI
 
 # %% [markdown]
 # # Group 2
@@ -278,8 +284,7 @@ df_test_g2 = df_test.query("group == 2").copy()
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("8", params_path="data/g2_260623_200-200.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
-params.update(beta_rec=0.5, kappa=0.5, lamb=0.2, eta=0.2, omega=10, alpha=1, c_thresh=1, rec_time_limit=1000.)  #
+params = cmr.load_params("8", params_path="data/8_260630_200-200.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
 params
 
 # %%
@@ -288,7 +293,7 @@ if SAVERES2:
     df_simu_g2, f_in, f_dif = cmr.run_success_multi_sess(params, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3")
     df_simu_g2["test"] = df_test_g2["test"]
     df_simu_g2 = df_simu_g2.merge(df_test_g2, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
-#     df_simu_g2.to_parquet("data/simu8_result_g2.parquet")
+    df_simu_g2.to_parquet("data/simu8_result_g2.parquet")
 # else:
 #     df_simu_g2 = pd.read_parquet("data/simu8_result_g2.parquet")
 df_simu_g2
@@ -479,23 +484,31 @@ crdist_mean_gt = np.array(gt["exp3_crdist_mean"])
 crdist_se_gt = np.array(gt["exp3_crdist_se"])
 
 # %%
+np.any(np.diff(df_hr["HR"].to_numpy()) > 0), np.any(np.diff(df_far["FAR"].to_numpy()) < 0)
+
+# %%
 # Compute weighted mean squared error
 hr_mean = df_hr["HR"].to_numpy()
 far_mean = df_far["FAR"].to_numpy()
 yesdist_mean = df_yes_distance["yes_rate"].to_numpy()
 crdist_mean = df_recall_distance["recall_prob"].to_numpy()
-wls_hr = get_wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
-wls_far = get_wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
-wls_yesdist = get_wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
-wls_crdist = get_wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
+wls_hr = wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
+wls_far = wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
+wls_yesdist = wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
+wls_crdist = wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
 wls_hr, wls_far, wls_yesdist, wls_crdist
 
 # %%
 # Compute total error
-err = wls_hr + wls_far + wls_yesdist + wls_crdist
+err = wls_hr * 10 + wls_far * 10 + wls_yesdist + wls_crdist
 err
 
 # %%
+# Verify fitting helper
+_, _, _, _, v_wls_hr, v_wls_far, v_wls_yesdist, v_wls_crdist = _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, gt)
+v_wls_hr, v_wls_far, v_wls_yesdist, v_wls_crdist
+
+# %%
 # g1 + g2 error
-err = wls_neighbor + wls_ILI + wls_hr + wls_far + wls_yesdist + wls_crdist
+err = wls_neighbor + wls_ILI + wls_hr * 10 + wls_far * 10 + wls_yesdist + wls_crdist
 err

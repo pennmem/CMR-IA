@@ -23,7 +23,7 @@ import scipy as sp
 from matplotlib.lines import Line2D
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -244,7 +244,7 @@ hr, far
 
 # %%
 # Calculate error
-err = 5 * get_wmse(hr_gt, hr, hr_std_gt) + get_wmse(far_gt, far, far_std_gt)
+err = 5 * wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
 err
 
 # %% [markdown]

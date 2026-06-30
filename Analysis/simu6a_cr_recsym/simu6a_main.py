@@ -29,7 +29,7 @@ from CMR_IA.fitting import make_boundary
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-SAVERES = False
+SAVERES = True
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -38,8 +38,6 @@ SAVERES = False
 # Load study and test data
 df_study = pd.read_parquet("data/simu6a_study.parquet")
 df_test = pd.read_parquet("data/simu6a_test.parquet")
-df_study = df_study.loc[df_study.session < 100]
-df_test = df_test.loc[df_test.session < 100]
 
 # %%
 # Inspect study data

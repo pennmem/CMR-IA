@@ -22,7 +22,7 @@ import seaborn as sns
 import CMR_IA as cmr
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -224,5 +224,5 @@ hr_std_gt, far_std_gt
 # Get behavioral stats and compare with ground truth
 hr = df_q.query("old == True")["yes_rate"].to_numpy()
 far = df_q.query("old == False")["yes_rate"].to_numpy()
-err = get_wmse(hr_gt, hr, hr_std_gt) + get_wmse(far_gt, far, far_std_gt)
+err = wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
 err

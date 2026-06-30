@@ -9,7 +9,7 @@ import pandas as pd
 with open("../wordpools/wasnorm_wordpool.txt") as f:
     items = np.array([line.rstrip("\n") for line in f])
 
-simu_sess_num = 1000
+simu_sess_num = 100
 nlist = 42
 n = 6
 wordpool = np.arange(1, 1639)

@@ -24,7 +24,7 @@ from scipy.stats import norm
 from sklearn.cluster import KMeans
 import json
 
-from CMR_IA.fitting import get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -459,7 +459,7 @@ hr_lowsim_gt, hr_highsim_gt, far_lowsim_gt, far_highsim_gt, far_lowsim_overall_g
 
 # %%
 # Calculate error
-err = get_wmse(hr_lowsim_gt, hr_lowsim, hr_lowsim_std_gt) + get_wmse(hr_highsim_gt, hr_highsim, hr_highsim_std_gt) + get_wmse(far_lowsim_gt, far_lowsim, far_lowsim_std_gt) + get_wmse(far_highsim_gt, far_highsim, far_highsim_std_gt)
+err = wmse(hr_lowsim_gt, hr_lowsim, hr_lowsim_std_gt) + wmse(hr_highsim_gt, hr_highsim, hr_highsim_std_gt) + wmse(far_lowsim_gt, far_lowsim, far_lowsim_std_gt) + wmse(far_highsim_gt, far_highsim, far_highsim_std_gt)
 err
 
 # %% [markdown]

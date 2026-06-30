@@ -20,9 +20,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import CMR_IA as cmr
-from CMR_IA.fitting import make_boundary, anal_perform_6b as anal_perform
+from CMR_IA.fitting import make_boundary, _simu6b_subj_stats as anal_perform
 
-SAVERES = False
+SAVERES = True
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -31,8 +31,6 @@ SAVERES = False
 # Load study and test data
 df_study = pd.read_parquet("data/simu6b_study.parquet")
 df_test = pd.read_parquet("data/simu6b_test.parquet")
-df_study = df_study.loc[df_study.session < 500]  # for testing
-df_test = df_test.loc[df_test.session < 500]
 
 # %% metadata={}
 # Inspect study data

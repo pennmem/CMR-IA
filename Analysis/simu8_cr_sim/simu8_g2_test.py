@@ -22,7 +22,7 @@ import CMR_IA as cmr
 import scipy as sp
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -243,9 +243,9 @@ crdist_se_gt = np.array(gt["exp3_crdist_se"])
 hr_mean = df_hr["HR"].to_numpy()
 far_mean = df_far["FAR"].to_numpy()
 yesdist_mean = df_yes_distance["yes_rate"].to_numpy()
-wls_hr = get_wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
-wls_far = get_wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
-wls_yesdist = get_wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
+wls_hr = wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
+wls_far = wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
+wls_yesdist = wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
 wls_hr, wls_far, wls_yesdist
 
 # %%

@@ -29,7 +29,7 @@ import json
 import statsmodels.formula.api as smf
 from scipy import stats
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -152,7 +152,7 @@ for which in ["base", "attn", "shift"]:
     # Error check
     hr = df_q.query("old == True")["yes_rate"].to_numpy()
     far = df_q.query("old == False")["yes_rate"].to_numpy()
-    err = get_wmse(hr_gt, hr, hr_std_gt) + get_wmse(far_gt, far, far_std_gt)
+    err = wmse(hr_gt, hr, hr_std_gt) + wmse(far_gt, far, far_std_gt)
     print(f"Error: {err}")
 
     # Slope check

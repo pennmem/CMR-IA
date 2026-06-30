@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 rng = np.random.default_rng(seed=42)
-simu_sess_num = 1000
+simu_sess_num = 300
 n = 160
 wordpool = np.arange(1, 1639)
 pos_lags = np.array([2, 4, 6, 8, 16])

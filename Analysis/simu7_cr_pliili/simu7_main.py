@@ -22,7 +22,7 @@ import CMR_IA as cmr
 import scipy as sp
 import json
 
-from CMR_IA.fitting import make_boundary, get_wmse
+from CMR_IA.utils import wmse
 
 cmr.analysis.setup_notebook()
 
@@ -331,11 +331,11 @@ lag_PLI_mean_gt, lag_ILI_mean_gt
 
 # %%
 # Compute weighted mean squared error
-wls_p_correct = get_wmse(p_correct_mean_gt, p_correct_mean, p_correct_se_gt)
-wls_p_PLI = get_wmse(p_PLI_mean_gt, p_PLI_mean, p_PLI_se_gt)
-wls_p_ILI = get_wmse(p_ILI_mean_gt, p_ILI_mean, p_ILI_se_gt)
-wls_lag_PLI = get_wmse(lag_PLI_mean_gt, lag_PLI_mean, lag_PLI_se_gt) / len(lag_PLI_mean_gt)
-wls_lag_ILI = get_wmse(lag_ILI_mean_gt, lag_ILI_mean, lag_ILI_se_gt) / len(lag_ILI_mean_gt)
+wls_p_correct = wmse(p_correct_mean_gt, p_correct_mean, p_correct_se_gt)
+wls_p_PLI = wmse(p_PLI_mean_gt, p_PLI_mean, p_PLI_se_gt)
+wls_p_ILI = wmse(p_ILI_mean_gt, p_ILI_mean, p_ILI_se_gt)
+wls_lag_PLI = wmse(lag_PLI_mean_gt, lag_PLI_mean, lag_PLI_se_gt) / len(lag_PLI_mean_gt)
+wls_lag_ILI = wmse(lag_ILI_mean_gt, lag_ILI_mean, lag_ILI_se_gt) / len(lag_ILI_mean_gt)
 err = wls_p_correct + wls_p_PLI + wls_p_ILI + wls_lag_PLI + wls_lag_ILI
 err
 

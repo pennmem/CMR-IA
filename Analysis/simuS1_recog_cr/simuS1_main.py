@@ -23,7 +23,8 @@ import scipy as sp
 import pingouin as pg
 import matplotlib.pyplot as plt
 
-from CMR_IA.fitting import make_boundary, get_wmse, anal_perform_S1
+from CMR_IA.utils import wmse
+from CMR_IA.fitting import _simuS1_subj_stats
 
 np.set_printoptions(suppress=True)
 
@@ -149,7 +150,7 @@ subjects = np.unique(df_simu_g1.subject)
 g1_stats = []
 for subj in subjects:
     df_subj = df_simu_g1.query(f"subject == {subj}").copy()
-    g1_stats.append(list(anal_perform_S1(df_subj)))
+    g1_stats.append(list(_simuS1_subj_stats(df_subj)))
 g1_stats = np.array(g1_stats)
 
 # %%
@@ -202,7 +203,7 @@ subjects = np.unique(df_simu_g2.subject)
 g2_stats = []
 for subj in subjects:
     df_subj = df_simu_g2.query(f"subject == {subj}").copy()
-    g2_stats.append(list(anal_perform_S1(df_subj)))
+    g2_stats.append(list(_simuS1_subj_stats(df_subj)))
 g2_stats = np.array(g2_stats)
 
 # %%
@@ -255,7 +256,7 @@ subjects = np.unique(df_simu_g3.subject)
 g3_stats = []
 for subj in subjects:
     df_subj = df_simu_g3.query(f"subject == {subj}").copy()
-    g3_stats.append(list(anal_perform_S1(df_subj)))
+    g3_stats.append(list(_simuS1_subj_stats(df_subj)))
 g3_stats = np.array(g3_stats)
 
 # %%
@@ -317,7 +318,7 @@ err
 
 # %%
 # Compute weighted MSE error
-err = get_wmse(ground_truth, stats, ground_truth_se)
+err = wmse(ground_truth, stats, ground_truth_se)
 err
 
 # %% [markdown]
