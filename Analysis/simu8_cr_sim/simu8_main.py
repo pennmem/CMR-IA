@@ -28,8 +28,10 @@ from CMR_IA.fitting import _simu8_g1_stats, _simu8_g2_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = True
 SAVERES = True
-SAVERES2 = True
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -70,10 +72,11 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu_g1, f_in, f_dif = cmr.run_norm_cr_multi_sess(params, df_study_g1, df_test_g1, sem_mat)
     df_simu_g1 = df_simu_g1.merge(df_test_g1, on=["session", "list", "test_itemno"])
-    df_simu_g1.to_parquet("data/simu8_result_g1.parquet")
+    if SAVERES:
+        df_simu_g1.to_parquet("data/simu8_result_g1.parquet")
 else:
     df_simu_g1 = pd.read_parquet("data/simu8_result_g1.parquet")
 df_simu_g1
@@ -289,13 +292,14 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES2:
+if RUNCMR:
     df_simu_g2, f_in, f_dif = cmr.run_success_multi_sess(params, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3")
     df_simu_g2["test"] = df_test_g2["test"]
     df_simu_g2 = df_simu_g2.merge(df_test_g2, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
-    df_simu_g2.to_parquet("data/simu8_result_g2.parquet")
-# else:
-#     df_simu_g2 = pd.read_parquet("data/simu8_result_g2.parquet")
+    if SAVERES:
+        df_simu_g2.to_parquet("data/simu8_result_g2.parquet")
+else:
+    df_simu_g2 = pd.read_parquet("data/simu8_result_g2.parquet")
 df_simu_g2
 
 # %% [markdown]

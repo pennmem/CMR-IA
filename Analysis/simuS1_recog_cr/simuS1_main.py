@@ -31,7 +31,10 @@ np.set_printoptions(suppress=True)
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = False
 SAVERES = False
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Run CMR-IA
@@ -106,13 +109,14 @@ def simu_success(tag, params):
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu_g1 = simu_success("Item-CR", params)
-    df_simu_g1.to_parquet("data/simuS1_result_g1.parquet")
     df_simu_g2 = simu_success("Pair-CR", params)
-    df_simu_g2.to_parquet("data/simuS1_result_g2.parquet")
     df_simu_g3 = simu_success("Asso-CR", params)
-    df_simu_g3.to_parquet("data/simuS1_result_g3.parquet")
+    if SAVERES:
+        df_simu_g1.to_parquet("data/simuS1_result_g1.parquet")
+        df_simu_g2.to_parquet("data/simuS1_result_g2.parquet")
+        df_simu_g3.to_parquet("data/simuS1_result_g3.parquet")
 else:
     df_simu_g1 = pd.read_parquet("data/simuS1_result_g1.parquet")
     df_simu_g2 = pd.read_parquet("data/simuS1_result_g2.parquet")

@@ -28,7 +28,10 @@ from CMR_IA.fitting import make_boundary
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = True
 SAVERES = True
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -52,10 +55,11 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu = cmr.run_conti_recog_multi_sess(params, df, sem_mat, design="Hockley")
     df_simu = df_simu.merge(df, on=["session", "position", "study_itemno1", "study_itemno2", "test_itemno1", "test_itemno2"])
-    df_simu.to_parquet("data/simu3_result.parquet")
+    if SAVERES:
+        df_simu.to_parquet("data/simu3_result.parquet")
 else:
     df_simu = pd.read_parquet("data/simu3_result.parquet")
 df_simu

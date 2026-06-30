@@ -27,7 +27,10 @@ from CMR_IA.fitting import _simuS2_subj_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = False
 SAVERES = False
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -59,11 +62,12 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu, f_in_acc, f_in_dif = cmr.run_success_multi_sess(params, df_study, df_test, sem_mat, mode="Recog-Recog")
     df_simu["test"] = df_test["test"]
     df_simu = df_simu.merge(df_test, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
-    df_simu.to_parquet("data/simuS2_result.parquet")
+    if SAVERES:
+        df_simu.to_parquet("data/simuS2_result.parquet")
 else:
     df_simu = pd.read_parquet("data/simuS2_result.parquet")
 df_simu

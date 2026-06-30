@@ -29,7 +29,10 @@ from CMR_IA.fitting import make_boundary
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = True
 SAVERES = True
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -61,7 +64,7 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu, f_in, f_dif = cmr.run_norm_cr_multi_sess(params, df_study, df_test, sem_mat)
     df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
     df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
@@ -81,7 +84,8 @@ if SAVERES:
         df_simu.loc[df_simu.session == sess, "corr_fin"] = [f_dif[sess][i][id] for i, id in enumerate(corrid)]
         df_simu.loc[df_simu.session == sess, "omax_fin"] = [np.max(np.delete(f_dif[sess][i], id)) for i, id in enumerate(corrid)]
 
-    df_simu.to_parquet("data/simu6a_result.parquet")
+    if SAVERES:
+        df_simu.to_parquet("data/simu6a_result.parquet")
 else:
     df_simu = pd.read_parquet("data/simu6a_result.parquet")
 df_simu

@@ -22,7 +22,10 @@ import seaborn as sns
 import CMR_IA as cmr
 from CMR_IA.fitting import make_boundary, _simu6b_subj_stats as anal_perform
 
+RUNCMR = True
 SAVERES = True
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -54,12 +57,13 @@ params
 
 # %% metadata={}
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu, f_in, f_dif = cmr.run_success_multi_sess(params, df_study, df_test, sem_mat, mode="CR-CR")
     df_simu["test_pos"] = df_test["test_pos"]
     df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno1", "test_itemno2", "test_pos"])
     df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
-    df_simu.to_parquet("data/simu6b_result.parquet")
+    if SAVERES:
+        df_simu.to_parquet("data/simu6b_result.parquet")
 else:
     df_simu = pd.read_parquet("data/simu6b_result.parquet")
 df_simu

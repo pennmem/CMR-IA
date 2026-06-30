@@ -28,7 +28,10 @@ from CMR_IA.utils import wmse
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
+RUNCMR = False
 SAVERES = False
+if SAVERES and not RUNCMR:
+    print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
 # %% [markdown]
 # ## Load Stimuli and Semantic Matrix
@@ -60,10 +63,11 @@ params
 
 # %%
 # Run model or load saved results
-if SAVERES:
+if RUNCMR:
     df_simu = cmr.run_norm_recog_multi_sess(params, df_study, df_test, sem_mat, design="Osth")
     df_simu = df_simu.merge(df_test, on=["session", "list", "itemno1", "itemno2"])
-    df_simu.to_parquet("data/simu2b_result.parquet")
+    if SAVERES:
+        df_simu.to_parquet("data/simu2b_result.parquet")
 else:
     df_simu = pd.read_parquet("data/simu2b_result.parquet")
 df_simu
