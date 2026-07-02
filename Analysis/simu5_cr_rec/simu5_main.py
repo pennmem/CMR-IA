@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import CMR_IA as cmr
-import scipy as sp
 import json
 
 from CMR_IA.fitting import _simu5_stats

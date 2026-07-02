@@ -27,9 +27,9 @@ from CMR_IA.fitting import _simu8_g1_stats, _simu8_g2_stats
 
 cmr.analysis.setup_notebook()
 
-SAVEFIG = False
-RUNCMR = True
-SAVERES = True
+SAVEFIG = True
+RUNCMR = False
+SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
 
@@ -341,7 +341,7 @@ df_hr, df_far
 # Plot hit rate and false alarm rate by density (stacked, broken y-axis)
 xpos = np.arange(3)
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(6, 7))
-fig.subplots_adjust(left=0.12, right=0.98, bottom=0.08, top=0.98, hspace=0.04)
+fig.subplots_adjust(left=0.1, right=0.98, bottom=0.1, top=0.98, hspace=0.04)
 
 sns.lineplot(x=xpos, y=df_hr["HR"].to_numpy(), ax=ax1, marker="o", color="C0", markersize=10, linewidth=2)
 sns.lineplot(x=xpos, y=df_far["FAR"].to_numpy(), ax=ax2, marker="s", color="C0", markersize=10, linewidth=2)
@@ -374,6 +374,8 @@ if SAVEFIG:
     ax1.set_ylabel(None)
     ax2.set_ylabel(None)
     ax2.set_xlabel(None)
+    ax1.tick_params(labelleft=False)
+    ax2.tick_params(labelleft=False)
     plt.savefig("figures/simu8_g2_hrfar-neighbor.pdf")
 plt.show()
 
@@ -461,7 +463,7 @@ sns.lineplot(data=df_recall_distance, x=xpos, y="recall_prob", ax=ax, marker="o"
 sns.lineplot(data=df_recall_distance.query("distance_bin != '0'"), x=xpos[1:], y="recall_prob", ax=ax, marker=None, color="C0", markersize=10, linewidth=2, linestyle="-")
 plt.xlim([-0.5, 5])
 plt.ylim([0, 0.5])
-plt.xticks(ticks=xpos, labels=["Target", "1.5", "2.5", "3.5", "4.5"])
+plt.xticks(ticks=xpos, labels=["Targets", "1.5", "2.5", "3.5", "4.5"])
 plt.xlabel("Distance Bins")
 plt.ylabel("Probability of Recall")
 

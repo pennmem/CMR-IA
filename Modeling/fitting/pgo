@@ -7,7 +7,6 @@ function usage
 {
   echo "Usage: pgo pyfile.py [num [-nb]]"
   echo "           num - Number of array tasks to start (default 1)"
-  echo "           -nb - No backup of script"
   exit 1
 }
 
@@ -21,20 +20,10 @@ if [ "$SH_PATH" = "" ]; then
 fi
 SH_SCRIPT=${SH_PATH}/runpyfile.sh
 
-BACK_DIR=runs
 PYFILE=$1
 PNAME=`expr substr \`basename $PYFILE\` 1 15`
 PROCS=1
-
 if [ $# -ge 2 ]; then PROCS=$2; fi
-if [ "$3" = "-nb" ]; then NO_BACKUP=1; else NO_BACKUP=0; fi
-
-if [ $NO_BACKUP -eq 0 ]; then
-    echo Making backup:
-    mkdir -p $BACK_DIR
-    echo cp $PYFILE runs/${PYFILE}.`date +%y%b%d_%H%M`
-    cp $PYFILE runs/${PYFILE}.`date +%y%b%d_%H%M`
-fi
 
 mkdir -p slurm_out
 

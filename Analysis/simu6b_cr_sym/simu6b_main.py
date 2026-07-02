@@ -52,7 +52,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %% metadata={}
 # Define parameters and load PSO results
-params = cmr.load_params("6b", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 96})
+params = cmr.load_params("6b", params_path="data/6b_260701_100-50.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 96})
 params
 
 # %% metadata={}

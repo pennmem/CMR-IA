@@ -26,7 +26,7 @@ import CMR_IA as cmr
 
 cmr.analysis.setup_notebook()
 
-SAVEFIG = False
+SAVEFIG = True
 SAVEDATA = False
 
 
@@ -373,7 +373,7 @@ far_plot = far_dens.reset_index()
 xpos = np.arange(3)
 
 fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(6, 7))
-fig.subplots_adjust(left=0.12, right=0.98, bottom=0.08, top=0.98, hspace=0.04)
+fig.subplots_adjust(left=0.1, right=0.98, bottom=0.1, top=0.98, hspace=0.04)
 
 ax1.errorbar(x=xpos, y=hr_plot["mean"], yerr=hr_plot["sem"], marker=None, capsize=3, capthick=2, linestyle="none")
 ax2.errorbar(x=xpos, y=far_plot["mean"], yerr=far_plot["sem"], marker=None, capsize=3, capthick=2, linestyle="none")
@@ -569,7 +569,7 @@ ax.tick_params(axis="y", direction="in")
 ax.tick_params(axis="x", direction="in")
 plt.xlim([-0.5, 5])
 plt.ylim([0, 0.5])
-plt.xticks(ticks=xpos, labels=["Target", "1.5", "2.5", "3.5", "4.5"])
+plt.xticks(ticks=xpos, labels=["Targets", "1.5", "2.5", "3.5", "4.5"])
 plt.xlabel("Distance Bins")
 plt.ylabel("Probability of Recall")
 

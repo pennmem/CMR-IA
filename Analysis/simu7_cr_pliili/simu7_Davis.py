@@ -202,14 +202,14 @@ df.query("type == 'PLI'")
 
 # %%
 # Pick list > 5 and list_lag -5 to -1
-df_PLI = df.query("type == 'PLI' and list > 5 and  list_lag > -6").copy()
+df_PLI = df.query("type == 'PLI' and list > 5 and list_lag > -6").copy()
 df_PLI["abs_list_lag"] = df_PLI["list_lag"].abs().astype(int)
 df_PLI["abs_list_lag"] = pd.Categorical(df_PLI["abs_list_lag"], categories=[1, 2, 3, 4, 5], ordered=True)
 df_PLI
 
 # %%
 # Check unique subjects
-len(np.unique(df_PLI.subjnum))  # in paper, it should be 39
+len(np.unique(df_PLI.subjnum))
 
 # %%
 # Subject-wise, count PLI
@@ -218,7 +218,7 @@ df_PLI_sess
 
 # %%
 # Subject-wise, count PLI by list_lag
-df_PLI_subj_lag = df_PLI.groupby(["subjnum", "abs_list_lag"]).test_item.count().to_frame(name="PLI_cnt").reset_index()
+df_PLI_subj_lag = df_PLI.groupby(["subjnum", "abs_list_lag"], observed=False).test_item.count().to_frame(name="PLI_cnt").reset_index()
 df_PLI_subj_lag
 
 # %%
@@ -282,7 +282,7 @@ def get_ILI_prob(df_tmp):
                 possible_ILI_cnt[i] = 1
 
     # get ILI count
-    df_tmp_lag = df_tmp.groupby("pos_lag")["test_item"].count().to_frame(name="ILI_cnt")
+    df_tmp_lag = df_tmp.groupby("pos_lag", observed=False)["test_item"].count().to_frame(name="ILI_cnt")
 
     # merge possible ILI count
     df_tmp_lag["possible_ILI_cnt"] = df_tmp_lag.index.map(possible_ILI_cnt).astype(float)
@@ -291,7 +291,7 @@ def get_ILI_prob(df_tmp):
     return df_tmp_lag
 
 
-df_ILI_subj_lag = df_ILI.groupby("subjnum").apply(get_ILI_prob).reset_index()
+df_ILI_subj_lag = df_ILI.groupby("subjnum", observed=False).apply(get_ILI_prob).reset_index()
 df_ILI_subj_lag = df_ILI_subj_lag.query("pos_lag > -6 and pos_lag < 6").copy()
 df_ILI_subj_lag["pos_lag_int"] = df_ILI_subj_lag["pos_lag"].astype(int)  # avoid nan from category vairables
 df_ILI_subj_lag
@@ -322,7 +322,7 @@ plt.show()
 
 # %%
 # Aggregate PLI probabilities by lag
-df_PLI_lag = df_PLI_subj_lag.groupby("abs_list_lag")["PLI_prob"].agg(["mean", "std"]).reset_index()
+df_PLI_lag = df_PLI_subj_lag.groupby("abs_list_lag", observed=False)["PLI_prob"].agg(["mean", "std"]).reset_index()
 df_PLI_lag
 
 # %%

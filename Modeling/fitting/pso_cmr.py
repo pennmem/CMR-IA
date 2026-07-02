@@ -5,9 +5,9 @@ from CMR_IA.pso import run_pso
 
 if __name__ == "__main__":
 
-    SIMU_NAME = "5"
+    SIMU_NAME = "7"
     ANAL_DIR = "../../Analysis"
-    SEED_FILE = f"{ANAL_DIR}/simu5_cr_rec/data/simu5_params.json"
+    SEED_FILE = f"{ANAL_DIR}/simu7_cr_pliili/data/simu7_params.json"
 
     if SIMU_NAME == "1":
 
