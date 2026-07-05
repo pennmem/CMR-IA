@@ -1,10 +1,10 @@
 {
-  "beta_enc": 0.493702,
-  "beta_cue": 0.377811,
-  "beta_rec_post": 0.68192,
-  "s_fc": 0.033998,
-  "gamma_fc": 0.930939,
-  "c_thresh_itm": 1.027106,
-  "c_thresh_assoc": 0.985851,
-  "c_d": 2.387517
+  "beta_enc": 0.300433,
+  "beta_cue": 0.390134,
+  "beta_rec_post": 0.736187,
+  "s_fc": 0.131066,
+  "gamma_fc": 0.715665,
+  "c_thresh_itm": 1.095628,
+  "c_thresh_assoc": 0.992761,
+  "c_d": 1.332657
 }

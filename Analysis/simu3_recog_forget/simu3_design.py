@@ -6,84 +6,83 @@ Here each subject 1 list, origin each subject 2 lists * 5 sessions. both aggrega
 import numpy as np
 import pandas as pd
 
+# Settings
 rng = np.random.default_rng(seed=42)
 simu_sess_num = 300
-n = 160
-wordpool = np.arange(1, 1639)
+stream_len = 320  # ~160 study + ~160 test presentations
 pos_lags = np.array([2, 4, 6, 8, 16])
+n_rep = 8  # replications of each test type at each lag
+test_types = ["single_old", "single_new", "pair_old", "pair_new"]
+wordpool = np.arange(1, 1639)
+min_new_pos = pos_lags.min() + 1  # keep new-item tests after the first few studies
+
+# Draw one session's words without replacement, one word at a time
+def take(k):
+    return np.array([next(word_iter) for _ in range(k)], dtype=int)
+
 parts = []
 for sess in range(simu_sess_num):
-    
-    # Choose present words and order
-    pres_words = rng.choice(wordpool, 2 * n, replace=False).reshape(n, 2)
 
-    # Choose test type for each study position
-    pres_type = rng.permutation(["single_new", "single_old", "pair_new", "pair_old"] * 40)
-    while pres_type[0] == "pair_new":
-        pres_type = rng.permutation(pres_type)
+    # Per-session stream state
+    word_iter = iter(rng.permutation(wordpool))
+    occupied = np.zeros(stream_len, dtype=bool)
+    ev_type = np.array(["study"] * stream_len, dtype="<U16")
+    ev_lag = np.zeros(stream_len, dtype=int)
+    study_w = np.full((stream_len, 2), -1, dtype=int)
+    test_w = np.full((stream_len, 2), -1, dtype=int)
 
-    # Choose test words corresponding to pres_words and pres_type
-    new_words = rng.permutation(wordpool[~np.isin(wordpool, pres_words)])
-    newidx = 0
-    test_words = []
-    for i in range(n):
-        t = pres_type[i]
-        tmp = pres_words[i]
-        if t == "single_old":
-            pick = rng.choice([0, 1])
-            test_words.append([tmp[pick], -1])
-        elif t == "single_new":
-            test_words.append([new_words[newidx], -1])
-            newidx += 1
-        elif t == "pair_old":
-            test_words.append(tmp.tolist())
-        elif t == "pair_new":
-            tmp_pre = pres_words[i - 1].tolist()
-            order = rng.permutation([tmp, tmp_pre])
-            test_words.append([order[0][0], order[1][1]])
-    test_words = np.array(test_words)
+    # Build and shuffle the test requests
+    requests = [(t, lag) for t in test_types for lag in pos_lags for _ in range(n_rep)]
+    rng.shuffle(requests)
 
-    # Algorithm fitting lags to study positions
-    presidx = np.arange(n, dtype=int)
-    testidx = np.zeros(n, dtype=int)
-    tested = np.zeros(n, dtype=int)
-    test_lag = np.zeros(n, dtype=int)
-    test_type = np.array(["no_fit"] * n, dtype="<U32")
-    lags = pos_lags.copy()
-    while True:
-        if lags.size == 0:
-            break
-        lag = rng.choice(lags)
-        for i in range(1, n):
-            if tested[i] == 0 and i + lag <= n - 1 and test_type[i + lag] == "no_fit":
-                testidx[i + lag] = presidx[i]
-                test_type[i + lag] = pres_type[i]
-                test_lag[i + lag] = lag
-                tested[i] = 1
-                break
-        else:
-            lags = np.delete(lags, np.argwhere(lags == lag))
+    # Greedily fit each test (and its study presentation/s) into the earliest available positions
+    for typ, lag in requests:
+        if typ == "single_new":
+            for t in range(min_new_pos, stream_len):
+                if not occupied[t]:
+                    occupied[t] = True
+                    ev_type[t], ev_lag[t] = typ, lag
+                    test_w[t] = [take(1)[0], -1]
+                    break
+        elif typ in ("single_old", "pair_old"):
+            for s in range(stream_len):
+                t = s + lag + 1  # intervening presentations between study s and test t equal lag
+                if t >= stream_len:
+                    break
+                if not occupied[s] and not occupied[t]:
+                    w = take(2)
+                    occupied[s] = occupied[t] = True
+                    study_w[s] = w
+                    ev_type[t], ev_lag[t] = typ, lag
+                    test_w[t] = [w[rng.integers(2)], -1] if typ == "single_old" else [w[0], w[1]]
+                    break
+        elif typ == "pair_new":
+            for s in range(stream_len - 1):
+                t = (s + 1) + lag + 1  # lag measured from the more recent study pair at s+1
+                if t >= stream_len:
+                    break
+                if not occupied[s] and not occupied[s + 1] and not occupied[t]:
+                    w_prev, w_recent = take(2), take(2)  # study pairs at s and s+1
+                    occupied[s] = occupied[s + 1] = occupied[t] = True
+                    study_w[s], study_w[s + 1] = w_prev, w_recent
+                    ev_type[t], ev_lag[t] = typ, lag
+                    test_w[t] = [w_recent[0], w_prev[1]] if rng.integers(2) == 0 else [w_prev[0], w_recent[1]]
+                    break
 
-    # Create test sequence
-    test_seq = []
-    for i in range(n):
-        if test_type[i] == "no_fit":
-            testidx[i] = -1
-            test_seq.append([-1, -1])
-        else:
-            test_seq.append(test_words[testidx[i]])
-    test_seq = np.array(test_seq)
+    # Fill remaining free positions with filler study pairs
+    for p in range(stream_len):
+        if not occupied[p]:
+            study_w[p] = take(2)
 
     parts.append(pd.DataFrame({
-        "position": presidx,
         "session": sess,
-        "testidx": testidx,
-        "lag": test_lag,
-        "type": test_type,
-        "study_itemno1": pres_words[:, 0],
-        "study_itemno2": pres_words[:, 1],
-        "test_itemno1": test_seq[:, 0],
-        "test_itemno2": test_seq[:, 1],
+        "position": np.arange(stream_len),
+        "lag": ev_lag,
+        "type": ev_type,
+        "study_itemno1": study_w[:, 0],
+        "study_itemno2": study_w[:, 1],
+        "test_itemno1": test_w[:, 0],
+        "test_itemno2": test_w[:, 1],
     }))
 
 df = pd.concat(parts).reset_index(drop=True)

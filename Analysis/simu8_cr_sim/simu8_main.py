@@ -27,7 +27,7 @@ from CMR_IA.fitting import _simu8_g1_stats, _simu8_g2_stats
 
 cmr.analysis.setup_notebook()
 
-SAVEFIG = True
+SAVEFIG = False
 RUNCMR = False
 SAVERES = False
 if SAVERES and not RUNCMR:
@@ -67,7 +67,7 @@ df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("8", params_path="data/8_260630_200-200.json", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
+params = cmr.load_params("8", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
 params
 
 # %%
@@ -287,7 +287,7 @@ df_test_g2 = df_test.query("group == 2").copy()
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("8", params_path="data/8_260630_200-200.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
+params = cmr.load_params("8", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 32, "ban_recall": np.arange(1, 17)})
 params
 
 # %%

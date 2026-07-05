@@ -1156,8 +1156,9 @@ class CMR(object):
                     pres_idx = self.pres_indexes[trial_idx, self.serial_position]
                     if np.logical_not(np.isscalar(pres_idx)) and pres_idx[1] == -1:
                         pres_idx = pres_idx[0].astype(int)
-                    self.present_item(pres_idx, source=None, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                    self._record_presented_items(pres_idx)
+                    if np.all(pres_idx >= 0):  # skip encoding on test-only presentations (for Hockley)
+                        self.present_item(pres_idx, source=None, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
+                        self._record_presented_items(pres_idx)
 
                 #####
                 # Simulate recognition
