@@ -161,7 +161,7 @@ for (i in 1:4){
 summary(mod.wc.drop2.cut3)
 ```
 
-Try to combine the three cut out components. Not singular!!
+Try to combine the three cut out components. Not converge.
 
 ```{r}
 random.effect.todrop = "(dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"149\"):dummy(roll_cat_len_level, \">=2\") + dummy(log_lag_disp, \"8\"):dummy(roll_cat_len_level, \">=2\") + dummy(roll_cat_len_level, \">=2\"))"
@@ -171,6 +171,14 @@ random.effect2 = "0 + dummy(log_lag_disp, \"149\"):dummy(roll_cat_len_level, \">
 formula.wc.drop2.cut3.comb = paste("far ~", full.fixed.effect, "+", format.random.effect.wc(reduced.random.effect), "+", format.random.effect.wc(random.effect2))
 cat(formula.wc.drop2.cut3.comb)
 mod.wc.drop2.cut3.comb = lmer(formula.wc.drop2.cut3.comb, data=df)
+summary(mod.wc.drop2.cut3.comb)
+```
+Not converge, so we use the result as start value to do again. Converge and not singular!
+
+```{r}
+theta <- getME(mod.wc.drop2.cut3.comb, "theta")
+start_vals <- list(theta = theta)
+mod.wc.drop2.cut3.comb = lmer(formula.wc.drop2.cut3.comb, data=df, start = start_vals)
 summary(mod.wc.drop2.cut3.comb)
 ```
 

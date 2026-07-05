@@ -26,7 +26,7 @@ import CMR_IA as cmr
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-SAVEDATA = True
+SAVEDATA = False
 SAVECSV = False
 
 # %% [markdown]
@@ -361,20 +361,17 @@ def calculate_Az(df_tmp1):
         min_conf = np.nanmin(conf)
         max_conf = np.nanmax(conf)
 
-        if max_conf == min_conf:  ### need consider!
+        if max_conf == min_conf:
             Azs.append(np.nan)
             continue
 
         # calculate HR and FAR for different thresholds
         thresholds = np.arange(1, 8)
-        # thresholds = np.arange(min_conf, max_conf+1)
         hrs = []
         fars = []
         old_conf = conf * is_old
         new_conf = conf * is_new
         for thresh in thresholds:
-            # hr = (np.sum((conf > thresh) & is_old) + 0.5) / (old_num + 1)
-            # far = (np.sum((conf > thresh) & is_new) + 0.5) / (new_num + 1)
             hr = (np.sum(old_conf > thresh) + 0.5) / (old_num + 1)
             far = (np.sum(new_conf > thresh) + 0.5) / (new_num + 1)
             hrs.append(hr)
@@ -384,21 +381,13 @@ def calculate_Az(df_tmp1):
         z_hr = norm.ppf(hrs)
         z_far = norm.ppf(fars)
 
-        # # linear regression on z_hr and z_far using sklearn
-        # X = np.array(z_far).reshape(-1, 1)
-        # y = np.array(z_hr)
-        # reg = LinearRegression().fit(X, y)
-        # # get slope and intercept
-        # slope = reg.coef_[0]
-        # intercept = reg.intercept_
-
-        # linear regression on z_hr and z_far manually
+        # linear regression on z_hr and z_far
         try:
             n = len(z_far)
             X = np.column_stack((np.ones(n), z_far))
-            beta = np.linalg.inv(X.T @ X) @ X.T @ z_hr
+            beta, *_ = np.linalg.lstsq(X, z_hr, rcond=None)
             intercept, slope = beta
-        except:
+        except np.linalg.LinAlgError:
             Azs.append(np.nan)
             continue
 
@@ -413,7 +402,7 @@ def calculate_Az(df_tmp1):
 
 
 # %%
-# Get Az
+# Get Az (some instability on different machines)
 df_Az = df.groupby(["subject_ID", "roll_cat_len_level"]).apply(calculate_Az).reset_index()
 df_Az.drop(columns="level_2", inplace=True)
 df_Az["log_lag_disp"] = np.ceil(np.e**df_Az.log_lag_bin)
@@ -460,18 +449,3 @@ Az_lowsim, Az_highsim
 if SAVECSV:
     df_dprime.to_csv("data/exp1_hrfar.csv", index=False)
     df_Az.to_csv("data/exp1_Az.csv", index=False)
-
-# %%
-# Plot histogram of csim, group by roll_cat_len_level and old
-# fig, ax = plt.subplots(1, 1, figsize=(8, 6))
-# sns.histplot(df.query("old == True"), x="confidence", alpha=0.5, ax=ax, stat="density", label="old")
-# sns.histplot(df.query("old == False"), x="confidence", alpha=0.5, ax=ax, stat="density", label="new")
-# plt.legend()
-# plt.show()
-
-# %%
-# Check position for new
-# tmp_lst = [0, 2, 3, 4, 5]
-# for i in tmp_lst:
-#     print(i)
-#     print(df.query(f"log_lag_bin_{i} == True and old == False").groupby(["roll_cat_len_level"]).position.agg(["mean", "std"]).round(4))

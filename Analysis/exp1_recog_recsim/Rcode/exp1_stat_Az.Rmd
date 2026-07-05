@@ -136,7 +136,7 @@ mod.wc.drop2.cut2 = lmer(formula.wc.drop2.cut2, data=df)
 summary(mod.wc.drop2.cut2)
 ```
 
-Try to combine the two cut out components. Not work.
+Try to combine the two cut out components. Also work.
 
 ```{r}
 random.effect.todrop = "(dummy(log_lag_disp, \"21\") + dummy(log_lag_disp, \"8\") + dummy(log_lag_disp, \"55\"):dummy(roll_cat_len_level, \">=2\") + dummy(roll_cat_len_level, \">=2\"))"
@@ -151,14 +151,14 @@ summary(mod.wc.drop2.cut2.comb)
 
 ### Summary
 
-In summary, we will adopt mod.wc.drop2.cut2.
+In summary, we will adopt mod.wc.drop2.cut2.comb.
 
 ```{r}
-summary(mod.wc.drop2.cut2)
-anova(mod.wc.drop2.cut2)
+summary(mod.wc.drop2.cut2.comb)
+anova(mod.wc.drop2.cut2.comb)
 ```
 ```{r}
-coef(summary(mod.wc.drop2.cut2))
+coef(summary(mod.wc.drop2.cut2.comb))
 ```
 
 
