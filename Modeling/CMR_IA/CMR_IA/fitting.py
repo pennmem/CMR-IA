@@ -312,44 +312,11 @@ def make_boundary(simu_name):
 
     elif simu_name == "8":
 
-        # g1 cued recall (separate fit)
-        # what_to_fit = [
-        #     "beta_enc",
-        #     "beta_rec",
-        #     "beta_cue",
-        #     "beta_distract",
-        #     "gamma_fc",
-        #     "gamma_cf",
-        #     "s_fc",
-        #     "phi_s",
-        #     "phi_d",
-        #     "kappa",
-        #     "lamb",
-        #     "eta",
-        #     "omega",
-        #     "alpha",
-        #     "c_thresh",
-        # ]
-
-        # g2 associative recognition (separate fit)
-        # what_to_fit = [
-        #     "beta_enc",
-        #     "beta_cue",
-        #     "beta_distract",
-        #     "beta_rec_post",
-        #     "s_fc",
-        #     "gamma_fc",
-        #     "c_thresh_assoc",
-        #     "c_d",
-        # ]
-
-        # Full fit: g1 cued recall + g2 recognition & final cued recall
         what_to_fit = [
             "beta_enc",
             "beta_rec",
             "beta_cue",
             "beta_distract",
-            "beta_rec_post",
             "gamma_fc",
             "gamma_cf",
             "s_fc",
@@ -361,8 +328,6 @@ def make_boundary(simu_name):
             "omega",
             "alpha",
             "c_thresh",
-            "c_thresh_assoc",
-            "c_d",
         ]
         ub_dict.update(
             s_fc=3.0,
@@ -1030,7 +995,7 @@ def _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, gt):
 
 
 def _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, gt):
-    """g2: recognition density (HR/FAR) + probe-distance yes rate + final cued recall."""
+    """g2: recognition density (HR/FAR) + probe-distance yes rate + final cued recall. Deprecated."""
     lookup = _simu8_name_face_lookup(df_study_g2)
 
     # Recognition: density effect on HR / FAR
@@ -1353,44 +1318,19 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         with open("../../Analysis/simu8_cr_sim/data/simu8_gt.json") as f:
             _gt = json.load(f)
 
-        # g1: run cued recall
+        # Run model
         param_dict.update(nitems_in_accumulator=16, ban_recall=np.arange(1, 17))
-        df_study_g1 = df_study.query("group == 1").copy()
-        df_test_g1 = df_test.query("group == 1").copy()
-        df_test_g1 = df_test_g1.rename(columns={"test_itemno1": "test_itemno", "test_item1": "test_item"})
-        df_test_g1.drop(columns=["test_itemno2", "test_item2"], inplace=True)
         try:
             with _time_limit(_EVAL_TIMEOUT):
-                df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study_g1, df_test_g1, sem_mat, disable_tqdm=True)
+                df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat, disable_tqdm=True)
         except _EvalTimeout:
-            return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec, "timeout": "g1"}
-        df_simu = df_simu.merge(df_test_g1, on=["session", "list", "test_itemno"])
-        neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI = _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, _gt)
+            return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec}
+        df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
+        neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI = _simu8_g1_stats(df_simu, df_study, face_distance, thresh, _gt)
 
-        # g2: run recognition + final cued recall
-        param_dict.update(nitems_in_accumulator=32, ban_recall=np.arange(1, 17), learn_while_retrieving=True)
-        df_study_g2 = df_study.query("group == 2").copy()
-        df_test_g2 = df_test.query("group == 2").copy()
-        try:
-            with _time_limit(_EVAL_TIMEOUT):
-                df_simu, _, _ = cmr.run_success_multi_sess(param_dict, df_study_g2, df_test_g2, sem_mat, mode="Recog-CR", design="S1G3", disable_tqdm=True)
-        except _EvalTimeout:
-            return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec, "timeout": "g2"}
-        df_simu["test"] = df_test_g2["test"].values
-        df_simu = df_simu.merge(df_test_g2, on=["session", "list", "test", "test_itemno1", "test_itemno2"])
-        df_recog = df_simu.query("test == 1").copy()
-        df_cr = df_simu.query("test == 2").copy()
-        hr_mean, far_mean, yesdist_mean, crdist_mean, wls_hr, wls_far, wls_yesdist, wls_crdist = _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, _gt)
-
-        # Combine g1 + g2 into one error
-        err = wls_neighbor + wls_ILI + wls_hr * 10 + wls_far * 10 + wls_yesdist + wls_crdist
-        if correct_rate < 0.6:
-            err += 5
-        if np.any(np.diff(hr_mean) > 0):
-            err += 10
-        if np.any(np.diff(far_mean) < 0):
-            err += 10
-        cmr_stats = {"err": err, "params": param_vec, "stats": [neighbor_mean, ILI_mean, hr_mean, far_mean, yesdist_mean, crdist_mean]}
+        # Get error
+        err = wls_neighbor + wls_ILI
+        cmr_stats = {"err": err, "params": param_vec, "stats": [neighbor_mean, ILI_mean]}
 
 
     ## SIMUS1 ##

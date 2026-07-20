@@ -5,7 +5,7 @@ from CMR_IA.pso import run_pso
 
 if __name__ == "__main__":
 
-    SIMU_NAME = "3"
+    SIMU_NAME = "8"
     ANAL_DIR = "../../Analysis"
     SEED_FILE = None
 

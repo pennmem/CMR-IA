@@ -13,8 +13,8 @@ from scipy.io import loadmat
 from numpy.linalg import norm
 
 # Logistic kernel: D0 = neighbour/confusion radius (matches the neighbour-count threshold), K = falloff sharpness
-D0 = 2.0  # 3.0
-K = 1.0  # 1.5
+D0 = 2.0
+K = 1.0
 
 # Load face coordinates from experiment data, keyed by face id (0-15) to preserve ordering
 events = loadmat("data/original_experiments/Experiment1/Experiment1.mat")["events"][:, 0]
