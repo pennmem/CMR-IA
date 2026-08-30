@@ -26,7 +26,7 @@ from CMR_IA.fitting import _simu5_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -56,7 +56,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("5", fixed_params={"nitems_in_accumulator": 48})
+params = cmr.load_params("5", params_path="data/5_260822_200-200.json", fixed_params={"nitems_in_accumulator": 48})
 params
 
 # %%
@@ -85,6 +85,9 @@ if RUNCMR:
 else:
     df_simu = pd.read_parquet("data/simu5_result.parquet")
 df_simu
+
+# %%
+np.sum(df_simu.s_resp == -2)
 
 # %% [markdown]
 # ## Analysis

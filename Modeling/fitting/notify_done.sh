@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -p cpu
+#SBATCH -p normal
 #SBATCH -t 0-00:05
 #SBATCH -c 1
 #SBATCH --mem=1G
@@ -26,3 +26,18 @@ else
         -H "Priority: high" \
         -d "$FAILED/$TOTAL tasks FAILED"
 fi
+
+# Drop this job's watchdog scrontab entry (and its #SCRON header block)
+# now that the array is done.
+EXISTING=$(scrontab -l 2>/dev/null)
+if [ $? -ne 0 ]; then EXISTING=""; fi
+printf '%s\n' "$EXISTING" | awk -v marker="watchdog.sh $JOB_ID " '
+    /^#SCRON/ { buf[n++]=$0; next }
+    {
+        if (index($0, marker) > 0) { n=0; next }
+        for (i=0;i<n;i++) print buf[i]
+        n=0
+        print $0
+    }
+    END { for (i=0;i<n;i++) print buf[i] }
+' | scrontab -

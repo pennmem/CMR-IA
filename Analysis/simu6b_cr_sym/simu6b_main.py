@@ -22,7 +22,7 @@ import seaborn as sns
 import CMR_IA as cmr
 from CMR_IA.fitting import _simu6b_subj_stats, _simu6b_stats
 
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -52,7 +52,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %% metadata={}
 # Define parameters and load PSO results
-params = cmr.load_params("6b", params_path="data/6b_260701_100-50.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 96})
+params = cmr.load_params("6b", params_path="data/6b_260823_200-200.json", fixed_params={"learn_while_retrieving": True, "nitems_in_accumulator": 96})
 params
 
 # %% metadata={}
@@ -67,6 +67,9 @@ if RUNCMR:
 else:
     df_simu = pd.read_parquet("data/simu6b_result.parquet")
 df_simu
+
+# %%
+np.sum(df_simu.s_resp == -2)
 
 # %% [markdown]
 # ## Analysis

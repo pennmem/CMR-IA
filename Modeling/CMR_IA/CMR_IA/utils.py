@@ -51,7 +51,7 @@ def make_params(source_coding=False):
         "omega": None,
         "alpha": None,
         "lamb": None,
-        "c_thresh": None,
+        "c_thresh_rec": None,
         "ban_recall": None,  # List of item ID numbers (as in pres_mat) that should not be recalled [CMR-IA]
         
         # Timing & recall settings

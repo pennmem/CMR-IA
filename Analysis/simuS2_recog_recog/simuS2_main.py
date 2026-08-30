@@ -27,7 +27,7 @@ from CMR_IA.fitting import _simuS2_subj_stats, _simuS2_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -57,7 +57,8 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("S2", fixed_params={"learn_while_retrieving": True})
+params = cmr.load_params("S2", params_path="data/S2_260829_200-200.json", fixed_params={"learn_while_retrieving": True})
+params.update(c_thresh_assoc=1.50)
 params
 
 # %%
@@ -172,9 +173,9 @@ stats_se.round(3)
 with open("data/simuS2_gt.json") as f:
     gt = json.load(f)
 conds = ["diff_item", "item_pair", "pair_item", "same_item", "intact_pair", "rep_lure", "nrep_lure"]
-ground_truth = np.array([gt[f"{c}_mean"] for c in conds])
-ground_truth_se = np.array([gt[f"{c}_se"] for c in conds])
-err = np.sum(np.power(stats_mean - ground_truth, 2))
+stats_mean_gt = np.array([gt[f"{c}_mean"] for c in conds])
+stats_se_gt = np.array([gt[f"{c}_se"] for c in conds])
+err = np.sum(np.power(stats_mean - stats_mean_gt, 2))
 err
 
 # %%
@@ -184,8 +185,12 @@ err
 
 # %%
 # Compute weighted MSE error
-err = wmse(ground_truth, stats_mean, ground_truth_se)
+# err = wmse(stats_mean_gt, stats_mean, stats_se_gt)
+err = wmse(stats_mean_gt[:, :2], stats_mean[:, :2], stats_se_gt[:, :2]) + 10 * wmse(stats_mean_gt[:, 2], stats_mean[:, 2], stats_se_gt[:, 2])
 err
+
+# %%
+np.any(stats_mean[:, :2] > 0.95)
 
 # %% [markdown]
 # ### Plot
@@ -219,8 +224,8 @@ base_xs_far = np.arange(2)
 # HR
 ax1.errorbar(
     x=base_xs - width,
-    y=ground_truth[:5, 0],
-    yerr=ground_truth_se[:5, 0],
+    y=stats_mean_gt[:5, 0],
+    yerr=stats_se_gt[:5, 0],
     markerfacecolor="white",
     **plot_params,
 )
@@ -234,8 +239,8 @@ ax1.errorbar(
 # FAR
 ax2.errorbar(
     x=base_xs_far - width,
-    y=ground_truth[7:4:-1, 0],
-    yerr=ground_truth_se[7:4:-1, 0],
+    y=stats_mean_gt[7:4:-1, 0],
+    yerr=stats_se_gt[7:4:-1, 0],
     markerfacecolor="white",
     **plot_params,
 )
@@ -302,8 +307,8 @@ base_xs_far = np.arange(2)
 # HR
 ax1.errorbar(
     x=base_xs - width,
-    y=ground_truth[:5, 1],
-    yerr=ground_truth_se[:5, 1],
+    y=stats_mean_gt[:5, 1],
+    yerr=stats_se_gt[:5, 1],
     markerfacecolor="white",
     **plot_params,
 )
@@ -317,8 +322,8 @@ ax1.errorbar(
 # FAR
 ax2.errorbar(
     x=base_xs_far - width,
-    y=ground_truth[7:4:-1, 1],
-    yerr=ground_truth_se[7:4:-1, 1],
+    y=stats_mean_gt[7:4:-1, 1],
+    yerr=stats_se_gt[7:4:-1, 1],
     markerfacecolor="white",
     **plot_params,
 )
@@ -380,8 +385,8 @@ base_xs = np.arange(1, 6)
 
 ax.errorbar(
     x=base_xs - width,
-    y=ground_truth[:5, 2],
-    yerr=ground_truth_se[:5, 2],
+    y=stats_mean_gt[:5, 2],
+    yerr=stats_se_gt[:5, 2],
     markerfacecolor="white",
     **plot_params,
 )
@@ -393,8 +398,8 @@ ax.errorbar(
 )
 ax.errorbar(
     x=-width,
-    y=ground_truth[5, 2],
-    yerr=ground_truth_se[5, 2],
+    y=stats_mean_gt[5, 2],
+    yerr=stats_se_gt[5, 2],
     markerfacecolor="white",
     **plot_params,
 )

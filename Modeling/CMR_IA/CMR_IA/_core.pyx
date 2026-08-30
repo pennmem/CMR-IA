@@ -153,9 +153,9 @@ class CMR(object):
         self.mode = mode
 
         # Input design [CMR-IA]
-        if design is not None and design not in ("EXP1", "Hockley", "Osth", "S1G3"):
+        if design is not None and design not in ("Osth", "EXP1", "Hockley", "S1G1", "S1G2", "S1G3"):
             raise ValueError("Design %s is invalid." % design)
-        _design_mode_map = {"EXP1": "RecogContinuous", "Hockley": "RecogContinuous", "S1G3": "Recog-CR", "Osth": "RecogNormal"}
+        _design_mode_map = {"Osth": "RecogNormal", "EXP1": "RecogContinuous", "Hockley": "RecogContinuous", "S1G1": "Recog-CR", "S1G2": "Recog-CR", "S1G3": "Recog-CR"}
         if design is not None and mode != _design_mode_map[design]:
             raise ValueError("Design %s requires mode='%s', got '%s'." % (design, _design_mode_map[design], mode))
         self.design = design
@@ -369,7 +369,7 @@ class CMR(object):
         self.att_vec[self.att_vec > att_ceil] = att_ceil
         self.att_vec[self.att_vec < 0] = 0
 
-        # Set up c_thresh vector for all itemno, allowing criterion shifting for different items
+        # Set up recognition threshold vector for all itemno, allowing criterion shifting for different items
         self.c_vec = self.params["c_s"] * self.sem_mean + self.params["c_thresh_itm"]
 
         # Set up random mechanism for threshold
@@ -379,7 +379,12 @@ class CMR(object):
         # Flexible threshold kernel
         self.thresh_kernel = np.exp(self.params["c_d"] * np.arange(self.params["thresh_kernel_len"]))
         self.thresh_kernel /= np.sum(self.thresh_kernel)
-        self.init_csims_flag = False
+        self.csims_seeded = False
+        self.recent_csims = {}
+        self.seen_items = []
+        self.seen_pairs = []
+        self.studied_items = []
+        self.studied_pairs = []
 
 
     def _validate_parameters(self):
@@ -401,7 +406,7 @@ class CMR(object):
         
         # Recall specific
         if self.mode in ("IFR", "DFR") or "CR" in self.mode:
-            for key in ["beta_rec", "kappa", "eta", "omega", "alpha", "lamb", "c_thresh"]:
+            for key in ["beta_rec", "kappa", "eta", "omega", "alpha", "lamb", "c_thresh_rec"]:
                 assert self.params[key] is not None, "params['%s'] must be set for recall tasks." % key
             if "CR" in self.mode:
                 for key in ["beta_cue"]:
@@ -411,6 +416,227 @@ class CMR(object):
         if "Recog" in self.mode:
             for key in ["beta_cue", "c_thresh_itm", "c_thresh_assoc"]:
                 assert self.params[key] is not None, "params['%s'] must be set for recognition tasks." % key
+
+
+    def _track_presentation(self, item_idx, studied):
+        """
+        Record a presented item or pair for the flexible recognition threshold. 
+        seen_* track every probe; studied_* track only studied items/pairs.
+        [CMR-IA]
+        """
+        is_pair = np.logical_not(np.isscalar(item_idx))
+        items = tuple(item_idx) if is_pair else (item_idx,)
+
+        # Everything ever shown (studied or cued)
+        for i in items:
+            if i not in self.seen_items:
+                self.seen_items.append(i)
+        if is_pair and items not in self.seen_pairs:
+            self.seen_pairs.append(items)
+
+        # Studied items/pairs
+        if studied:
+            for i in items:
+                if i not in self.studied_items:
+                    self.studied_items.append(i)
+            if is_pair and items not in self.studied_pairs:
+                self.studied_pairs.append(items)
+
+
+    def _reset_studied_tracking(self):
+        """
+        Reset studied tracking at the start of a new list.
+        [CMR-IA]
+        """
+        self.csims_seeded = False
+        self.studied_items = []
+        self.studied_pairs = []
+
+
+    def _init_recent_csims(self, num=5):
+        """
+        Seed the recent-csim windows used by the flexible recognition and cued recall thresholds.
+        [CMR-IA]
+        """
+        assert not self.csims_seeded, "csims windows already seeded."
+        do_item, do_assoc, do_recall = False, False, False
+
+        # Init by task and design
+        if self.mode == "RecogNormal":
+            if self.design == "Osth":  # Osth only has rearranged probes
+                do_assoc = True
+            else:  # other normal item recognition tasks
+                do_item = True
+        elif self.mode == "RecogContinuous":
+            if self.design == "EXP1":  # EXP1 has only item recognition
+                do_item = True
+            elif self.design == "Hockley":  # Hockley has both item and pair recognition
+                do_item = True
+                do_assoc = True
+            else:
+                raise NotImplementedError
+        elif self.mode in ["CRNormal", "CR-CR"]:  # cued recall tasks
+            do_recall = True
+        elif self.mode == "Recog-CR":
+            if self.design == "S1G1":  # S1G1 is item + cued recall
+                do_item = True
+                do_recall = True
+            elif self.design in ["S1G2", "S1G3"]:  # S1G2 and S1G3 are pair + cued recall
+                do_assoc = True
+                do_recall = True
+            else:
+                raise NotImplementedError
+        elif self.mode == "Recog-Recog":  # S2
+            do_item = True
+            do_assoc = True
+        else:
+            raise NotImplementedError
+
+        if do_item:
+            self._seed_window("item", self._init_item_csim(num))
+        if do_assoc:
+            self._seed_window("assoc", self._init_pair_csim(num))
+        if do_recall:
+            self._seed_window("recall", self._init_pair_csim(num))
+        self.csims_seeded = True
+
+
+    def _seed_window(self, kind, csim_avg):
+        """
+        Fill the recent-csim window for a given threshold kind with a constant seed value.
+        [CMR-IA]
+        """
+        n = self.params["thresh_kernel_len"]
+        self.recent_csims[kind] = deque([csim_avg] * n, maxlen=n)
+
+
+    def _init_item_csim(self, num):
+        """
+        Compute the average context similarity over some random studied (old) and lure (new) items.
+        Studied items are from the current list; lure items are from the pool of items that have not been seen yet.
+        [CMR-IA]
+        """
+        # Get the csim for some random old items
+        old_item_csims = []
+        assert len(self.studied_items) > 0, "No studied items, cannot seed item csim."
+        old_items = self.rng.choice(np.array(self.studied_items), num)
+        for pres_idx in old_items:
+            self.present_item(pres_idx, source=None, update_context=False, update_weights=False)  # just to get self.c_in
+            csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
+            old_item_csims.append(csim.item())
+
+        # Get the csim for some random new items
+        new_item_csims = []
+        all_new_items = [idx for idx in np.arange(self.nitems_unique) if idx not in np.array(self.seen_items)]
+        assert len(all_new_items) > 0, "No new items, cannot seed item csim."
+        new_items = self.rng.choice(all_new_items, num)
+        for pres_idx in new_items:
+            self.present_item(pres_idx, source=None, update_context=False, update_weights=False)  # just to get self.c_in
+            csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
+            new_item_csims.append(csim.item())
+
+        return np.mean(old_item_csims + new_item_csims)
+
+
+    def _init_pair_csim(self, num):
+        """
+        Compute the average context similarity over some random studied (old) and rearranged/unseen (new) pairs.
+        Studied pairs are from the current list; rearranged/unseen pairs require special treatment.
+        [CMR-IA]
+        """
+        # New pairs are a bit tricky, the expected csim may differ with experimental settings
+        def get_new_pairs(studied_pairs, num):
+            new_pairs = []
+            if self.design == "Osth":  # Osth's rearranged pairs are from certain lags
+                for _ in range(num):
+                    lag = self.rng.choice(np.arange(1, 6))
+                    fw = self.rng.choice([0, 1])
+                    idx = self.rng.choice(np.arange(len(studied_pairs) - lag))
+                    new_pairs.append([studied_pairs[idx][fw], studied_pairs[idx + lag][1 - fw]])
+            elif self.design == "Hockley":  # Hockley's rearranged pairs are from adjacent studied pairs
+                for i in range(0, len(studied_pairs) - 1):
+                    new_pairs.append([studied_pairs[i][0], studied_pairs[i + 1][1]])
+                    new_pairs.append([studied_pairs[i][1], studied_pairs[i + 1][0]])
+                new_pairs = self.rng.choice(new_pairs, num)
+            elif self.design == "S1G3" or self.mode in ["CRNormal", "CR-CR"]:  # random rearranged pairs
+                for _ in range(num):
+                    idx1, idx2 = self.rng.choice(np.arange(len(studied_pairs)), 2, replace=False)
+                    fw = self.rng.choice([0, 1])
+                    new_pairs.append([studied_pairs[idx1][fw], studied_pairs[idx2][1 - fw]])
+            else:  # random unseen pairs
+                all_new_items = [idx for idx in np.arange(self.nitems_unique) if idx not in np.array(self.seen_items)]
+                assert len(all_new_items) > 1, "Not enough new items, cannot seed pair csim."
+                for _ in range(num):
+                    new_pair = self.rng.choice(all_new_items, 2, replace=False)
+                    new_pairs.append(new_pair)
+            return new_pairs
+        
+        
+        self.beta = self.params["beta_cue"]
+        c_old_tmp = self.c_old.copy()
+        c_tmp = self.c.copy()
+
+        # Get the csim for old pairs
+        old_pair_csims = []
+        assert len(self.studied_pairs) > 0, "No studied pairs, cannot seed pair csim."
+        old_pairs = self.rng.choice(np.array(self.studied_pairs), num)
+        for pres_idx in old_pairs:
+            self.present_item(pres_idx[0], source=None, update_context=True, update_weights=False)
+            self.present_item(pres_idx[1], source=None, update_context=False, update_weights=False)
+            csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
+            self.c_old = c_old_tmp
+            self.c = c_tmp
+            old_pair_csims.append(csim.item())
+
+        # Get the csim for new pairs
+        new_pair_csims = []
+        new_pairs = get_new_pairs(self.studied_pairs, num)
+        for pres_idx in new_pairs:
+            self.present_item(pres_idx[0], source=None, update_context=True, update_weights=False)
+            self.present_item(pres_idx[1], source=None, update_context=False, update_weights=False)
+            csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
+            self.c_old = c_old_tmp
+            self.c = c_tmp
+            new_pair_csims.append(csim.item())
+
+        return np.mean(old_pair_csims + new_pair_csims)
+
+
+    def _maybe_seed_conti_csims(self, trial_idx):
+        """
+        Seed the flexible-threshold windows partway through a continuous-recognition session.
+        [CMR-IA]
+        """
+        if not self.params["use_flexible_thresh"] or self.csims_seeded:
+            return
+        if self.design == "EXP1":  # for our Exp1, start at trial 21
+            if trial_idx == 20:
+                self._init_recent_csims()
+        elif self.design == "Hockley":  # for Hockley's experiment, start at the first valid test probe
+            cue_idx = self.cues_indexes[trial_idx]
+            if np.logical_not(np.isscalar(cue_idx)) and cue_idx[1] == -1:
+                cue_idx = cue_idx[0].astype(int)
+            if np.all(cue_idx > 0):
+                self._init_recent_csims()
+        else:
+            raise NotImplementedError
+
+
+    def _compute_threshold(self, kind, base, csim):
+        """
+        Return a recognition/recall threshold, then advance the recent-csim window.
+        [CMR-IA]
+        """
+        thresh_epsilon = self.thresh_rng.uniform(-self.thresh_sigma, self.thresh_sigma)
+        if self.params["use_flexible_thresh"] and self.csims_seeded:
+            thresh = np.dot(self.recent_csims[kind], self.thresh_kernel) * base + thresh_epsilon
+        elif self.params["use_flexible_thresh"]:  # before the window is seeded (for EXP1)
+            thresh = 1
+        else:
+            thresh = base + thresh_epsilon
+        if self.csims_seeded:
+            self.recent_csims[kind].append(csim)
+        return thresh
 
 
     def present_item(self, item_idx, source=None, update_context=True, update_weights=True, use_new_context=False):
@@ -533,134 +759,6 @@ class CMR(object):
                 self.M_CF += self.L_CF * self.prim_vec[self.serial_position] * pair_ass
 
 
-    def _record_presented_items(self, item_idx, as_list=True):
-        """
-        Track presented items for flexible recognition threshold.
-        [CMR-IA]
-        """
-        if not hasattr(self, 'presented_items'):
-            self.presented_items = []
-        if not hasattr(self, 'list_items'):
-            self.list_items = []
-        is_paired_idx = np.logical_not(np.isscalar(item_idx))
-
-        # Record a pair
-        if is_paired_idx:
-            if not hasattr(self, 'presented_pairs'):
-                self.presented_pairs = []
-            if not hasattr(self, 'list_pairs'):
-                self.list_pairs = []
-            self.presented_items.append(item_idx[0]) if item_idx[0] not in self.presented_items else None
-            self.presented_items.append(item_idx[1]) if item_idx[1] not in self.presented_items else None
-            self.presented_pairs.append(tuple(item_idx)) if tuple(item_idx) not in self.presented_pairs else None
-            if as_list:
-                self.list_items.append(item_idx[0]) if item_idx[0] not in self.list_items else None
-                self.list_items.append(item_idx[1]) if item_idx[1] not in self.list_items else None
-                self.list_pairs.append(tuple(item_idx)) if tuple(item_idx) not in self.list_pairs else None
-        
-        # Record an item
-        else:
-            self.presented_items.append(item_idx) if item_idx not in self.presented_items else None
-            if as_list:
-                self.list_items.append(item_idx) if item_idx not in self.list_items else None
-
-
-    def _init_recent_csims(self, num=5, do_item=False, do_pair=False):
-        """
-        Initialize some recent csims for flexible recognition threshold.
-        [CMR-IA]
-        """
-        if do_item:
-            try:
-                # Get the csim for some random old items
-                old_item_csims = []
-                old_items = self.rng.choice(np.array(self.list_items), num)
-                for pres_idx in old_items:
-                    self.present_item(pres_idx, source=None, update_context=False, update_weights=False)  # just to get self.c_in
-                    csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
-                    old_item_csims.append(csim.item())
-
-                # Get the csim for some random new items
-                new_item_csims = []
-                all_new_items = [idx for idx in np.arange(self.nitems_unique) if idx not in np.array(self.presented_items)]
-                new_items = self.rng.choice(all_new_items, num)
-                for pres_idx in new_items:
-                    self.present_item(pres_idx, source=None, update_context=False, update_weights=False)  # just to get self.c_in
-                    csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
-                    new_item_csims.append(csim.item())
-                
-                # Fill the recent csims with the average csim
-                csim_avg = np.mean(old_item_csims + new_item_csims)
-                self.recent_item_csims = deque([csim_avg] * self.params["thresh_kernel_len"], maxlen=self.params["thresh_kernel_len"])
-            except:
-                pass  # usually because of no new items when no item recognition
-
-        if do_pair:
-            try:
-                self.beta = self.params["beta_cue"]
-                c_old_tmp = self.c_old.copy()
-                c_tmp = self.c.copy()
-
-                # Get the csim for old pairs
-                old_pair_csims = []
-                old_pairs = self.rng.choice(np.array(self.list_pairs), num)
-                for pres_idx in old_pairs:
-                    self.present_item(pres_idx[0], source=None, update_context=True, update_weights=False)
-                    self.present_item(pres_idx[1], source=None, update_context=False, update_weights=False)
-                    csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
-                    self.c_old = c_old_tmp
-                    self.c = c_tmp
-                    old_pair_csims.append(csim.item())
-
-                # Rearranged pairs are a bit tricky, the expected csim may differ with experimental settings
-                def get_rearranged_pairs(presented_pairs, num):
-                    rearranged_pairs = []
-
-                    if self.design == "Hockley":  # for Hockley's continuous experiment
-                        for i in range(0, len(presented_pairs) - 1):
-                            rearranged_pairs.append([presented_pairs[i][0], presented_pairs[i + 1][1]])
-                            rearranged_pairs.append([presented_pairs[i][1], presented_pairs[i + 1][0]])
-                        rearranged_pairs = self.rng.choice(rearranged_pairs, num)
-
-                    elif self.design == "Osth":  # for Osth's associative recognition experiment
-                        for _ in range(num):
-                            lag = self.rng.choice(np.arange(1, 6))
-                            fw = self.rng.choice([0, 1])
-                            idx = self.rng.choice(np.arange(len(presented_pairs) - lag))
-                            rearranged_pairs.append([presented_pairs[idx][fw], presented_pairs[idx + lag][1 - fw]])
-
-                    elif self.design == "S1G3":  # for S1 where rearranged pairs are totally random
-                        for _ in range(num):
-                            idx1, idx2 = self.rng.choice(np.arange(len(presented_pairs)), 2, replace=False)
-                            fw = self.rng.choice([0, 1])
-                            rearranged_pairs.append([presented_pairs[idx1][fw], presented_pairs[idx2][1 - fw]])
-
-                    else:  # for other experiments where new pairs are totally random
-                        all_new_items = [idx for idx in np.arange(self.nitems_unique) if idx not in np.array(self.presented_items)]
-                        for _ in range(num):
-                            new_pair = self.rng.choice(all_new_items, 2, replace=False)
-                            rearranged_pairs.append(new_pair)
-
-                    return rearranged_pairs
-                    
-                # Get the csim for rearranged new pairs
-                new_pair_csims = []
-                new_pairs = get_rearranged_pairs(self.list_pairs, num)
-                for pres_idx in new_pairs:
-                    self.present_item(pres_idx[0], source=None, update_context=True, update_weights=False)
-                    self.present_item(pres_idx[1], source=None, update_context=False, update_weights=False)
-                    csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
-                    self.c_old = c_old_tmp
-                    self.c = c_tmp
-                    new_pair_csims.append(csim.item())
-
-                # Fill the recent csims with the average csim
-                csim_avg = np.mean(old_pair_csims + new_pair_csims)
-                self.recent_pair_csims = deque([csim_avg] * self.params["thresh_kernel_len"], maxlen=self.params["thresh_kernel_len"])
-            except:
-                pass  # usually because of no new pairs when no pair recognition
-
-    
     def simulate_recall(self, time_limit=60000, max_recalls=np.inf):
         """
         Simulates a recall period starting from the current state of context.
@@ -706,7 +804,7 @@ class CMR(object):
 
                 # Filter intrusions using temporal context comparison, and log item if overtly recalled
                 csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
-                if csim >= self.params["c_thresh"]:
+                if csim >= self.params["c_thresh_rec"]:
                     rec_itemno = self.all_nos_unique[item] # [CMR-IA]
                     self.rec_items[-1].append(rec_itemno)
                     self.rec_times[-1].append(cycles_elapsed * self.params["dt"])
@@ -746,26 +844,13 @@ class CMR(object):
         csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal]).item()
         self.recog_csims.append(csim)
 
-        # Get recognition threshold
-        thresh_epsilon = self.thresh_rng.uniform(-self.thresh_sigma, self.thresh_sigma)
-        if self.params["use_flexible_thresh"]:
-            if is_paired_cue:
-                thresh = np.dot(self.recent_pair_csims, self.thresh_kernel) * self.params["c_thresh_assoc"] + thresh_epsilon if self.init_csims_flag else 1
-            else:
-                thresh = np.dot(self.recent_item_csims, self.thresh_kernel) * self.c_vec[self.all_nos_unique[cue_idx] - 1] + thresh_epsilon if self.init_csims_flag else 1
+        # Get recognition threshold (advances the matching recent-csim window)
+        if is_paired_cue:
+            kind, base = "assoc", self.params["c_thresh_assoc"]
         else:
-            if is_paired_cue:
-                thresh = self.params["c_thresh_assoc"] + thresh_epsilon
-            else:
-                thresh = self.c_vec[self.all_nos_unique[cue_idx] - 1] + thresh_epsilon
+            kind, base = "item", self.c_vec[self.all_nos_unique[cue_idx] - 1]
+        thresh = self._compute_threshold(kind, base, csim)
         self.recog_threshs.append(thresh)
-        
-        # Update recent context similarities
-        if self.init_csims_flag:
-            if is_paired_cue:
-                self.recent_pair_csims.append(csim)
-            else:
-                self.recent_item_csims.append(csim)
 
         # Get response
         if csim > thresh:  # OLD response
@@ -779,6 +864,9 @@ class CMR(object):
         
         # Calculate recognition probability (not used)
         self.recog_probs.append(1 / (1 + np.exp(-self.params["recog_slope"] * (csim - thresh))))
+
+        # Track presentation for the cue item/pair
+        self._track_presentation(cue_idx, studied=False)
 
 
     def simulate_cr(self, cue_idx, time_limit=5000):
@@ -819,39 +907,47 @@ class CMR(object):
             # Identify the feature index of the retrieved item
             item = top_items[winner_idx]
 
-            # Decay retrieval thresholds            
+            # Decay retrieval thresholds, then set the retrieved item's threshold to maximum.
             self.ret_thresh = 1 + self.params["alpha"] * (self.ret_thresh - 1)
+            if not np.isinf(self.ret_thresh[item]):
+                self.ret_thresh[item] = 1 + self.params["omega"]
 
             # Present retrieved item to the model, with no source information
             self.beta = self.params["beta_rec"]
             self.present_item(item, source=None, update_context=True, update_weights=False)
 
-            # Filter intrusions using temporal context comparison, and log item if overtly recalled
+            # Compute context similarity for filtering
             csim = np.dot(self.c_old[:self.ntemporal].T, self.c_in[:self.ntemporal])
+
+            # Output encoding for the pair of cue and recalled item
+            if self.learn_while_retrieving:
+                self.present_item(np.array([item, cue_idx]), source=None, update_context=False, update_weights=True, use_new_context=self.params["use_new_context"])
+
+            # Get recall threshold (advances the recall recent-csim window)
+            thresh = self._compute_threshold("recall", self.params["c_thresh_rec"], csim.item())
             self.recog_csims.append(csim.item())
-            self.recog_threshs.append(self.params["c_thresh"])
-            if csim >= self.params["c_thresh"]:
+            self.recog_threshs.append(thresh)
 
-                # Set the retrieved item's threshold to maximum
-                if not np.isinf(self.ret_thresh[item]):
-                    self.ret_thresh[item] = 1 + self.params["omega"]
-
-                # Output encoding for the pair of cue and recalled item
-                if self.learn_while_retrieving:
-                    self.present_item(np.array([item, cue_idx]), source=None, update_context=False, update_weights=True, use_new_context=self.params["use_new_context"])
-
+            # Filter intrusions using temporal context comparison, log item only if overtly recalled
+            if csim >= thresh:
                 rec_itemno = self.all_nos_unique[item]
                 self.rec_items.append(rec_itemno)
                 self.rec_times.append(cycles_elapsed * self.params["dt"])
             else:
                 self.rec_items.append(-2) # reject
                 self.rec_times.append(-2)
+            
+            # Track presentation for the retrieved pair
+            self._track_presentation([item, cue_idx], studied=False)
 
         else:
             self.rec_items.append(-1) # fail
             self.rec_times.append(-1)
             self.recog_csims.append(-1)
             self.recog_threshs.append(-1)
+
+            # Track presentation only for the cue item
+            self._track_presentation(cue_idx, studied=False)
 
 
     @cython.boundscheck(False)  # Deactivate bounds checking
@@ -1060,9 +1156,7 @@ class CMR(object):
                     self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
-                    self.init_csims_flag = False
-                    self.list_items = []
-                    self.list_pairs = []
+                    self._reset_studied_tracking()
 
                 #####
                 # Present items
@@ -1075,7 +1169,7 @@ class CMR(object):
                         if np.logical_not(np.isscalar(pres_idx)) and pres_idx[1] == -1:
                             pres_idx = pres_idx[0].astype(int)
                         self.present_item(pres_idx, source=None, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                        self._record_presented_items(pres_idx)
+                        self._track_presentation(pres_idx, studied=True)
 
                 #####
                 # Shift context before recall phase (e.g., distractor)
@@ -1085,9 +1179,7 @@ class CMR(object):
                     self.beta_source = self.params["beta_distract"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
-                    do_pair = self.design == "Osth"  # do pair only for Osth's experiment
-                    self._init_recent_csims(do_item=True, do_pair=do_pair)
-                    self.init_csims_flag = True
+                    self._init_recent_csims()
 
                 #####
                 # Simulate recognition
@@ -1100,7 +1192,6 @@ class CMR(object):
                         if np.logical_not(np.isscalar(cue_idx)) and cue_idx[1] == -1:
                             cue_idx = cue_idx[0].astype(int)
                         self.simulate_recog(cue_idx)
-                        self._record_presented_items(cue_idx, as_list=False)
 
 
     def run_conti_recog_single_sess(self):
@@ -1113,23 +1204,6 @@ class CMR(object):
         For Hockley's variant, we changes the order of encoding and recognition.
         [CMR-IA]
         """
-        # Function to initialize the flexible threshold
-        def do_init_csims(self):
-            if not self.params["use_flexible_thresh"]:  # do nothing if not using flexible threshold
-                return
-            if self.init_csims_flag:  # do nothing if already initialized
-                return
-            if self.design == "EXP1":  # for our Exp1, start at trial 21
-                if trial_idx == 20:
-                    self._init_recent_csims(do_item=True, do_pair=False)
-                    self.init_csims_flag = True
-            elif self.design == "Hockley":  # for Hockley's experiment, start at the first valid test probe
-                if np.all(cue_idx > 0):
-                    self._init_recent_csims(do_item=True, do_pair=True)
-                    self.init_csims_flag = True
-            else:
-                raise NotImplementedError
-
         if self.design == "Hockley":
             phases = ["pretrial", "encoding", "recognition"]
         else:
@@ -1145,6 +1219,7 @@ class CMR(object):
                     self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source=None, update_context=True, update_weights=False)
                     self.distractor_idx += 1
+                    self._maybe_seed_conti_csims(trial_idx)
 
                 #####
                 # Present items
@@ -1158,7 +1233,7 @@ class CMR(object):
                         pres_idx = pres_idx[0].astype(int)
                     if np.all(pres_idx >= 0):  # skip encoding on test-only presentations (for Hockley)
                         self.present_item(pres_idx, source=None, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                        self._record_presented_items(pres_idx)
+                        self._track_presentation(pres_idx, studied=True)
 
                 #####
                 # Simulate recognition
@@ -1169,9 +1244,7 @@ class CMR(object):
                     cue_idx = self.cues_indexes[trial_idx]
                     if np.logical_not(np.isscalar(cue_idx)) and cue_idx[1] == -1:
                         cue_idx = cue_idx[0].astype(int)
-                    do_init_csims(self)  # initialize the flexible threshold
                     self.simulate_recog(cue_idx)
-                    self._record_presented_items(cue_idx, as_list=False)
 
 
     def run_norm_cr_single_sess(self):
@@ -1196,10 +1269,11 @@ class CMR(object):
                     self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
+                    self._reset_studied_tracking()
 
                 #####
                 # Present items (pairs)
-                #####             
+                #####
                 if self.phase == "encoding":
                     for self.serial_position in range(self.pres_indexes.shape[1]):
                         pres_idx = self.pres_indexes[trial_idx, self.serial_position]
@@ -1211,6 +1285,7 @@ class CMR(object):
                             self.present_item(pres_idx[0], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
                             self.beta = self.params["beta_enc_inpair"]
                             self.present_item(pres_idx[1], source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
+                        self._track_presentation(pres_idx, studied=True)
 
                 #####
                 # Shift context before recall phase (e.g., distractor)
@@ -1220,6 +1295,7 @@ class CMR(object):
                     self.beta_source = self.params["beta_distract"]
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
+                    self._init_recent_csims()
 
                 #####
                 # Simulate cued recall
@@ -1271,9 +1347,7 @@ class CMR(object):
                     self.beta_source = 1 if trial_idx == 0 else self.params["beta_rec_post"]
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
-                    self.init_csims_flag = False
-                    self.list_items = []
-                    self.list_pairs = []
+                    self._reset_studied_tracking()
 
                 #####
                 # Shift context before recall phase (e.g., distractor)
@@ -1284,9 +1358,8 @@ class CMR(object):
                     self.present_item(self.distractor_idx, source, update_context=True, update_weights=False)
                     self.distractor_idx += 1
                     self.ret_thresh = np.ones(self.nitems_unique, dtype=np.float32)  # reset threshold
-                    if not self.init_csims_flag:
-                        self._init_recent_csims(do_item=True, do_pair=True)
-                        self.init_csims_flag = True
+                    if not self.csims_seeded:  # skip for the second prerecall
+                        self._init_recent_csims()
 
                 #####
                 # Present items
@@ -1297,7 +1370,7 @@ class CMR(object):
                         self.beta = self.params["beta_enc"]
                         self.beta_source = 0
                         self.present_item(pres_idx, source, update_context=True, update_weights=True, use_new_context=self.params["use_new_context"])
-                        self._record_presented_items(pres_idx)
+                        self._track_presentation(pres_idx, studied=True)
 
                 #####
                 # Simulate recognition
@@ -1314,7 +1387,6 @@ class CMR(object):
                         self.beta = self.params["beta_cue"]
                         self.beta_source = 0
                         self.simulate_recog(cue_idx)  # can be pair, can be scalar
-                        self._record_presented_items(cue_idx, as_list=False)
 
                 #####
                 # Simulate cued recall
@@ -1330,7 +1402,7 @@ class CMR(object):
                             cue_idx = cue_idx[0].astype(int)
                         self.beta = self.params["beta_cue"]
                         self.beta_source = 0
-                        self.simulate_cr(cue_idx)  # should be scalar
+                        self.simulate_cr(cue_idx)
 
 
 # ---------- Wrapper functions ---------- #
@@ -1529,7 +1601,7 @@ def run_norm_cr_multi_sess(params, df_study, df_test, sem_mat, disable_tqdm=Fals
     list_num = len(np.unique(df_study.list))
     df_thin = df_test[["session", "list", "test_itemno"]]
 
-    resps, rts, csims = [], [], []
+    resps, rts, csims, threshs = [], [], [], []
     f_in, f_dif = [], []
     for sess in tqdm(sessions, disable=disable_tqdm):
 
@@ -1547,10 +1619,11 @@ def run_norm_cr_multi_sess(params, df_study, df_test, sem_mat, disable_tqdm=Fals
         resps += cmr_model.rec_items
         rts += cmr_model.rec_times
         csims += cmr_model.recog_csims
+        threshs += cmr_model.recog_threshs
         f_in.append(cmr_model.f_in_acc)
         f_dif.append(cmr_model.f_in_dif)
 
-    df_thin = df_thin.assign(s_resp=resps, s_rt=rts, csim=csims)
+    df_thin = df_thin.assign(s_resp=resps, s_rt=rts, csim=csims, thresh=threshs)
     print("CMR Time: " + str(time.time() - now_test))
 
     return df_thin, f_in, f_dif

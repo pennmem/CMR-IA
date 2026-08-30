@@ -33,4 +33,29 @@ SUBMIT_OUT=$(sbatch --array=1-${PROCS} -J $PNAME $SH_SCRIPT $PYFILE)
 echo "$SUBMIT_OUT"
 JOB_ID=$(echo "$SUBMIT_OUT" | awk '{print $NF}')
 sbatch --dependency=afterany:$JOB_ID ${SH_PATH}/notify_done.sh $JOB_ID
-sbatch -J ${PNAME}_wd ${SH_PATH}/watchdog.sh $JOB_ID outfiles 15
+
+# Submit watchdog runs as a periodic scrontab entry, notify_done.sh removes this entry once JOB_ID finishes
+WD_PATH=$(readlink -f ${SH_PATH}/watchdog.sh)
+WD_MARKER="watchdog.sh $JOB_ID "
+EXISTING=$(scrontab -l 2>/dev/null)
+if [ $? -ne 0 ]; then EXISTING=""; fi
+(printf '%s\n' "$EXISTING" | awk -v marker="$WD_MARKER" '
+    /^#SCRON/ { buf[n++]=$0; next }
+    {
+        if (index($0, marker) > 0) { n=0; next }
+        for (i=0;i<n;i++) print buf[i]
+        n=0
+        print $0
+    }
+    END { for (i=0;i<n;i++) print buf[i] }
+'; cat <<EOF
+#SCRON -p service
+#SCRON -t 00:02:00
+#SCRON -J ${PNAME}_wd
+#SCRON -D $(pwd)
+#SCRON -o slurm_out/slurm-watchdog-%j.out
+#SCRON --open-mode=append
+#SCRON --dependency=singleton
+*/2 * * * * $WD_PATH $JOB_ID $(pwd)/outfiles 15
+EOF
+) | scrontab -

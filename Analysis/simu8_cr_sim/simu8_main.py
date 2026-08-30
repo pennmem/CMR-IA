@@ -28,7 +28,7 @@ from CMR_IA.fitting import _simu8_g1_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -58,7 +58,7 @@ sem_mat = np.load("data/simu8_smat.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("8", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
+params = cmr.load_params("8", params_path="data/8_260826_200-200.json", fixed_params={"nitems_in_accumulator": 16, "ban_recall": np.arange(1, 17)})
 params
 
 # %%

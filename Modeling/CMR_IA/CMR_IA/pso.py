@@ -379,6 +379,9 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                     if e.errno == errno.EEXIST:
                         print('Model for particle %s already complete! Skipping...' % i)
                         continue
+                    elif e.errno == errno.ESTALE:
+                        print('Stale file handle for particle %s -- leaving it for reclaim...' % i)
+                        continue
                     else:
                         raise
 
@@ -401,7 +404,13 @@ def pso(func, lb, ub, df_study, df_test, sem_mat, sources, swarmsize=100,
                             continue  # another survivor is already reclaiming it
                         raise
                     print('Reclaiming stale particle %s (claimant likely died)...' % i)
-                    run_particle(i, fd)
+                    try:
+                        run_particle(i, fd)
+                    except OSError as e:
+                        if e.errno == errno.ESTALE:
+                            print('Stale file handle for particle %s -- leaving it for reclaim...' % i)
+                        else:
+                            raise
                 if all_done:
                     break
                 time.sleep(2)

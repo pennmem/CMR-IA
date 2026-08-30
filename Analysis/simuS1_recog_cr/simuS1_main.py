@@ -54,12 +54,12 @@ def simu_success(tag, params):
         test1_num = 80
         i = 1
         mode = "Recog-CR"
-        design = None
+        design = "S1G1"
     elif tag == "Pair-CR":
         test1_num = 80
         i = 2
         mode = "Recog-CR"
-        design = None
+        design = "S1G2"
     elif tag == "Asso-CR":
         test1_num = 40
         i = 3

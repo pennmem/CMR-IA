@@ -34,13 +34,12 @@ def make_boundary(simu_name):
         eta=0,
         omega=1,
         alpha=0.5,
-        c_thresh=0,
+        c_thresh_rec=0,
         c_thresh_itm=0,
         c_thresh_assoc=0,
         lamb=0,
         gamma_fc=0,
         gamma_cf=0,
-        d_assoc=0,
         thresh_sigma=0,
         c_d=0,
     )
@@ -60,13 +59,12 @@ def make_boundary(simu_name):
         eta=0.25,
         omega=10,
         alpha=1,
-        c_thresh=1,
+        c_thresh_rec=2,
         c_thresh_itm=2,
         c_thresh_assoc=2,
         lamb=0.25,
         gamma_fc=1,
         gamma_cf=1,
-        d_assoc=1,
         thresh_sigma=0.5,
         c_d=10,
     )
@@ -241,7 +239,8 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
+            "c_d",
         ]
 
     elif simu_name == "6a":
@@ -263,7 +262,8 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
+            "c_d",
         ]
 
     elif simu_name == "6b":
@@ -285,7 +285,8 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
+            "c_d",
         ]
 
     elif simu_name == "7":
@@ -307,7 +308,8 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
+            "c_d",
         ]
 
     elif simu_name == "8":
@@ -327,7 +329,8 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
+            "c_d",
         ]
         ub_dict.update(
             s_fc=3.0,
@@ -352,7 +355,7 @@ def make_boundary(simu_name):
             "eta",
             "omega",
             "alpha",
-            "c_thresh",
+            "c_thresh_rec",
             "c_thresh_itm",
             "c_thresh_assoc",
             "c_d",
@@ -374,9 +377,6 @@ def make_boundary(simu_name):
             eta=0,
             omega=2,
             alpha=0.5,
-            c_thresh=0,
-            c_thresh_itm=0,
-            c_thresh_assoc=0,
         )
         ub_dict.update(
             beta_enc=1,
@@ -395,9 +395,6 @@ def make_boundary(simu_name):
             eta=0.2,
             omega=10,
             alpha=1,
-            c_thresh=1,
-            c_thresh_itm=2,
-            c_thresh_assoc=2,
         )
 
     elif simu_name == "S2":
@@ -882,12 +879,12 @@ def _simu7_stats(df_simu, df_study, gt):
         lag_PLI_mean = np.full(5, 0)
         lag_ILI_mean = np.full(10, 0)
 
-    wls_p_correct = wmse(np.array(gt["p_correct_mean"]), p_correct_mean, np.array(gt["p_correct_se"]))
-    wls_p_PLI = wmse(np.array(gt["p_PLI_mean"]), p_PLI_mean, np.array(gt["p_PLI_se"]))
-    wls_p_ILI = wmse(np.array(gt["p_ILI_mean"]), p_ILI_mean, np.array(gt["p_ILI_se"]))
-    wls_lag_PLI = wmse(np.array(gt["lag_PLI_mean"]), lag_PLI_mean, np.array(gt["lag_PLI_se"])) / len(gt["lag_PLI_mean"])
-    wls_lag_ILI = wmse(np.array(gt["lag_ILI_mean"]), lag_ILI_mean, np.array(gt["lag_ILI_se"])) / len(gt["lag_ILI_mean"])
-    err = wls_p_correct + wls_p_PLI + wls_p_ILI + wls_lag_PLI + wls_lag_ILI
+    p_correct_err = wmse(np.array(gt["p_correct_mean"]), p_correct_mean, np.array(gt["p_correct_se"]))
+    p_PLI_err = wmse(np.array(gt["p_PLI_mean"]), p_PLI_mean, np.array(gt["p_PLI_se"]))
+    p_ILI_err = wmse(np.array(gt["p_ILI_mean"]), p_ILI_mean, np.array(gt["p_ILI_se"]))
+    lag_PLI_err = wmse(np.array(gt["lag_PLI_mean"]), lag_PLI_mean, np.array(gt["lag_PLI_se"])) / len(gt["lag_PLI_mean"])
+    lag_ILI_err = wmse(np.array(gt["lag_ILI_mean"]), lag_ILI_mean, np.array(gt["lag_ILI_se"])) / len(gt["lag_ILI_mean"])
+    err = p_correct_err + p_PLI_err + p_ILI_err + lag_PLI_err + lag_ILI_err
     return p_correct_mean, p_PLI_mean, p_ILI_mean, lag_PLI_mean, lag_ILI_mean, err
 
 
@@ -942,7 +939,7 @@ def _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, gt):
     s_resp = df_simu["s_resp"].to_numpy(dtype=np.int64)
     correct_ans = df_simu["correct_ans"].to_numpy(dtype=np.int64)
     correct = s_resp == correct_ans
-    correct_rate = correct.mean()
+    p_correct = correct.mean()
 
     # Group rows by session (each session has exactly 8 unique test faces)
     order = np.argsort(sess, kind="stable")
@@ -989,9 +986,9 @@ def _simu8_g1_stats(df_simu, df_study_g1, face_distance, thresh, gt):
     neighbor_se_gt = np.array(gt["exp1_neighbor_se"])
     ILI_mean_gt = np.array(gt["exp1_ILI_mean"])
     ILI_se_gt = np.array(gt["exp1_ILI_se"])
-    wls_neighbor = wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
-    wls_ILI = wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
-    return neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI
+    neighbor_err = wmse(neighbor_mean_gt, neighbor_mean, neighbor_se_gt) / len(neighbor_mean_gt)
+    ILI_err = wmse(ILI_mean_gt, ILI_mean, ILI_se_gt) / len(ILI_mean_gt)
+    return neighbor_mean, ILI_mean, p_correct, neighbor_err, ILI_err
 
 
 def _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, gt):
@@ -1046,11 +1043,11 @@ def _simu8_g2_stats(df_recog, df_cr, df_study_g2, face_distance, thresh, gt):
     yesdist_se_gt = np.array(gt["exp3_yesdist_se"])
     crdist_mean_gt = np.array(gt["exp3_crdist_mean"])
     crdist_se_gt = np.array(gt["exp3_crdist_se"])
-    wls_hr = wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
-    wls_far = wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
-    wls_yesdist = wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
-    wls_crdist = wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
-    return (hr_mean, far_mean, yesdist_mean, crdist_mean, wls_hr, wls_far, wls_yesdist, wls_crdist)
+    hr_err = wmse(hr_mean_gt, hr_mean, hr_se_gt) / len(hr_mean_gt)
+    far_err = wmse(far_mean_gt, far_mean, far_se_gt) / len(far_mean_gt)
+    yesdist_err = wmse(yesdist_mean_gt, yesdist_mean, yesdist_se_gt) / len(yesdist_mean_gt)
+    crdist_err = wmse(crdist_mean_gt, crdist_mean, crdist_se_gt) / len(crdist_mean_gt)
+    return (hr_mean, far_mean, yesdist_mean, crdist_mean, hr_err, far_err, yesdist_err, crdist_err)
 
 
 def _simuS1_subj_stats(df_simu):
@@ -1085,8 +1082,8 @@ def _simuS1_stats(dfs, gt):
         stats_gp = [list(_simuS1_subj_stats(df_gp[df_gp["subject"] == subj])) for subj in subjects]
         stats.append(list(np.mean(stats_gp, axis=0)))
     stats = np.array(stats)
-    ground_truth = np.array([gt["g1_mean"], gt["g2_mean"], gt["g3_mean"]])
-    err = np.sum(np.power(stats - ground_truth, 2))
+    stats_gt = np.array([gt["g1_mean"], gt["g2_mean"], gt["g3_mean"]])
+    err = np.sum(np.power(stats - stats_gt, 2))
     return stats, err
 
 
@@ -1139,8 +1136,9 @@ def _simuS2_stats(df_simu, gt):
         stats.append(_simuS2_subj_stats(df_simu[m]))
     stats_mean = np.nanmean(stats, axis=0)
     _conds = ["diff_item", "item_pair", "pair_item", "same_item", "intact_pair", "rep_lure", "nrep_lure"]
-    ground_truth = np.array([gt[f"{c}_mean"] for c in _conds])
-    err = np.sum(np.power(stats_mean - ground_truth, 2))
+    stats_mean_gt = np.array([gt[f"{c}_mean"] for c in _conds])
+    stats_se_gt = np.array([gt[f"{c}_se"] for c in _conds])
+    err = wmse(stats_mean_gt[:, :2], stats_mean[:, :2], stats_se_gt[:, :2]) + 10 * wmse(stats_mean_gt[:, 2], stats_mean[:, 2], stats_se_gt[:, 2])
     return stats_mean, err
 
 
@@ -1250,7 +1248,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Run model
         param_dict.update(nitems_in_accumulator=48)
-        df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+        df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat, disable_tqdm=True)
         df_simu = df_simu.merge(df_test, on=["session", "test_itemno"])
         df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
 
@@ -1266,7 +1264,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
 
         # Run model
         param_dict.update(nitems_in_accumulator=48)
-        df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat)
+        df_simu, _, _ = cmr.run_norm_cr_multi_sess(param_dict, df_study, df_test, sem_mat, disable_tqdm=True)
         df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
         df_simu["correct"] = df_simu.s_resp == df_simu.correct_ans
 
@@ -1326,10 +1324,10 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         except _EvalTimeout:
             return _TIMEOUT_PENALTY, {"err": _TIMEOUT_PENALTY, "params": param_vec}
         df_simu = df_simu.merge(df_test, on=["session", "list", "test_itemno"])
-        neighbor_mean, ILI_mean, correct_rate, wls_neighbor, wls_ILI = _simu8_g1_stats(df_simu, df_study, face_distance, thresh, _gt)
+        neighbor_mean, ILI_mean, p_correct, neighbor_err, ILI_err = _simu8_g1_stats(df_simu, df_study, face_distance, thresh, _gt)
 
         # Get error
-        err = wls_neighbor + wls_ILI
+        err = neighbor_err + ILI_err
         cmr_stats = {"err": err, "params": param_vec, "stats": [neighbor_mean, ILI_mean]}
 
 
@@ -1380,6 +1378,11 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         with open("../../Analysis/simuS2_recog_recog/data/simuS2_gt.json") as f:
             _gt = json.load(f)
         stats_mean, err = _simuS2_stats(df_simu, _gt)
+
+        # Apply some constraints that HR should not be too high
+        if np.any(stats_mean[:, :2] > 0.95):
+            err += 100
+
         cmr_stats = {"err": err, "params": param_vec, "stats": stats_mean}
 
     else:

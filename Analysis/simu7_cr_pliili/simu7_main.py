@@ -28,7 +28,7 @@ from CMR_IA.fitting import _simu7_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -58,7 +58,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("7", fixed_params={"nitems_in_accumulator": 96})
+params = cmr.load_params("7", params_path="data/7_260825_200-200.json", fixed_params={"nitems_in_accumulator": 96})
 params
 
 # %%
@@ -306,11 +306,11 @@ lag_ILI_mean = df_ILI_sess_lag.groupby("pos_lag_int").ILI_prob.mean().values
 lag_PLI_mean, lag_ILI_mean
 
 # %%
-# Check PLI monotonicity constraint
+# Check PLI monotonicity
 np.cov(np.arange(5), lag_PLI_mean)[0, 1] >= 0
 
 # %%
-# Check ILI monotonicity constraint
+# Check ILI monotonicity
 np.any(np.diff(lag_ILI_mean[:5]) <= 0), np.any(np.diff(lag_ILI_mean[5:]) >= 0)
 
 # %%

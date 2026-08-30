@@ -29,7 +29,7 @@ from CMR_IA.fitting import _simu6a_stats
 cmr.analysis.setup_notebook()
 
 SAVEFIG = False
-RUNCMR = False
+RUNCMR = True
 SAVERES = False
 if SAVERES and not RUNCMR:
     print("Warning: SAVERES is ignored when RUNCMR is False; existing results are loaded instead.")
@@ -59,7 +59,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("6a", fixed_params={"nitems_in_accumulator": 48})
+params = cmr.load_params("6a", params_path="data/6a_260817_200-200.json", fixed_params={"nitems_in_accumulator": 48})
 params
 
 # %%
@@ -90,6 +90,9 @@ else:
     df_simu = pd.read_parquet("data/simu6a_result.parquet")
 df_simu
 
+# %%
+np.sum(df_simu.s_resp == -2)
+
 # %% [markdown]
 # ## Analysis
 
@@ -97,6 +100,17 @@ df_simu
 # Clean first 2 lists
 df_simu = df_simu.query("list > 1")
 df_simu
+
+# %%
+# Plot csim and threshold by lag
+cthresh_lag = df_simu.query("thresh != -1").groupby("lag").thresh.mean()
+lag = np.unique(df_simu.lag.to_numpy())
+
+plt.plot(lag, cthresh_lag, label="thresh")
+plt.xlabel("Lag")
+plt.ylabel("Similarity Score")
+plt.legend()
+plt.show()
 
 # %% [markdown]
 # ### f_IN
