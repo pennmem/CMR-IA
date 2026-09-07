@@ -1,0 +1,379 @@
+subject,condition,n,A_yes1yes2,B_yes1no2,C_no1yes2,D_no1no2,p_yes1,p_yes2,Q_reported_smoothed,Q_unsmoothed,T2_plus_T3,resolution,n_alt_combinations,note
+1,SameItem,10,5,4,1,0,0.9,0.6,-0.421053,-1.0,n=10 A=5 B=4 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+1,DifferentItem,11,2,6,2,1,0.7272727272727273,0.36363636363636365,-0.625,-0.7142857142857143,n=11 A=2 B=6 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+1,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,n=3 A=3 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+1,ItemPair,15,6,5,0,4,0.7333333333333333,0.4,0.828125,1.0,n=15 A=6 B=5 C=0 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+1,PairItem,11,8,2,0,1,0.9090909090909091,0.7272727272727273,0.821429,1.0,n=11 A=8 B=2 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+1,RepeatedLure,5,0,0,2,3,0.0,0.4,0.166667,,n=3 A=0 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 5
+2,SameItem,9,3,2,1,3,0.5555555555555556,0.4444444444444444,0.53125,0.6363636363636364,n=9 A=3 B=2 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+2,DifferentItem,11,3,3,0,5,0.5454545454545454,0.2727272727272727,0.833333,1.0,n=11 A=3 B=3 C=0 D=5,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+2,IntactPair,6,3,1,1,1,0.6666666666666666,0.6666666666666666,0.4,0.5,n=6 A=3 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+2,ItemPair,14,6,4,1,3,0.7142857142857143,0.5,0.542373,0.6363636363636364,n=14 A=6 B=4 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+2,PairItem,10,5,3,1,1,0.8,0.6,0.222222,0.25,n=10 A=5 B=3 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+2,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3
+3,SameItem,9,6,0,0,3,0.6666666666666666,0.6666666666666666,0.978261,1.0,n=9 A=6 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+3,DifferentItem,9,2,4,0,3,0.6666666666666666,0.2222222222222222,0.590909,1.0,n=9 A=2 B=4 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+3,IntactPair,5,3,0,0,2,0.6,0.6,0.944444,1.0,n=5 A=3 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+3,ItemPair,16,13,0,0,3,0.8125,0.8125,0.989474,1.0,n=16 A=13 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+3,PairItem,11,7,0,2,2,0.6363636363636364,0.8181818181818182,0.875,1.0,n=11 A=7 B=0 C=2 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+3,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=4 A=0 B=0 C=0 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+4,SameItem,9,7,0,1,1,0.7777777777777778,0.8888888888888888,0.875,1.0,n=9 A=7 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+4,DifferentItem,11,8,3,0,0,1.0,0.7272727272727273,0.416667,,n=11 A=8 B=3 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+4,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=6 A=6 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+4,ItemPair,14,13,0,1,0,0.9285714285714286,1.0,0.8,,n=14 A=13 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+4,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+4,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=3 A=0 B=0 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+5,SameItem,10,9,0,0,1,0.9,0.9,0.965517,1.0,n=10 A=9 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+5,DifferentItem,12,9,2,1,0,0.9166666666666666,0.8333333333333334,0.117647,-1.0,n=12 A=9 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+5,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+5,ItemPair,13,12,0,1,0,0.9230769230769231,1.0,0.785714,,n=13 A=12 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+5,PairItem,10,9,0,1,0,0.9,1.0,0.727273,,n=10 A=9 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+5,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3
+6,SameItem,11,10,0,1,0,0.9090909090909091,1.0,0.75,,n=11 A=10 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+6,DifferentItem,10,9,0,1,0,0.9,1.0,0.727273,,n=10 A=9 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+6,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=6 A=6 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+6,ItemPair,13,10,2,1,0,0.9230769230769231,0.8461538461538461,0.166667,-1.0,n=13 A=10 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+6,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+6,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=3 A=0 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 1
+7,SameItem,11,9,0,1,1,0.8181818181818182,0.9090909090909091,0.9,1.0,n=11 A=9 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+7,DifferentItem,9,8,1,0,0,1.0,0.8888888888888888,0.7,,n=9 A=8 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+7,IntactPair,4,4,0,0,0,1.0,1.0,0.8,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+7,ItemPair,15,13,0,2,0,0.8666666666666667,1.0,0.6875,,n=15 A=13 B=0 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+7,PairItem,11,11,0,0,0,1.0,1.0,0.916667,,n=12 A=11 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+7,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3
+8,SameItem,9,8,0,0,1,0.8888888888888888,0.8888888888888888,0.961538,1.0,n=9 A=8 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+8,DifferentItem,11,5,2,1,3,0.6363636363636364,0.5454545454545454,0.673913,0.7647058823529411,n=11 A=5 B=2 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+8,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+8,ItemPair,14,12,1,1,0,0.9285714285714286,0.9285714285714286,0.470588,-1.0,n=14 A=12 B=1 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+8,PairItem,11,7,0,4,0,0.6363636363636364,1.0,0.25,,n=11 A=7 B=0 C=4 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+8,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=5 A=0 B=0 C=0 D=5,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+9,SameItem,10,6,2,1,1,0.8,0.7,0.444444,0.5,n=10 A=6 B=2 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+9,DifferentItem,12,6,4,2,0,0.8333333333333334,0.6666666666666666,-0.551724,-1.0,n=12 A=6 B=4 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+9,IntactPair,4,4,0,0,0,1.0,1.0,0.8,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+9,ItemPair,14,10,1,1,2,0.7857142857142857,0.7857142857142857,0.842105,0.9047619047619048,n=14 A=10 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+9,PairItem,10,9,0,0,1,0.9,0.9,0.965517,1.0,n=10 A=9 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+9,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=5 A=0 B=0 C=1 D=4,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+10,SameItem,12,8,0,1,3,0.6666666666666666,0.75,0.95082,1.0,n=12 A=8 B=0 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+10,DifferentItem,11,1,5,1,4,0.5454545454545454,0.18181818181818182,-0.1,-0.1111111111111111,n=11 A=1 B=5 C=1 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+10,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,n=2 A=2 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+10,ItemPair,14,9,1,3,1,0.7142857142857143,0.8571428571428571,0.461538,0.5,n=14 A=9 B=1 C=3 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+10,PairItem,11,6,3,1,1,0.8181818181818182,0.6363636363636364,0.3,0.3333333333333333,n=11 A=6 B=3 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+10,RepeatedLure,4,0,0,2,2,0.0,0.5,0.0,,n=5 A=0 B=0 C=0 D=5,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+11,SameItem,11,7,3,0,1,0.9090909090909091,0.6363636363636364,0.730769,1.0,n=11 A=7 B=3 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+11,DifferentItem,9,4,3,1,1,0.7777777777777778,0.5555555555555556,0.125,0.14285714285714285,n=9 A=4 B=3 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+11,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,n=3 A=3 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+11,ItemPair,17,12,1,1,3,0.7647058823529411,0.7647058823529411,0.902174,0.9459459459459459,n=17 A=12 B=1 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+11,PairItem,10,8,2,0,0,1.0,0.8,0.545455,,n=10 A=8 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+11,RepeatedLure,4,1,0,0,3,0.25,0.25,0.909091,1.0,n=5 A=1 B=0 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+12,SameItem,8,5,0,2,1,0.625,0.875,0.736842,1.0,n=8 A=5 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+12,DifferentItem,11,1,4,3,3,0.45454545454545453,0.36363636363636365,-0.5,-0.6,n=11 A=1 B=4 C=3 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+12,IntactPair,5,1,2,2,0,0.6,0.6,-0.785714,-1.0,n=5 A=1 B=2 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+12,ItemPair,15,4,5,3,3,0.6,0.4666666666666667,-0.1,-0.1111111111111111,n=15 A=4 B=5 C=3 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+12,PairItem,11,5,3,1,2,0.7272727272727273,0.5454545454545454,0.447368,0.5384615384615384,unavailable,A: sum(n)=50 and rl identity satisfied,1,TRIAL2/TRIAL3 counterpart not reconstructable; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+12,RepeatedLure,5,1,0,1,3,0.2,0.4,0.75,1.0,n=3 A=1 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 5
+13,SameItem,10,8,2,0,0,1.0,0.8,0.545455,,n=10 A=8 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+13,DifferentItem,11,8,2,1,0,0.9090909090909091,0.8181818181818182,0.0625,-1.0,n=11 A=8 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+13,IntactPair,5,3,2,0,0,1.0,0.6,0.166667,,n=5 A=3 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+13,ItemPair,15,14,1,0,0,1.0,0.9333333333333333,0.8125,,n=15 A=14 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+13,PairItem,9,9,0,0,0,1.0,1.0,0.9,,n=9 A=9 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+13,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=7 A=0 B=0 C=1 D=6,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 7 vs 3
+14,SameItem,9,5,2,2,0,0.7777777777777778,0.7777777777777778,-0.388889,-1.0,n=9 A=5 B=2 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+14,DifferentItem,10,4,5,1,0,0.9,0.5,-0.571429,-1.0,n=10 A=4 B=5 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+14,IntactPair,4,2,2,0,0,1.0,0.5,0.0,,n=4 A=2 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+14,ItemPair,16,11,1,2,2,0.75,0.8125,0.769231,0.8333333333333334,n=16 A=11 B=1 C=2 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+14,PairItem,11,5,2,1,3,0.6363636363636364,0.5454545454545454,0.673913,0.7647058823529411,n=11 A=5 B=2 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+14,RepeatedLure,5,0,0,1,4,0.0,0.2,0.5,,n=5 A=0 B=0 C=1 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+15,SameItem,8,8,0,0,0,1.0,1.0,0.888889,,n=8 A=8 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+15,DifferentItem,11,6,2,3,0,0.7272727272727273,0.8181818181818182,-0.458333,-1.0,n=11 A=6 B=2 C=3 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+15,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=6 A=6 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+15,ItemPair,15,12,1,2,0,0.8666666666666667,0.9333333333333333,0.25,-1.0,n=15 A=12 B=1 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+15,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+15,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=4 A=0 B=0 C=0 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+16,SameItem,9,7,0,0,2,0.7777777777777778,0.7777777777777778,0.973684,1.0,n=9 A=7 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+16,DifferentItem,10,7,1,2,0,0.8,0.9,0.0,-1.0,n=10 A=7 B=1 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+16,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+16,ItemPair,15,12,0,2,1,0.8,0.9333333333333333,0.875,1.0,n=15 A=12 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+16,PairItem,11,7,4,0,0,1.0,0.6363636363636364,0.25,,n=11 A=7 B=4 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+16,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=5 A=0 B=0 C=0 D=5,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+17,SameItem,11,4,0,3,4,0.36363636363636365,0.6363636363636364,0.840909,1.0,n=11 A=4 B=0 C=3 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+17,DifferentItem,11,2,1,3,5,0.2727272727272727,0.45454545454545453,0.447368,0.5384615384615384,n=11 A=2 B=1 C=3 D=5,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+17,IntactPair,4,3,0,1,0,0.75,1.0,0.4,,n=4 A=3 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+17,ItemPair,14,6,1,2,5,0.5,0.5714285714285714,0.810127,0.875,n=14 A=6 B=1 C=2 D=5,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+17,PairItem,10,7,2,0,1,0.9,0.7,0.8,1.0,n=10 A=7 B=2 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+17,RepeatedLure,3,0,1,1,1,0.3333333333333333,0.3333333333333333,-0.5,-1.0,n=2 A=0 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3
+18,SameItem,9,7,1,1,0,0.8888888888888888,0.8888888888888888,0.25,-1.0,n=9 A=7 B=1 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+18,DifferentItem,9,8,1,0,0,1.0,0.8888888888888888,0.7,,n=9 A=8 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+18,IntactPair,4,4,0,0,0,1.0,1.0,0.8,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+18,ItemPair,17,14,0,3,0,0.8235294117647058,1.0,0.611111,,n=17 A=14 B=0 C=3 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+18,PairItem,11,10,0,1,0,0.9090909090909091,1.0,0.75,,n=11 A=10 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+18,RepeatedLure,5,0,0,3,2,0.0,0.6,-0.166667,,n=3 A=0 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 5
+19,SameItem,11,8,1,1,1,0.8181818181818182,0.8181818181818182,0.7,0.7777777777777778,n=12 A=9 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+19,DifferentItem,9,8,1,0,0,1.0,0.8888888888888888,0.7,,n=8 A=7 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 8 vs 9
+19,IntactPair,5,4,0,0,1,0.8,0.8,0.928571,1.0,n=5 A=4 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+19,ItemPair,14,8,6,0,0,1.0,0.5714285714285714,0.133333,,n=14 A=8 B=6 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+19,PairItem,11,7,0,4,0,0.6363636363636364,1.0,0.25,,n=11 A=7 B=0 C=4 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+19,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=2 A=0 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+20,SameItem,10,8,0,1,1,0.8,0.9,0.888889,1.0,n=11 A=9 B=0 C=1 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+20,DifferentItem,10,8,1,1,0,0.9,0.9,0.307692,-1.0,n=9 A=7 B=1 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 9 vs 10
+20,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=6 A=6 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+20,ItemPair,14,13,0,1,0,0.9285714285714286,1.0,0.8,,n=14 A=13 B=0 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+20,PairItem,10,9,1,0,0,1.0,0.9,0.727273,,n=10 A=9 B=1 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+20,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=2 A=0 B=0 C=0 D=2,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 2 vs 1; rl_n=1 != (12-si_n)+(6-int_n)=2
+21,SameItem,9,9,0,0,0,1.0,1.0,0.9,,n=10 A=10 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 10 vs 9
+21,DifferentItem,13,13,0,0,0,1.0,1.0,0.928571,,n=12 A=12 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=13 exceeds pooled design slot 12; differs from TRIAL2+TRIAL3: n 12 vs 13
+21,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,n=3 A=3 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+21,ItemPair,15,14,1,0,0,1.0,0.9333333333333333,0.8125,,n=15 A=14 B=1 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+21,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+21,RepeatedLure,5,0,0,0,5,0.0,0.0,0.833333,,n=5 A=0 B=0 C=0 D=5,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rl_n=5 != (12-si_n)+(6-int_n)=6
+22,SameItem,8,6,0,1,1,0.75,0.875,0.857143,1.0,n=9 A=6 B=1 C=1 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 9 vs 8
+22,DifferentItem,11,7,2,1,1,0.8181818181818182,0.7272727272727273,0.5,0.5555555555555556,n=10 A=6 B=2 C=1 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 10 vs 11
+22,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=5 A=5 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+22,ItemPair,15,10,2,2,1,0.8,0.8,0.431818,0.42857142857142855,n=15 A=10 B=2 C=2 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+22,PairItem,11,9,2,0,0,1.0,0.8181818181818182,0.583333,,unavailable,B: sum(n)=50 satisfied; rl solved separately,1,TRIAL2/TRIAL3 counterpart not reconstructable; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+22,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=3 A=0 B=0 C=0 D=3,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 3 vs 4; rl_n=4 != (12-si_n)+(6-int_n)=5
+23,SameItem,10,7,2,0,1,0.9,0.7,0.8,1.0,n=11 A=9 B=1 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 11 vs 10
+23,DifferentItem,10,4,2,2,2,0.6,0.6,0.285714,0.3333333333333333,n=9 A=3 B=2 C=2 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 9 vs 10
+23,IntactPair,6,3,0,1,2,0.5,0.6666666666666666,0.842105,1.0,n=6 A=3 B=0 C=1 D=2,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+23,ItemPair,15,7,1,4,3,0.5333333333333333,0.7333333333333333,0.590909,0.68,n=15 A=7 B=1 C=4 D=3,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+23,PairItem,10,2,1,3,4,0.3,0.5,0.363636,0.45454545454545453,n=10 A=2 B=1 C=3 D=4,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+23,RepeatedLure,2,0,0,1,1,0.0,0.5,0.0,,n=2 A=0 B=0 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+24,SameItem,11,10,0,1,0,0.9090909090909091,1.0,0.75,,n=12 A=10 B=1 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+24,DifferentItem,11,7,2,2,0,0.8181818181818182,0.8181818181818182,-0.25,-1.0,n=10 A=7 B=2 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 10 vs 11
+24,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+24,ItemPair,13,11,1,1,0,0.9230769230769231,0.9230769230769231,0.4375,-1.0,n=13 A=11 B=1 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+24,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+24,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=1 A=0 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+25,SameItem,10,7,2,0,1,0.9,0.7,0.8,1.0,n=11 A=7 B=1 C=1 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 11 vs 10
+25,DifferentItem,12,3,4,2,3,0.5833333333333334,0.4166666666666667,0.042553,0.058823529411764705,n=12 A=3 B=4 C=2 D=3,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+25,IntactPair,4,2,0,1,1,0.5,0.75,0.666667,1.0,n=3 A=1 B=0 C=1 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 3 vs 4
+25,ItemPair,15,8,0,5,2,0.5333333333333333,0.8666666666666667,0.770833,1.0,n=15 A=8 B=0 C=5 D=2,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+25,PairItem,10,8,0,2,0,0.8,1.0,0.545455,,n=10 A=8 B=0 C=2 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+25,RepeatedLure,5,0,0,0,5,0.0,0.0,0.833333,,n=3 A=0 B=0 C=0 D=3,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 3 vs 5; rl_n=5 != (12-si_n)+(6-int_n)=4
+26,SameItem,9,5,1,2,1,0.6666666666666666,0.7777777777777778,0.375,0.42857142857142855,n=9 A=6 B=1 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+26,DifferentItem,10,6,3,0,1,0.9,0.6,0.695652,1.0,n=11 A=7 B=3 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+26,IntactPair,6,4,0,0,2,0.6666666666666666,0.6666666666666666,0.956522,1.0,n=5 A=4 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+26,ItemPair,16,9,2,1,4,0.6875,0.625,0.83871,0.8947368421052632,n=16 A=9 B=2 C=1 D=4,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+26,PairItem,9,7,2,0,0,1.0,0.7777777777777778,0.5,,n=9 A=7 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+26,RepeatedLure,3,0,0,2,1,0.0,0.6666666666666666,-0.25,,n=2 A=0 B=0 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3
+27,SameItem,9,7,0,2,0,0.7777777777777778,1.0,0.5,,n=9 A=5 B=1 C=2 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+27,DifferentItem,11,6,3,0,2,0.8181818181818182,0.5454545454545454,0.805556,1.0,n=12 A=7 B=3 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+27,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+27,ItemPair,14,11,0,3,0,0.7857142857142857,1.0,0.533333,,n=14 A=11 B=0 C=3 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+27,PairItem,9,7,0,1,1,0.7777777777777778,0.8888888888888888,0.875,1.0,n=9 A=7 B=0 C=1 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+27,RepeatedLure,2,1,0,1,0,0.5,1.0,0.0,,n=4 A=1 B=0 C=3 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 4 vs 2
+28,SameItem,9,6,1,1,1,0.7777777777777778,0.7777777777777778,0.625,0.7142857142857143,n=9 A=6 B=1 C=1 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+28,DifferentItem,11,6,3,2,0,0.8181818181818182,0.7272727272727273,-0.458333,-1.0,n=12 A=7 B=3 C=2 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+28,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+28,ItemPair,15,10,0,5,0,0.6666666666666666,1.0,0.3125,,n=15 A=10 B=0 C=5 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+28,PairItem,8,5,3,0,0,1.0,0.625,0.222222,,n=8 A=5 B=3 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+28,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=1 A=0 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 1 vs 2
+29,SameItem,10,7,1,1,1,0.8,0.8,0.666667,0.75,n=11 A=9 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+29,DifferentItem,10,3,6,1,0,0.9,0.4,-0.695652,-1.0,n=10 A=3 B=6 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+29,IntactPair,6,4,0,1,1,0.6666666666666666,0.8333333333333334,0.8,1.0,n=5 A=3 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+29,ItemPair,15,11,0,2,2,0.7333333333333333,0.8666666666666667,0.916667,1.0,n=15 A=11 B=0 C=2 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+29,PairItem,9,3,2,2,2,0.5555555555555556,0.5555555555555556,0.166667,0.2,n=9 A=3 B=2 C=2 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+29,RepeatedLure,2,0,0,2,0,0.0,1.0,-0.666667,,n=2 A=0 B=0 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+30,SameItem,9,6,1,0,2,0.7777777777777778,0.6666666666666666,0.911765,1.0,n=9 A=5 B=2 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+30,DifferentItem,11,2,6,1,2,0.7272727272727273,0.2727272727272727,-0.21875,-0.2,n=12 A=3 B=6 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+30,IntactPair,6,5,0,1,0,0.8333333333333334,1.0,0.571429,,n=5 A=4 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+30,ItemPair,15,7,6,2,0,0.8666666666666667,0.6,-0.625,-1.0,n=15 A=7 B=6 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+30,PairItem,9,6,2,1,0,0.8888888888888888,0.7777777777777778,-0.071429,-1.0,n=9 A=6 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+30,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,n=4 A=0 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 3
+31,SameItem,8,5,2,0,1,0.875,0.625,0.736842,1.0,n=9 A=6 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 9 vs 8
+31,DifferentItem,10,6,2,1,1,0.8,0.7,0.444444,0.5,n=10 A=6 B=2 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+31,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+31,ItemPair,16,13,1,1,1,0.875,0.875,0.8,0.8571428571428571,n=16 A=13 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+31,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+31,RepeatedLure,4,0,0,1,3,0.0,0.25,0.4,,n=4 A=0 B=0 C=0 D=4,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+32,SameItem,8,7,0,1,0,0.875,1.0,0.666667,,n=9 A=9 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 9 vs 8
+32,DifferentItem,10,6,1,3,0,0.7,0.9,-0.235294,-1.0,n=10 A=6 B=1 C=3 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+32,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=4 A=4 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+32,ItemPair,15,9,3,2,1,0.8,0.7333333333333333,0.23913,0.2,n=15 A=9 B=3 C=2 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+32,PairItem,12,11,0,1,0,0.9166666666666666,1.0,0.769231,,n=12 A=11 B=0 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+32,RepeatedLure,2,0,0,1,1,0.0,0.5,0.0,,n=3 A=0 B=0 C=1 D=2,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 3 vs 2; rl_n=2 != (12-si_n)+(6-int_n)=5
+33,SameItem,9,9,0,0,0,1.0,1.0,0.9,,n=10 A=9 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 10 vs 9
+33,DifferentItem,11,11,0,0,0,1.0,1.0,0.916667,,n=11 A=11 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+33,IntactPair,7,5,0,2,0,0.7142857142857143,1.0,0.375,,n=6 A=5 B=0 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+33,ItemPair,15,15,0,0,0,1.0,1.0,0.9375,,n=15 A=15 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+33,PairItem,8,8,0,0,0,1.0,1.0,0.888889,,n=8 A=8 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+33,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,n=1 A=0 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 1 vs 3; rl_n=3 != (12-si_n)+(6-int_n)=2
+34,SameItem,11,8,0,1,2,0.7272727272727273,0.8181818181818182,0.931818,1.0,n=11 A=8 B=0 C=1 D=2,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+34,DifferentItem,11,10,1,0,0,1.0,0.9090909090909091,0.75,,n=12 A=11 B=1 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+34,IntactPair,7,6,0,1,0,0.8571428571428571,1.0,0.625,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+34,ItemPair,11,8,0,2,1,0.7272727272727273,0.9090909090909091,0.821429,1.0,n=11 A=8 B=0 C=2 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+34,PairItem,10,8,2,0,0,1.0,0.8,0.545455,,n=10 A=8 B=2 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+34,RepeatedLure,0,0,0,0,0,,,0.0,,n=0 A=0 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=0: no items in this condition; matches TRIAL2+TRIAL3 exactly
+35,SameItem,9,7,0,1,1,0.7777777777777778,0.8888888888888888,0.875,1.0,n=10 A=6 B=0 C=3 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+35,DifferentItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+35,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+35,ItemPair,15,14,0,1,0,0.9333333333333333,1.0,0.8125,,n=15 A=14 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+35,PairItem,11,11,0,0,0,1.0,1.0,0.916667,,n=11 A=11 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+35,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=3 A=0 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 4
+36,SameItem,11,8,0,1,2,0.7272727272727273,0.8181818181818182,0.931818,1.0,n=11 A=9 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+36,DifferentItem,11,6,3,2,0,0.8181818181818182,0.7272727272727273,-0.458333,-1.0,n=12 A=7 B=3 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+36,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+36,ItemPair,13,12,0,1,0,0.9230769230769231,1.0,0.785714,,n=13 A=12 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+36,PairItem,10,7,2,1,0,0.9,0.8,0.0,-1.0,n=10 A=7 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+36,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+37,SameItem,10,7,0,2,1,0.7,0.9,0.8,1.0,n=11 A=7 B=0 C=1 D=3,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+37,DifferentItem,9,7,1,1,0,0.8888888888888888,0.8888888888888888,0.25,-1.0,n=9 A=7 B=1 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+37,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+37,ItemPair,15,13,0,2,0,0.8666666666666667,1.0,0.6875,,n=15 A=13 B=0 C=2 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+37,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+37,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=1 A=0 B=0 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rl_n=1 != (12-si_n)+(6-int_n)=2
+38,SameItem,10,4,1,2,3,0.5,0.6,0.615385,0.7142857142857143,n=10 A=7 B=0 C=2 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+38,DifferentItem,11,4,5,2,0,0.8181818181818182,0.5454545454545454,-0.71875,-1.0,n=12 A=5 B=5 C=2 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+38,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+38,ItemPair,13,11,0,2,0,0.8461538461538461,1.0,0.642857,,n=13 A=11 B=0 C=2 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+38,PairItem,10,6,4,0,0,1.0,0.6,0.181818,,n=10 A=6 B=4 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+38,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,n=3 A=0 B=0 C=2 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees); rl_n=3 != (12-si_n)+(6-int_n)=2
+39,SameItem,9,7,0,1,1,0.7777777777777778,0.8888888888888888,0.875,1.0,n=9 A=5 B=1 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+39,DifferentItem,11,7,3,0,1,0.9090909090909091,0.6363636363636364,0.730769,1.0,n=12 A=8 B=3 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+39,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+39,ItemPair,15,11,1,3,0,0.8,0.9333333333333333,0.045455,-1.0,n=15 A=11 B=1 C=3 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+39,PairItem,9,9,0,0,0,1.0,1.0,0.9,,n=9 A=9 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+39,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=3 A=0 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+40,SameItem,7,5,0,2,0,0.7142857142857143,1.0,0.375,,n=7 A=4 B=0 C=3 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+40,DifferentItem,11,4,5,1,1,0.8181818181818182,0.45454545454545453,-0.1,-0.1111111111111111,n=12 A=5 B=5 C=1 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+40,IntactPair,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,n=5 A=4 B=1 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+40,ItemPair,15,7,3,4,1,0.6666666666666666,0.7333333333333333,-0.166667,-0.2631578947368421,n=15 A=7 B=3 C=4 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+40,PairItem,11,7,2,2,0,0.8181818181818182,0.8181818181818182,-0.25,-1.0,n=11 A=7 B=2 C=2 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+40,RepeatedLure,4,0,0,1,3,0.0,0.25,0.4,,n=5 A=0 B=0 C=1 D=4,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 4; rl_n=4 != (12-si_n)+(6-int_n)=5
+41,SameItem,10,7,2,1,0,0.9,0.8,0.0,-1.0,n=10 A=6 B=3 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+41,DifferentItem,10,5,4,0,1,0.9,0.5,0.571429,1.0,n=11 A=6 B=4 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+41,IntactPair,6,5,0,1,0,0.8333333333333334,1.0,0.571429,,n=5 A=4 B=0 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+41,ItemPair,13,9,0,4,0,0.6923076923076923,1.0,0.357143,,n=13 A=9 B=0 C=4 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+41,PairItem,11,6,5,0,0,1.0,0.5454545454545454,0.083333,,n=11 A=6 B=5 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+41,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=1 A=0 B=0 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 1 vs 3; rl_n=3 != (12-si_n)+(6-int_n)=2
+42,SameItem,10,6,2,0,2,0.8,0.6,0.857143,1.0,n=10 A=6 B=2 C=0 D=2,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+42,DifferentItem,9,4,4,1,0,0.8888888888888888,0.5555555555555556,-0.5,-1.0,n=10 A=4 B=5 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+42,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=4 A=4 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+42,ItemPair,16,9,1,3,3,0.625,0.75,0.727273,0.8,n=16 A=9 B=1 C=3 D=3,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+42,PairItem,10,8,2,0,0,1.0,0.8,0.545455,,n=10 A=8 B=2 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+42,RepeatedLure,2,0,0,2,0,0.0,1.0,-0.666667,,n=1 A=0 B=0 C=1 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 1 vs 2; rl_n=2 != (12-si_n)+(6-int_n)=3
+43,SameItem,10,4,3,0,3,0.7,0.4,0.8,1.0,n=11 A=7 B=2 C=0 D=2,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+43,DifferentItem,11,0,7,2,2,0.6363636363636364,0.18181818181818182,-0.875,-1.0,n=11 A=0 B=7 C=2 D=2,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+43,IntactPair,6,4,0,0,2,0.6666666666666666,0.6666666666666666,0.956522,1.0,n=5 A=4 B=0 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+43,ItemPair,15,5,4,3,3,0.6,0.5333333333333333,0.1,0.1111111111111111,n=15 A=5 B=4 C=3 D=3,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+43,PairItem,8,4,4,0,0,1.0,0.5,0.0,,n=8 A=4 B=4 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+43,RepeatedLure,3,0,0,2,1,0.0,0.6666666666666666,-0.25,,n=1 A=0 B=0 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 1 vs 3; rl_n=3 != (12-si_n)+(6-int_n)=2
+44,SameItem,11,8,1,1,1,0.8181818181818182,0.8181818181818182,0.7,0.7777777777777778,n=12 A=8 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+44,DifferentItem,9,6,1,2,0,0.7777777777777778,0.8888888888888888,-0.071429,-1.0,n=9 A=6 B=1 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+44,IntactPair,5,3,1,0,1,0.8,0.6,0.75,1.0,n=4 A=3 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+44,ItemPair,15,13,0,1,1,0.8666666666666667,0.9333333333333333,0.928571,1.0,n=15 A=13 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+44,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+44,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=1 A=0 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 1 vs 2
+45,SameItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=9 B=1 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+45,DifferentItem,10,2,7,0,1,0.9,0.2,0.0,1.0,n=11 A=3 B=7 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 11 vs 10
+45,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+45,ItemPair,13,10,2,1,0,0.9230769230769231,0.8461538461538461,0.166667,-1.0,n=13 A=10 B=2 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+45,PairItem,10,7,2,1,0,0.9,0.8,0.0,-1.0,n=10 A=7 B=2 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+45,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=2 A=0 B=0 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 2 vs 1
+46,SameItem,9,7,0,0,2,0.7777777777777778,0.7777777777777778,0.973684,1.0,n=9 A=8 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+46,DifferentItem,8,5,3,0,0,1.0,0.625,0.222222,,n=9 A=5 B=3 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 9 vs 8
+46,IntactPair,7,6,0,1,0,0.8571428571428571,1.0,0.625,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+46,ItemPair,14,11,2,1,0,0.9285714285714286,0.8571428571428571,0.210526,-1.0,n=14 A=11 B=2 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+46,PairItem,12,12,0,0,0,1.0,1.0,0.923077,,n=12 A=12 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+46,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=4 A=0 B=0 C=1 D=3,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 4 vs 2
+47,SameItem,9,6,1,0,2,0.7777777777777778,0.6666666666666666,0.911765,1.0,n=10 A=6 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+47,DifferentItem,11,4,6,1,0,0.9090909090909091,0.45454545454545453,-0.625,-1.0,n=11 A=4 B=6 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+47,IntactPair,5,3,0,1,1,0.6,0.8,0.75,1.0,n=4 A=2 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+47,ItemPair,14,10,3,0,1,0.9285714285714286,0.7142857142857143,0.8,1.0,n=14 A=10 B=3 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+47,PairItem,11,7,4,0,0,1.0,0.6363636363636364,0.25,,n=11 A=7 B=4 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+47,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=3 A=0 B=0 C=0 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 4
+48,SameItem,11,10,0,1,0,0.9090909090909091,1.0,0.75,,n=12 A=11 B=1 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+48,DifferentItem,12,10,1,1,0,0.9166666666666666,0.9166666666666666,0.4,-1.0,n=12 A=10 B=1 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+48,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+48,ItemPair,11,11,0,0,0,1.0,1.0,0.916667,,n=11 A=11 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+48,PairItem,9,9,0,0,0,1.0,1.0,0.9,,n=9 A=9 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+48,RepeatedLure,0,0,0,0,0,,,0.0,,n=1 A=0 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,n=0: no items in this condition; differs from TRIAL2+TRIAL3: n 1 vs 0
+49,SameItem,9,7,1,0,1,0.8888888888888888,0.7777777777777778,0.875,1.0,n=9 A=6 B=0 C=1 D=2,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+49,DifferentItem,9,7,2,0,0,1.0,0.7777777777777778,0.5,,n=10 A=7 B=2 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+49,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+49,ItemPair,16,14,2,0,0,1.0,0.875,0.705882,,n=16 A=14 B=2 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+49,PairItem,10,8,1,0,1,0.9,0.8,0.888889,1.0,n=10 A=8 B=1 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+49,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=2 A=0 B=0 C=0 D=2,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rl_n=2 != (12-si_n)+(6-int_n)=3
+50,SameItem,7,5,0,0,2,0.7142857142857143,0.7142857142857143,0.964286,1.0,n=8 A=8 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 8 vs 7
+50,DifferentItem,10,7,1,1,1,0.8,0.8,0.666667,0.75,n=10 A=7 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+50,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+50,ItemPair,16,15,0,1,0,0.9375,1.0,0.823529,,n=16 A=15 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+50,PairItem,11,11,0,0,0,1.0,1.0,0.916667,,n=11 A=11 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+50,RepeatedLure,5,1,0,0,4,0.2,0.2,0.928571,1.0,n=4 A=0 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+51,SameItem,10,9,0,0,1,0.9,0.9,0.965517,1.0,n=11 A=9 B=0 C=0 D=2,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+51,DifferentItem,11,7,1,3,0,0.7272727272727273,0.9090909090909091,-0.166667,-1.0,n=11 A=7 B=1 C=3 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+51,IntactPair,5,4,0,0,1,0.8,0.8,0.928571,1.0,n=4 A=4 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+51,ItemPair,14,11,1,2,0,0.8571428571428571,0.9285714285714286,0.210526,-1.0,n=14 A=11 B=1 C=2 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+51,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+51,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=3 A=0 B=0 C=0 D=3,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 3 vs 4; rl_n=4 != (12-si_n)+(6-int_n)=3
+52,SameItem,10,6,2,1,1,0.8,0.7,0.444444,0.5,n=11 A=6 B=3 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+52,DifferentItem,10,2,5,2,1,0.7,0.4,-0.571429,-0.6666666666666666,n=10 A=2 B=5 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+52,IntactPair,4,3,0,0,1,0.75,0.75,0.909091,1.0,n=3 A=2 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 4
+52,ItemPair,16,10,1,4,1,0.6875,0.875,0.4,0.42857142857142855,n=16 A=10 B=1 C=4 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+52,PairItem,10,5,4,1,0,0.9,0.6,-0.421053,-1.0,n=10 A=5 B=4 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+52,RepeatedLure,4,0,0,2,2,0.0,0.5,0.0,,n=5 A=0 B=0 C=2 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 4
+53,SameItem,8,7,1,0,0,1.0,0.875,0.666667,,n=9 A=7 B=0 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 9 vs 8
+53,DifferentItem,10,7,2,1,0,0.9,0.8,0.0,-1.0,n=10 A=7 B=2 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+53,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+53,ItemPair,15,8,4,1,2,0.8,0.6,0.517857,0.6,n=15 A=8 B=4 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+53,PairItem,11,10,1,0,0,1.0,0.9090909090909091,0.75,,n=11 A=10 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+53,RepeatedLure,4,1,0,2,1,0.25,0.75,0.285714,1.0,n=4 A=1 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+54,SameItem,11,4,0,5,2,0.36363636363636365,0.8181818181818182,0.607143,1.0,n=11 A=7 B=0 C=3 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+54,DifferentItem,9,5,1,1,2,0.6666666666666666,0.6666666666666666,0.71875,0.8181818181818182,n=10 A=5 B=1 C=1 D=3,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+54,IntactPair,5,3,1,1,0,0.8,0.8,-0.125,-1.0,n=4 A=3 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 5
+54,ItemPair,14,10,1,1,2,0.7857142857142857,0.7857142857142857,0.842105,0.9047619047619048,n=14 A=10 B=1 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+54,PairItem,11,9,2,0,0,1.0,0.8181818181818182,0.583333,,n=11 A=9 B=2 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+54,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=3 A=0 B=0 C=1 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 2
+55,SameItem,7,5,0,1,1,0.7142857142857143,0.8571428571428571,0.833333,1.0,n=7 A=5 B=1 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+55,DifferentItem,11,7,2,2,0,0.8181818181818182,0.8181818181818182,-0.25,-1.0,n=12 A=8 B=2 C=2 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 11
+55,IntactPair,7,4,1,0,2,0.7142857142857143,0.5714285714285714,0.875,1.0,n=6 A=3 B=1 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+55,ItemPair,13,9,1,1,2,0.7692307692307693,0.7692307692307693,0.826923,0.8947368421052632,n=13 A=9 B=1 C=1 D=2,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+55,PairItem,12,10,1,0,1,0.9166666666666666,0.8333333333333334,0.909091,1.0,n=12 A=10 B=1 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+55,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=4 A=0 B=0 C=0 D=4,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+56,SameItem,9,7,1,0,1,0.8888888888888888,0.7777777777777778,0.875,1.0,n=10 A=8 B=1 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 10 vs 9
+56,DifferentItem,10,9,1,0,0,1.0,0.9,0.727273,,n=10 A=9 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+56,IntactPair,6,5,0,0,1,0.8333333333333334,0.8333333333333334,0.941176,1.0,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+56,ItemPair,14,12,1,1,0,0.9285714285714286,0.9285714285714286,0.470588,-1.0,n=14 A=12 B=1 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+56,PairItem,11,9,1,1,0,0.9090909090909091,0.9090909090909091,0.357143,-1.0,n=11 A=9 B=1 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+56,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=4 A=0 B=0 C=0 D=4,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 4 vs 3
+57,SameItem,10,8,0,2,0,0.8,1.0,0.545455,,n=10 A=5 B=0 C=3 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+57,DifferentItem,12,12,0,0,0,1.0,1.0,0.923077,,n=13 A=12 B=0 C=0 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 13 vs 12
+57,IntactPair,6,6,0,0,0,1.0,1.0,0.857143,,n=5 A=5 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+57,ItemPair,14,12,0,2,0,0.8571428571428571,1.0,0.666667,,n=14 A=12 B=0 C=2 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+57,PairItem,8,8,0,0,0,1.0,1.0,0.888889,,n=8 A=8 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+57,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+58,SameItem,8,5,0,1,2,0.625,0.75,0.896552,1.0,n=9 A=7 B=0 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 9 vs 8
+58,DifferentItem,7,4,3,0,0,1.0,0.5714285714285714,0.125,,n=7 A=4 B=3 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+58,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+58,ItemPair,17,12,2,2,1,0.8235294117647058,0.8235294117647058,0.5,0.5,n=17 A=12 B=2 C=2 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+58,PairItem,11,6,2,3,0,0.7272727272727273,0.8181818181818182,-0.458333,-1.0,n=11 A=6 B=2 C=3 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+58,RepeatedLure,3,1,0,2,0,0.3333333333333333,1.0,-0.25,,n=4 A=0 B=0 C=1 D=3,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 4 vs 3
+59,SameItem,10,8,1,0,1,0.9,0.8,0.888889,1.0,n=11 A=10 B=1 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 11 vs 10
+59,DifferentItem,10,7,1,1,1,0.8,0.8,0.666667,0.75,n=10 A=7 B=1 C=1 D=1,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+59,IntactPair,6,3,0,2,1,0.5,0.8333333333333334,0.615385,1.0,n=5 A=2 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 5 vs 6
+59,ItemPair,13,8,1,4,0,0.6923076923076923,0.9230769230769231,-0.227273,-1.0,n=13 A=8 B=1 C=4 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+59,PairItem,11,10,0,1,0,0.9090909090909091,1.0,0.75,,n=11 A=10 B=0 C=1 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+59,RepeatedLure,2,0,0,1,1,0.0,0.5,0.0,,n=3 A=0 B=0 C=2 D=1,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 3 vs 2
+60,SameItem,11,11,0,0,0,1.0,1.0,0.916667,,n=12 A=12 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 12 vs 11
+60,DifferentItem,9,5,1,3,0,0.6666666666666666,0.8888888888888888,-0.3125,-1.0,n=9 A=5 B=1 C=3 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+60,IntactPair,5,5,0,0,0,1.0,1.0,0.833333,,n=5 A=5 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly
+60,ItemPair,13,13,0,0,0,1.0,1.0,0.928571,,n=12 A=12 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,differs from TRIAL2+TRIAL3: n 12 vs 13
+60,PairItem,12,12,0,0,0,1.0,1.0,0.923077,,n=12 A=12 B=0 C=0 D=0,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+60,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,n=1 A=0 B=0 C=0 D=1,B: sum(n)=50 satisfied; rl solved separately,1,matches TRIAL2+TRIAL3 exactly; rl_n=1 != (12-si_n)+(6-int_n)=2
+61,SameItem,8,7,0,0,1,0.875,0.875,0.956522,1.0,n=7 A=5 B=0 C=0 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 7 vs 8
+61,DifferentItem,10,9,0,1,0,0.9,1.0,0.727273,,n=12 A=11 B=0 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 12 vs 10
+61,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+61,ItemPair,15,14,0,1,0,0.9333333333333333,1.0,0.8125,,n=15 A=14 B=0 C=1 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+61,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+61,RepeatedLure,4,0,0,0,4,0.0,0.0,0.8,,n=4 A=0 B=0 C=0 D=4,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rl_n=4 != (12-si_n)+(6-int_n)=3
+62,SameItem,7,5,0,0,2,0.7142857142857143,0.7142857142857143,0.964286,1.0,n=8 A=7 B=0 C=0 D=1,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3: n 8 vs 7
+62,DifferentItem,11,4,3,3,1,0.6363636363636364,0.6363636363636364,-0.289474,-0.38461538461538464,n=11 A=4 B=3 C=3 D=1,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+62,IntactPair,7,7,0,0,0,1.0,1.0,0.875,,n=6 A=6 B=0 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,n=7 exceeds pooled design slot 6; differs from TRIAL2+TRIAL3: n 6 vs 7
+62,ItemPair,14,7,2,5,0,0.6428571428571429,0.8571428571428571,-0.571429,-1.0,n=14 A=7 B=2 C=5 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly
+62,PairItem,11,8,3,0,0,1.0,0.7272727272727273,0.416667,,n=11 A=8 B=3 C=0 D=0,"C: per-condition solve, design constraints not satisfiable",0,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+62,RepeatedLure,4,2,0,1,1,0.5,0.75,0.666667,1.0,n=4 A=1 B=0 C=1 D=2,"C: per-condition solve, design constraints not satisfiable",0,differs from TRIAL2+TRIAL3 in cell counts (n agrees)
+63,SameItem,11,7,0,0,4,0.6363636363636364,0.6363636363636364,0.985294,1.0,n=7 A=7 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 7 vs 11
+63,DifferentItem,11,11,0,0,0,1.0,1.0,0.916667,,n=11 A=11 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+63,IntactPair,4,4,0,0,0,1.0,1.0,0.8,,n=4 A=4 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+63,ItemPair,14,14,0,0,0,1.0,1.0,0.933333,,n=14 A=14 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly
+63,PairItem,10,10,0,0,0,1.0,1.0,0.909091,,n=10 A=10 B=0 C=0 D=0,A: sum(n)=50 and rl identity satisfied,1,matches TRIAL2+TRIAL3 exactly; rr7 p1_pi is self-consistent and used as given; the TRIAL files p1_pi is corrupt
+63,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,n=2 A=0 B=0 C=0 D=2,A: sum(n)=50 and rl identity satisfied,1,differs from TRIAL2+TRIAL3: n 2 vs 3

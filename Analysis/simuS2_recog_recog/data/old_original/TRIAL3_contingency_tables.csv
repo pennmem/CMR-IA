@@ -1,0 +1,379 @@
+subject,condition,n,A_yes1yes2,B_yes1no2,C_no1yes2,D_no1no2,p_yes1,p_yes2,Q_reported_smoothed,Q_unsmoothed,resolution,n_alt_combinations,note
+1,SameItem,5,2,3,0,0,1.0,0.4,-0.166667,,B: sum(n)=25 satisfied; rl solved separately,2,
+1,DifferentItem,6,1,3,1,1,0.6666666666666666,0.3333333333333333,-0.4,-0.5,B: sum(n)=25 satisfied; rl solved separately,2,
+1,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,2,
+1,ItemPair,8,1,4,0,3,0.625,0.125,0.4,1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+1,PairItem,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+1,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,2,
+2,SameItem,3,0,2,0,1,0.6666666666666666,0.0,-0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+2,DifferentItem,6,0,1,0,5,0.16666666666666666,0.0,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,
+2,IntactPair,3,1,0,1,1,0.3333333333333333,0.6666666666666666,0.5,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+2,ItemPair,8,3,2,1,2,0.625,0.5,0.4,0.5,B: sum(n)=25 satisfied; rl solved separately,1,
+2,PairItem,5,3,1,0,1,0.8,0.6,0.75,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+2,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+3,SameItem,5,3,0,0,2,0.6,0.6,0.944444,1.0,A: sum(n)=25 and rl identity satisfied,1,
+3,DifferentItem,4,0,3,0,1,0.75,0.0,-0.4,,A: sum(n)=25 and rl identity satisfied,1,
+3,IntactPair,2,1,0,0,1,0.5,0.5,0.8,1.0,A: sum(n)=25 and rl identity satisfied,1,
+3,ItemPair,8,6,0,0,2,0.75,0.75,0.969697,1.0,A: sum(n)=25 and rl identity satisfied,1,
+3,PairItem,6,3,0,2,1,0.5,0.8333333333333334,0.615385,1.0,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+3,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+4,SameItem,5,3,0,1,1,0.6,0.8,0.75,1.0,A: sum(n)=25 and rl identity satisfied,1,
+4,DifferentItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,A: sum(n)=25 and rl identity satisfied,1,
+4,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+4,ItemPair,6,5,0,1,0,0.8333333333333334,1.0,0.571429,,A: sum(n)=25 and rl identity satisfied,1,
+4,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+4,RepeatedLure,1,0,0,1,0,0.0,1.0,-0.5,,A: sum(n)=25 and rl identity satisfied,1,
+5,SameItem,4,3,0,0,1,0.75,0.75,0.909091,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+5,DifferentItem,6,5,0,1,0,0.8333333333333334,1.0,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,
+5,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+5,ItemPair,7,6,0,1,0,0.8571428571428571,1.0,0.625,,B: sum(n)=25 satisfied; rl solved separately,1,
+5,PairItem,5,4,0,1,0,0.8,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+5,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+6,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+6,DifferentItem,5,4,0,1,0,0.8,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+6,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+6,ItemPair,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,
+6,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+6,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+7,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+7,DifferentItem,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+7,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+7,ItemPair,8,6,0,2,0,0.75,1.0,0.444444,,B: sum(n)=25 satisfied; rl solved separately,1,
+7,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+7,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+8,SameItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+8,DifferentItem,6,2,1,1,2,0.5,0.5,0.470588,0.6,B: sum(n)=25 satisfied; rl solved separately,1,
+8,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+8,ItemPair,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+8,PairItem,6,3,0,3,0,0.5,1.0,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+8,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+9,SameItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+9,DifferentItem,6,2,2,2,0,0.6666666666666666,0.6666666666666666,-0.666667,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+9,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+9,ItemPair,7,4,1,0,2,0.7142857142857143,0.5714285714285714,0.875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+9,PairItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+9,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+10,SameItem,6,4,0,0,2,0.6666666666666666,0.6666666666666666,0.956522,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+10,DifferentItem,6,0,4,0,2,0.6666666666666666,0.0,-0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,
+10,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+10,ItemPair,7,5,0,1,1,0.7142857142857143,0.8571428571428571,0.833333,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+10,PairItem,5,3,1,0,1,0.8,0.6,0.75,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+10,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+11,SameItem,6,4,1,0,1,0.8333333333333334,0.6666666666666666,0.8,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+11,DifferentItem,4,1,2,1,0,0.75,0.5,-0.666667,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+11,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+11,ItemPair,9,5,1,1,2,0.6666666666666666,0.6666666666666666,0.71875,0.8181818181818182,B: sum(n)=25 satisfied; rl solved separately,1,
+11,PairItem,4,3,1,0,0,1.0,0.75,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+11,RepeatedLure,2,0,0,1,1,0.0,0.5,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,
+12,SameItem,4,3,0,1,0,0.75,1.0,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+12,DifferentItem,6,1,2,2,1,0.5,0.5,-0.470588,-0.6,B: sum(n)=25 satisfied; rl solved separately,1,
+12,IntactPair,3,0,2,1,0,0.6666666666666666,0.3333333333333333,-0.875,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+12,ItemPair,7,1,4,1,1,0.7142857142857143,0.2857142857142857,-0.5,-0.6,B: sum(n)=25 satisfied; rl solved separately,1,
+12,PairItem,5,2,2,0,1,0.8,0.4,0.5,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+12,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+13,SameItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,
+13,DifferentItem,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+13,IntactPair,3,2,1,0,0,1.0,0.6666666666666666,0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+13,ItemPair,8,7,1,0,0,1.0,0.875,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+13,PairItem,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+13,RepeatedLure,4,0,0,1,3,0.0,0.25,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+14,SameItem,4,2,2,0,0,1.0,0.5,0.0,,A: sum(n)=25 and rl identity satisfied,1,
+14,DifferentItem,5,3,2,0,0,1.0,0.6,0.166667,,A: sum(n)=25 and rl identity satisfied,1,
+14,IntactPair,3,2,1,0,0,1.0,0.6666666666666666,0.25,,A: sum(n)=25 and rl identity satisfied,1,
+14,ItemPair,8,6,1,0,1,0.875,0.75,0.857143,1.0,A: sum(n)=25 and rl identity satisfied,1,
+14,PairItem,5,1,1,1,2,0.4,0.4,0.25,0.3333333333333333,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+14,RepeatedLure,2,0,0,1,1,0.0,0.5,0.0,,A: sum(n)=25 and rl identity satisfied,1,
+15,SameItem,4,4,0,0,0,1.0,1.0,0.8,,A: sum(n)=25 and rl identity satisfied,1,
+15,DifferentItem,5,1,2,2,0,0.6,0.6,-0.785714,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+15,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+15,ItemPair,7,4,1,2,0,0.7142857142857143,0.8571428571428571,-0.25,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+15,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+15,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+16,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+16,DifferentItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+16,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+16,ItemPair,7,5,0,2,0,0.7142857142857143,1.0,0.375,,B: sum(n)=25 satisfied; rl solved separately,1,
+16,PairItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+16,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+17,SameItem,5,2,0,1,2,0.4,0.6,0.785714,1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+17,DifferentItem,6,1,0,1,4,0.16666666666666666,0.3333333333333333,0.8,1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+17,IntactPair,2,1,0,1,0,0.5,1.0,0.0,,B: sum(n)=25 satisfied; rl solved separately,2,
+17,ItemPair,7,2,1,2,2,0.42857142857142855,0.5714285714285714,0.25,0.3333333333333333,B: sum(n)=25 satisfied; rl solved separately,2,
+17,PairItem,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+17,RepeatedLure,1,0,0,1,0,0.0,1.0,-0.5,,B: sum(n)=25 satisfied; rl solved separately,2,
+18,SameItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+18,DifferentItem,4,3,1,0,0,1.0,0.75,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+18,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+18,ItemPair,9,9,0,0,0,1.0,1.0,0.9,,B: sum(n)=25 satisfied; rl solved separately,1,
+18,PairItem,5,4,0,1,0,0.8,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+18,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+19,SameItem,6,5,0,0,1,0.8333333333333334,0.8333333333333334,0.941176,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+19,DifferentItem,3,2,1,0,0,1.0,0.6666666666666666,0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+19,IntactPair,3,2,0,0,1,0.6666666666666666,0.6666666666666666,0.875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+19,ItemPair,7,2,5,0,0,1.0,0.2857142857142857,-0.375,,B: sum(n)=25 satisfied; rl solved separately,1,
+19,PairItem,6,3,0,3,0,0.5,1.0,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+19,RepeatedLure,1,0,0,1,0,0.0,1.0,-0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+20,SameItem,6,5,0,1,0,0.8333333333333334,1.0,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,
+20,DifferentItem,4,3,1,0,0,1.0,0.75,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+20,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+20,ItemPair,7,7,0,0,0,1.0,1.0,0.875,,B: sum(n)=25 satisfied; rl solved separately,1,
+20,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+20,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+21,SameItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,
+21,DifferentItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,
+21,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,A: sum(n)=25 and rl identity satisfied,1,
+21,ItemPair,8,7,1,0,0,1.0,0.875,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+21,PairItem,4,4,0,0,0,1.0,1.0,0.8,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+21,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+22,SameItem,4,3,1,0,0,1.0,0.75,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+22,DifferentItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+22,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+22,ItemPair,7,5,0,1,1,0.7142857142857143,0.8571428571428571,0.833333,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+22,PairItem,6,5,1,0,0,1.0,0.8333333333333334,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+22,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+23,SameItem,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,
+23,DifferentItem,5,2,1,1,1,0.6,0.6,0.25,0.3333333333333333,C: fell back to per-condition solve,0,
+23,IntactPair,3,1,0,1,1,0.3333333333333333,0.6666666666666666,0.5,1.0,C: fell back to per-condition solve,0,
+23,ItemPair,7,1,1,2,3,0.2857142857142857,0.42857142857142855,0.166667,0.2,C: fell back to per-condition solve,0,
+23,PairItem,5,1,0,1,3,0.2,0.4,0.75,1.0,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+23,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+24,SameItem,5,4,1,0,0,1.0,0.8,0.5,,A: sum(n)=25 and rl identity satisfied,1,
+24,DifferentItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+24,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+24,ItemPair,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+24,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+24,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,A: sum(n)=25 and rl identity satisfied,1,
+25,SameItem,5,3,1,0,1,0.8,0.6,0.75,1.0,C: fell back to per-condition solve,0,
+25,DifferentItem,6,2,1,1,2,0.5,0.5,0.470588,0.6,C: fell back to per-condition solve,0,
+25,IntactPair,2,0,0,1,1,0.0,0.5,0.0,,C: fell back to per-condition solve,0,
+25,ItemPair,8,3,0,4,1,0.375,0.875,0.4,1.0,C: fell back to per-condition solve,0,
+25,PairItem,5,3,0,2,0,0.6,1.0,0.166667,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+25,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+26,SameItem,5,3,0,2,0,0.6,1.0,0.166667,,B: sum(n)=25 satisfied; rl solved separately,1,
+26,DifferentItem,6,5,0,0,1,0.8333333333333334,0.8333333333333334,0.941176,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+26,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+26,ItemPair,7,4,1,1,1,0.7142857142857143,0.7142857142857143,0.5,0.6,B: sum(n)=25 satisfied; rl solved separately,1,
+26,PairItem,5,3,2,0,0,1.0,0.6,0.166667,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+26,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+27,SameItem,4,3,1,0,0,1.0,0.75,0.4,,C: fell back to per-condition solve,0,
+27,DifferentItem,7,4,1,0,2,0.7142857142857143,0.5714285714285714,0.875,1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+27,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+27,ItemPair,7,5,0,2,0,0.7142857142857143,1.0,0.375,,C: fell back to per-condition solve,0,
+27,PairItem,4,3,0,1,0,0.75,1.0,0.4,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+27,RepeatedLure,3,1,0,2,0,0.3333333333333333,1.0,-0.25,,C: fell back to per-condition solve,0,
+28,SameItem,3,2,1,0,0,1.0,0.6666666666666666,0.25,,C: fell back to per-condition solve,0,
+28,DifferentItem,7,5,1,1,0,0.8571428571428571,0.8571428571428571,0.1,-1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+28,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+28,ItemPair,7,5,0,2,0,0.7142857142857143,1.0,0.375,,C: fell back to per-condition solve,0,
+28,PairItem,5,4,1,0,0,1.0,0.8,0.5,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+28,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+29,SameItem,5,3,0,0,2,0.6,0.6,0.944444,1.0,A: sum(n)=25 and rl identity satisfied,1,
+29,DifferentItem,6,1,4,1,0,0.8333333333333334,0.3333333333333333,-0.8,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+29,IntactPair,2,1,0,1,0,0.5,1.0,0.0,,A: sum(n)=25 and rl identity satisfied,1,
+29,ItemPair,7,4,0,2,1,0.5714285714285714,0.8571428571428571,0.6875,1.0,A: sum(n)=25 and rl identity satisfied,1,
+29,PairItem,5,1,1,2,1,0.4,0.6,-0.25,-0.3333333333333333,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+29,RepeatedLure,2,0,0,2,0,0.0,1.0,-0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+30,SameItem,5,3,2,0,0,1.0,0.6,0.166667,,A: sum(n)=25 and rl identity satisfied,1,
+30,DifferentItem,6,2,2,0,2,0.6666666666666666,0.3333333333333333,0.666667,1.0,A: sum(n)=25 and rl identity satisfied,1,
+30,IntactPair,3,2,0,1,0,0.6666666666666666,1.0,0.25,,A: sum(n)=25 and rl identity satisfied,1,
+30,ItemPair,7,2,4,1,0,0.8571428571428571,0.42857142857142855,-0.6875,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+30,PairItem,4,4,0,0,0,1.0,1.0,0.8,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+30,RepeatedLure,1,0,1,0,0,1.0,0.0,-0.5,,A: sum(n)=25 and rl identity satisfied,1,
+31,SameItem,4,2,0,1,1,0.5,0.75,0.666667,1.0,A: sum(n)=25 and rl identity satisfied,1,
+31,DifferentItem,5,3,1,0,1,0.8,0.6,0.75,1.0,A: sum(n)=25 and rl identity satisfied,1,
+31,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+31,ItemPair,8,7,0,1,0,0.875,1.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+31,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+31,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+32,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+32,DifferentItem,5,4,0,1,0,0.8,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+32,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+32,ItemPair,8,3,3,1,1,0.75,0.5,0.0,0.0,B: sum(n)=25 satisfied; rl solved separately,1,
+32,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+32,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+33,SameItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+33,DifferentItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+33,IntactPair,3,2,0,1,0,0.6666666666666666,1.0,0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+33,ItemPair,7,7,0,0,0,1.0,1.0,0.875,,B: sum(n)=25 satisfied; rl solved separately,1,
+33,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+33,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+34,SameItem,5,3,0,0,2,0.6,0.6,0.944444,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+34,DifferentItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,
+34,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+34,ItemPair,5,3,0,1,1,0.6,0.8,0.75,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+34,PairItem,6,5,1,0,0,1.0,0.8333333333333334,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+34,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,1,n=0: no items in this condition this cycle
+35,SameItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+35,DifferentItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,
+35,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+35,ItemPair,7,7,0,0,0,1.0,1.0,0.875,,B: sum(n)=25 satisfied; rl solved separately,1,
+35,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+35,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+36,SameItem,5,3,0,1,1,0.6,0.8,0.75,1.0,C: fell back to per-condition solve,0,
+36,DifferentItem,7,4,1,2,0,0.7142857142857143,0.8571428571428571,-0.25,-1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+36,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,C: fell back to per-condition solve,0,
+36,ItemPair,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,
+36,PairItem,5,3,2,0,0,1.0,0.6,0.166667,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+36,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+37,SameItem,5,2,0,1,2,0.4,0.6,0.785714,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+37,DifferentItem,4,3,0,1,0,0.75,1.0,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+37,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+37,ItemPair,9,8,0,1,0,0.8888888888888888,1.0,0.7,,B: sum(n)=25 satisfied; rl solved separately,1,
+37,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+37,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+38,SameItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,C: fell back to per-condition solve,0,
+38,DifferentItem,7,2,4,1,0,0.8571428571428571,0.42857142857142855,-0.6875,-1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+38,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+38,ItemPair,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,
+38,PairItem,4,2,2,0,0,1.0,0.5,0.0,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+38,RepeatedLure,1,0,0,1,0,0.0,1.0,-0.5,,C: fell back to per-condition solve,0,
+39,SameItem,3,2,0,1,0,0.6666666666666666,1.0,0.25,,C: fell back to per-condition solve,0,
+39,DifferentItem,7,4,2,0,1,0.8571428571428571,0.5714285714285714,0.6875,1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+39,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+39,ItemPair,7,6,0,1,0,0.8571428571428571,1.0,0.625,,C: fell back to per-condition solve,0,
+39,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+39,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,C: fell back to per-condition solve,0,
+40,SameItem,3,1,0,2,0,0.3333333333333333,1.0,-0.25,,B: sum(n)=25 satisfied; rl solved separately,2,
+40,DifferentItem,6,2,3,1,0,0.8333333333333334,0.5,-0.615385,-1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+40,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,2,
+40,ItemPair,8,3,2,2,1,0.625,0.625,-0.086957,-0.14285714285714285,B: sum(n)=25 satisfied; rl solved separately,2,
+40,PairItem,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+40,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,B: sum(n)=25 satisfied; rl solved separately,2,
+41,SameItem,4,1,2,0,1,0.75,0.25,0.285714,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+41,DifferentItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,
+41,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+41,ItemPair,7,4,0,3,0,0.5714285714285714,1.0,0.125,,B: sum(n)=25 satisfied; rl solved separately,1,
+41,PairItem,6,2,4,0,0,1.0,0.3333333333333333,-0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+41,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+42,SameItem,4,2,1,0,1,0.75,0.5,0.666667,1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+42,DifferentItem,5,2,3,0,0,1.0,0.4,-0.166667,,B: sum(n)=25 satisfied; rl solved separately,2,
+42,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,2,
+42,ItemPair,9,5,0,2,2,0.5555555555555556,0.7777777777777778,0.833333,1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+42,PairItem,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+42,RepeatedLure,0,0,0,0,0,,,0.0,,B: sum(n)=25 satisfied; rl solved separately,2,n=0: no items in this condition this cycle
+43,SameItem,5,4,1,0,0,1.0,0.8,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+43,DifferentItem,6,0,3,1,2,0.5,0.16666666666666666,-0.615385,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+43,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+43,ItemPair,7,1,2,3,1,0.42857142857142855,0.5714285714285714,-0.590909,-0.7142857142857143,B: sum(n)=25 satisfied; rl solved separately,1,
+43,PairItem,5,3,2,0,0,1.0,0.6,0.166667,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+43,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+44,SameItem,6,5,1,0,0,1.0,0.8333333333333334,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,
+44,DifferentItem,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+44,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+44,ItemPair,7,6,0,1,0,0.8571428571428571,1.0,0.625,,B: sum(n)=25 satisfied; rl solved separately,1,
+44,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+44,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+45,SameItem,4,4,0,0,0,1.0,1.0,0.8,,A: sum(n)=25 and rl identity satisfied,1,
+45,DifferentItem,6,2,3,0,1,0.8333333333333334,0.3333333333333333,0.363636,1.0,A: sum(n)=25 and rl identity satisfied,1,
+45,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+45,ItemPair,7,4,2,1,0,0.8571428571428571,0.7142857142857143,-0.25,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+45,PairItem,5,2,2,1,0,0.8,0.6,-0.5,-1.0,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+45,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+46,SameItem,4,4,0,0,0,1.0,1.0,0.8,,B: sum(n)=25 satisfied; rl solved separately,1,
+46,DifferentItem,5,3,1,0,1,0.8,0.6,0.75,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+46,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+46,ItemPair,7,5,1,1,0,0.8571428571428571,0.8571428571428571,0.1,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+46,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+46,RepeatedLure,3,0,0,1,2,0.0,0.3333333333333333,0.25,,B: sum(n)=25 satisfied; rl solved separately,1,
+47,SameItem,4,3,0,0,1,0.75,0.75,0.909091,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+47,DifferentItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,B: sum(n)=25 satisfied; rl solved separately,1,
+47,IntactPair,3,1,0,1,1,0.3333333333333333,0.6666666666666666,0.5,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+47,ItemPair,7,4,2,0,1,0.8571428571428571,0.5714285714285714,0.6875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+47,PairItem,5,3,2,0,0,1.0,0.6,0.166667,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+47,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+48,SameItem,6,5,1,0,0,1.0,0.8333333333333334,0.571429,,B: sum(n)=25 satisfied; rl solved separately,1,
+48,DifferentItem,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+48,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+48,ItemPair,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+48,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+48,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,B: sum(n)=25 satisfied; rl solved separately,1,
+49,SameItem,3,1,0,0,2,0.3333333333333333,0.3333333333333333,0.875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+49,DifferentItem,6,4,1,0,1,0.8333333333333334,0.6666666666666666,0.8,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+49,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+49,ItemPair,8,6,2,0,0,1.0,0.75,0.444444,,B: sum(n)=25 satisfied; rl solved separately,1,
+49,PairItem,6,5,0,0,1,0.8333333333333334,0.8333333333333334,0.941176,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+49,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+50,SameItem,4,4,0,0,0,1.0,1.0,0.8,,B: sum(n)=25 satisfied; rl solved separately,1,
+50,DifferentItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+50,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+50,ItemPair,8,7,0,1,0,0.875,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+50,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+50,RepeatedLure,2,0,1,1,0,0.5,0.5,-0.8,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+51,SameItem,5,4,0,0,1,0.8,0.8,0.928571,1.0,A: sum(n)=25 and rl identity satisfied,1,
+51,DifferentItem,5,3,1,1,0,0.8,0.8,-0.125,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+51,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+51,ItemPair,8,5,1,2,0,0.75,0.875,-0.153846,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+51,PairItem,5,5,0,0,0,1.0,1.0,0.833333,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+51,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+52,SameItem,6,3,2,1,0,0.8333333333333334,0.6666666666666666,-0.363636,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+52,DifferentItem,5,1,2,1,1,0.6,0.4,-0.25,-0.3333333333333333,B: sum(n)=25 satisfied; rl solved separately,1,
+52,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+52,ItemPair,7,4,0,2,1,0.5714285714285714,0.8571428571428571,0.6875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+52,PairItem,5,2,2,1,0,0.8,0.6,-0.5,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+52,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+53,SameItem,5,3,0,1,1,0.6,0.8,0.75,1.0,A: sum(n)=25 and rl identity satisfied,2,
+53,DifferentItem,5,4,0,1,0,0.8,1.0,0.5,,A: sum(n)=25 and rl identity satisfied,2,
+53,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,2,
+53,ItemPair,7,4,2,0,1,0.8571428571428571,0.5714285714285714,0.6875,1.0,A: sum(n)=25 and rl identity satisfied,2,
+53,PairItem,5,4,1,0,0,1.0,0.8,0.5,,A: sum(n)=25 and rl identity satisfied,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+53,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,A: sum(n)=25 and rl identity satisfied,2,
+54,SameItem,5,3,0,2,0,0.6,1.0,0.166667,,A: sum(n)=25 and rl identity satisfied,2,
+54,DifferentItem,4,0,1,0,3,0.25,0.0,0.4,,A: sum(n)=25 and rl identity satisfied,2,
+54,IntactPair,3,2,0,1,0,0.6666666666666666,1.0,0.25,,A: sum(n)=25 and rl identity satisfied,2,
+54,ItemPair,8,6,1,0,1,0.875,0.75,0.857143,1.0,A: sum(n)=25 and rl identity satisfied,2,
+54,PairItem,5,4,1,0,0,1.0,0.8,0.5,,A: sum(n)=25 and rl identity satisfied,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+54,RepeatedLure,1,0,0,1,0,0.0,1.0,-0.5,,A: sum(n)=25 and rl identity satisfied,2,
+55,SameItem,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+55,DifferentItem,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+55,IntactPair,3,2,0,0,1,0.6666666666666666,0.6666666666666666,0.875,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+55,ItemPair,7,5,0,1,1,0.7142857142857143,0.8571428571428571,0.833333,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+55,PairItem,6,5,0,0,1,0.8333333333333334,0.8333333333333334,0.941176,1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+55,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+56,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,2,
+56,DifferentItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,2,
+56,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,2,
+56,ItemPair,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,2,
+56,PairItem,6,4,1,1,0,0.8333333333333334,0.8333333333333334,0.0,-1.0,B: sum(n)=25 satisfied; rl solved separately,2,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+56,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,B: sum(n)=25 satisfied; rl solved separately,2,
+57,SameItem,5,3,0,2,0,0.6,1.0,0.166667,,C: fell back to per-condition solve,0,
+57,DifferentItem,7,6,0,0,1,0.8571428571428571,0.8571428571428571,0.95,1.0,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+57,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,C: fell back to per-condition solve,0,
+57,ItemPair,7,7,0,0,0,1.0,1.0,0.875,,C: fell back to per-condition solve,0,
+57,PairItem,4,4,0,0,0,1.0,1.0,0.8,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+57,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+58,SameItem,4,3,0,0,1,0.75,0.75,0.909091,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+58,DifferentItem,3,0,3,0,0,1.0,0.0,-0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+58,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+58,ItemPair,9,6,2,1,0,0.8888888888888888,0.7777777777777778,-0.071429,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+58,PairItem,6,2,2,2,0,0.6666666666666666,0.6666666666666666,-0.666667,-1.0,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+58,RepeatedLure,3,0,0,0,3,0.0,0.0,0.75,,B: sum(n)=25 satisfied; rl solved separately,1,
+59,SameItem,5,5,0,0,0,1.0,1.0,0.833333,,B: sum(n)=25 satisfied; rl solved separately,1,
+59,DifferentItem,4,3,1,0,0,1.0,0.75,0.4,,B: sum(n)=25 satisfied; rl solved separately,1,
+59,IntactPair,3,1,0,1,1,0.3333333333333333,0.6666666666666666,0.5,1.0,B: sum(n)=25 satisfied; rl solved separately,1,
+59,ItemPair,7,4,0,3,0,0.5714285714285714,1.0,0.125,,B: sum(n)=25 satisfied; rl solved separately,1,
+59,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,B: sum(n)=25 satisfied; rl solved separately,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+59,RepeatedLure,2,0,0,2,0,0.0,1.0,-0.666667,,B: sum(n)=25 satisfied; rl solved separately,1,
+60,SameItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,
+60,DifferentItem,5,2,1,2,0,0.6,0.8,-0.5,-1.0,A: sum(n)=25 and rl identity satisfied,1,
+60,IntactPair,2,2,0,0,0,1.0,1.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+60,ItemPair,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,
+60,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+60,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,A: sum(n)=25 and rl identity satisfied,1,
+61,SameItem,4,2,0,0,2,0.5,0.5,0.923077,1.0,C: fell back to per-condition solve,0,
+61,DifferentItem,7,6,0,1,0,0.8571428571428571,1.0,0.625,,C: fell back to per-condition solve,0,n=7 exceeds design slot 6
+61,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+61,ItemPair,7,7,0,0,0,1.0,1.0,0.875,,C: fell back to per-condition solve,0,
+61,PairItem,4,4,0,0,0,1.0,1.0,0.8,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+61,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,
+62,SameItem,4,3,0,0,1,0.75,0.75,0.909091,1.0,A: sum(n)=25 and rl identity satisfied,1,
+62,DifferentItem,6,3,1,1,1,0.6666666666666666,0.6666666666666666,0.4,0.5,A: sum(n)=25 and rl identity satisfied,1,
+62,IntactPair,3,3,0,0,0,1.0,1.0,0.75,,A: sum(n)=25 and rl identity satisfied,1,
+62,ItemPair,6,4,0,2,0,0.6666666666666666,1.0,0.285714,,A: sum(n)=25 and rl identity satisfied,1,
+62,PairItem,6,4,2,0,0,1.0,0.6666666666666666,0.285714,,A: sum(n)=25 and rl identity satisfied,1,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+62,RepeatedLure,2,0,0,0,2,0.0,0.0,0.666667,,A: sum(n)=25 and rl identity satisfied,1,
+63,SameItem,3,3,0,0,0,1.0,1.0,0.75,,C: fell back to per-condition solve,0,
+63,DifferentItem,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,
+63,IntactPair,1,1,0,0,0,1.0,1.0,0.5,,C: fell back to per-condition solve,0,
+63,ItemPair,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,
+63,PairItem,6,6,0,0,0,1.0,1.0,0.857143,,C: fell back to per-condition solve,0,p_yes1 recovered from Q and p_yes2 (stored p1_pi unreliable)
+63,RepeatedLure,1,0,0,0,1,0.0,0.0,0.5,,C: fell back to per-condition solve,0,

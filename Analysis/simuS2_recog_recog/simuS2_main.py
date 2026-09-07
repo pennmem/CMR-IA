@@ -57,8 +57,7 @@ sem_mat = np.load("../wordpools/ltp_FR_similarity_matrix.npy")
 
 # %%
 # Define parameters and load PSO results
-params = cmr.load_params("S2", params_path="data/S2_260829_200-200.json", fixed_params={"learn_while_retrieving": True})
-params.update(c_thresh_assoc=1.50)
+params = cmr.load_params("S2", params_path="data/S2_260901_200-200.json", fixed_params={"learn_while_retrieving": True})
 params
 
 # %%
@@ -146,6 +145,9 @@ df_simu["condition"] = df_simu.apply(get_cond, axis=1)
 df_simu
 
 # %%
+df_simu.groupby(["session", "list", "condition"]).count().head(20)
+
+# %%
 # Compute performance stats per subject
 subjects = np.unique(df_simu.subject)
 stats = []
@@ -153,7 +155,7 @@ for subj in subjects:
     df_subj = df_simu.query(f"subject=={subj} and list % 3 != 0")  # discard first list
     stats_subj = _simuS2_subj_stats(df_subj)
     stats.append(stats_subj)
-stats_mean = np.nanmean(stats, axis=0)
+stats_mean = np.mean(stats, axis=0)  # no NaN by construction; every subject contributes
 stats_mean.round(2)
 
 # %%
@@ -162,7 +164,7 @@ stats_mean
 
 # %%
 # Compute SE stats per subject
-stats_se = np.array(sp.stats.sem(np.array(stats), axis=0, nan_policy="omit"))
+stats_se = np.array(sp.stats.sem(np.array(stats), axis=0))
 stats_se.round(3)
 
 # %% [markdown]
@@ -181,6 +183,12 @@ err
 # %%
 # Verify fitting helper
 _, err = _simuS2_stats(df_simu, gt)
+err
+
+# %%
+# Compute weighted MSE error
+# err = wmse(stats_mean_gt, stats_mean, stats_se_gt)
+err = wmse(stats_mean_gt[:, :2], stats_mean[:, :2], stats_se_gt[:, :2]) + 2 * wmse(stats_mean_gt[:, 2], stats_mean[:, 2], stats_se_gt[:, 2])
 err
 
 # %%
@@ -211,7 +219,7 @@ width = 0.15
 # %%
 # Plot Test 1 HR and FAR by condition
 y1_low, y1_high = 0.62, 1
-y2_low, y2_high = 0, 0.18
+y2_low, y2_high = 0, 0.28
 range1 = y1_high - y1_low
 range2 = y2_high - y2_low
 
@@ -294,7 +302,7 @@ plt.show()
 # %%
 # Plot Test 2 HR and FAR by condition
 y1_low, y1_high = 0.62, 1
-y2_low, y2_high = 0, 0.18
+y2_low, y2_high = 0, 0.28
 range1 = y1_high - y1_low
 range2 = y2_high - y2_low
 

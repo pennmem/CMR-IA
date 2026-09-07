@@ -5,8 +5,6 @@
 #SBATCH -N 1
 #SBATCH --mem=5G
 #SBATCH -o slurm_out/slurm-%A_%a.out
-##SBATCH --mail-type=END,FAIL
-##SBATCH --mail-user=jerryjin@andrew.cmu.edu
 
 umask 022
 

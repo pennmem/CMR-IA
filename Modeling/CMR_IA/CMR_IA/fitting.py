@@ -413,6 +413,7 @@ def make_boundary(simu_name):
         ]
         lb_dict.update(
             thresh_sigma=0,
+            beta_cue=0.01,
         )
         ub_dict.update(
             thresh_sigma=0.2,
@@ -1076,15 +1077,17 @@ def _simuS1_subj_stats(df_simu):
 
 def _simuS1_stats(dfs, gt):
     """simuS1: stack per-group means and score against ground truth (base err, no constraint)."""
-    stats = []
+    stats_mean = []
     for df_gp in dfs:
         subjects = np.unique(df_gp["subject"].to_numpy())
         stats_gp = [list(_simuS1_subj_stats(df_gp[df_gp["subject"] == subj])) for subj in subjects]
-        stats.append(list(np.mean(stats_gp, axis=0)))
-    stats = np.array(stats)
-    stats_gt = np.array([gt["g1_mean"], gt["g2_mean"], gt["g3_mean"]])
-    err = np.sum(np.power(stats - stats_gt, 2))
-    return stats, err
+        stats_mean.append(list(np.mean(stats_gp, axis=0)))
+    stats_mean = np.array(stats_mean)
+    stats_mean_gt = np.array([gt["g1_mean"], gt["g2_mean"], gt["g3_mean"]])
+    stats_se_gt = np.array([gt["g1_se"], gt["g2_se"], gt["g3_se"]])
+    # err = np.sum(np.power(stats_mean - stats_mean_gt, 2))
+    err = wmse(stats_mean_gt, stats_mean, stats_se_gt)
+    return stats_mean, err
 
 
 def _simuS2_condition(typ, correct_ans):
@@ -1110,12 +1113,10 @@ def _simuS2_subj_stats(df_simu):
     for cond in _SIMUS2_CONDS:
         cm = condition == cond
         m1, m2 = cm & (test == 1), cm & (test == 2)
-        t1p = s_resp[m1].mean() if m1.any() else np.nan
-        t2p = s_resp[m2].mean() if m2.any() else np.nan
-        if cond == "NR_Lure":  # excluded from the pair table; original except-branch -> 0
+        t1p = s_resp[m1].mean() if m1.any() else 0.0  # a subject with no trials in a condition scores 0
+        t2p = s_resp[m2].mean() if m2.any() else 0.0
+        if cond == "NR_Lure" or not cm.any():  # NR_Lure has no pair table; no pairs -> smoothed Q of an all-zero table
             q = 0.0
-        elif not cm.any():  # no pairs -> empty crosstab raises in original -> nan
-            q = np.nan
         else:
             a, b = _pair_aligned(pair_idx[cm], test[cm], correct[cm])
             q = _Yule_Q_smoothed(*_contingency(a, b, categorical=True))
@@ -1134,11 +1135,11 @@ def _simuS2_stats(df_simu, gt):
     for subj in np.unique(subject):
         m = (subject == subj) & (list_no % 3 != 0)
         stats.append(_simuS2_subj_stats(df_simu[m]))
-    stats_mean = np.nanmean(stats, axis=0)
+    stats_mean = np.mean(stats, axis=0)  # no NaN by construction; every subject contributes
     _conds = ["diff_item", "item_pair", "pair_item", "same_item", "intact_pair", "rep_lure", "nrep_lure"]
     stats_mean_gt = np.array([gt[f"{c}_mean"] for c in _conds])
     stats_se_gt = np.array([gt[f"{c}_se"] for c in _conds])
-    err = wmse(stats_mean_gt[:, :2], stats_mean[:, :2], stats_se_gt[:, :2]) + 10 * wmse(stats_mean_gt[:, 2], stats_mean[:, 2], stats_se_gt[:, 2])
+    err = wmse(stats_mean_gt[:, :2], stats_mean[:, :2], stats_se_gt[:, :2]) + 5 * wmse(stats_mean_gt[:, 2], stats_mean[:, 2], stats_se_gt[:, 2])
     return stats_mean, err
 
 
@@ -1341,7 +1342,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
             df_study_gp = df_study.query(f"group == {i}").copy()
             df_test_gp = df_test.query(f"group == {i}").copy()
             mode = "Recog-CR"
-            design = "S1G3" if i == 3 else None
+            design = f"S1G{i}"
             nitems = 4 * 48
 
             # Run model
@@ -1354,12 +1355,12 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         # Score the model's behavioral stats as compared with the true data
         with open("../../Analysis/simuS1_recog_cr/data/simuS1_gt.json") as f:
             _gt = json.load(f)
-        stats, err = _simuS1_stats(dfs, _gt)
+        stats_mean, err = _simuS1_stats(dfs, _gt)
 
         # Apply some constraints that pair FAR should not be 0
-        if stats[1, 2] == 0:
+        if stats_mean[1, 2] < 0.01:
             err += 1
-        cmr_stats = {"err": err, "params": param_vec, "stats": stats}
+        cmr_stats = {"err": err, "params": param_vec, "stats": stats_mean}
 
         if return_df:
             return err, cmr_stats, df_simu
@@ -1380,7 +1381,7 @@ def obj_func(param_vec, df_study, df_test, sem_mat, sources, simu_name, return_d
         stats_mean, err = _simuS2_stats(df_simu, _gt)
 
         # Apply some constraints that HR should not be too high
-        if np.any(stats_mean[:, :2] > 0.95):
+        if np.any(stats_mean[:, :2] > 0.98):
             err += 100
 
         cmr_stats = {"err": err, "params": param_vec, "stats": stats_mean}
